@@ -1,0 +1,129 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="{% static 'admin_panel/system_settings/tariffs/tariffs.css' %}">
+
+{% endblock %}
+{% block content %}
+    <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Тарифы</h4>
+          </div>
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item active">Тарифы</li>
+
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+        <div class="row mb-3">
+          <div class="dropdown text-right">
+              <a class="btn btn-success" href="#">Добавить тариф</a>
+          </div>
+          <!-- ./col -->
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-success card-outline">
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+              <div class="table-responsive" >
+                   <table id="tariffs" class="table table-bordered  table-hover table-striped linkedRow border-0 w-100">
+                      <thead>
+                        <tr>
+                          <th>Название тарифа</th>
+                          <th>Описание тарифа</th>
+                          <th>Дата редактирования</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="border-0">
+                          <td>1.</td>
+                          <td>65</td>
+                          <td>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                            </div>
+                          </td>
+                          <td class="ps-1 pe-1 text-center">
+                              <div class="btn-group">
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-clone fa-rotate-90"></i></a>
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+                              </div>
+                          </td>
+                        </tr>
+                        <tr class="border-0">
+                          <td>1.</td>
+                          <td>65</td>
+                          <td>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                            </div>
+                          </td>
+                          <td class="ps-1 pe-1 text-center">
+                              <div class="btn-group">
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-clone fa-rotate-90"></i></a>
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+                              </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                   </table>
+              </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer d-flex flex-column bg-white">
+
+          </div>
+       </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="application/javascript">
+       $(document).ready(function () {
+             $('#tariffs').DataTable({
+                 searching: false,
+                 ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+
+
+            });
+        });
+    </script>
+    <script type="module" src="{% static 'admin_panel/system_settings/tariffs/tariffs.js' %}"></script>
+{% endblock %}

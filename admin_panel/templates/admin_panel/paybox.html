@@ -1,0 +1,236 @@
+{% extends 'admin_panel/base_2a.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head_2a %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
+    <link rel="stylesheet" href="{% static 'admin_panel/paybox/paybox.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block name %}
+    Касса
+ {% endblock %}
+{% block navigation %}
+    <li class="breadcrumb-item active">Касса</li>
+{% endblock %}
+{% block action_list %}
+    <li><a class="dropdown-item" href="#">Создать приход</a></li>
+    <li><a class="dropdown-item" href="#">Создать расход</a></li>
+    <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
+{% endblock %}
+
+{% block card_body %}
+   <table id="paybox" class="table border-0 table-bordered table-hover  linkedRow w-100">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Дата</th>
+          <th>Статус</th>
+          <th>Тип платежа</th>
+          <th>Владелец</th>
+          <th>Лицевой счёт</th>
+          <th>Приход/Расход</th>
+          <th>Сумма (грн)</th>
+          <th></th>
+        </tr>
+        <tr class="border-0" >
+           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
+           <td style="min-width: 150px">
+               <input type="text" class="daterange" name="daterange" value="" />
+           </td>
+           <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Проведён</option>
+                        <option>Не проведён</option>
+                    </select>
+               </div>
+          </td>
+          <td style="min-width: 200px">
+               <div class="form-group mb-0">
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Тип платежа 1</option>
+                        <option>Тип платежа 2</option>
+                    </select>
+               </div>
+          </td>
+          <td  style="min-width: 200px">
+              <div class="form-group mb-0">
+                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                    <option></option>
+                    <option>Alaska... Alaska</option>
+                    <option>California</option>
+                    <option>Delaware</option>
+                    <option>Tennessee</option>
+                    <option>Texas</option>
+                    <option>Washington</option>
+                  </select>
+              </div>
+          </td>
+          <td  style="min-width: 145px">
+              <input type="text" style="width: 100%" class="form-control rounded-0">
+          </td>
+          <td  style="min-width: 150px">
+               <div class="form-group mb-0">
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Приход</option>
+                        <option>Расход</option>
+                    </select>
+               </div>
+          </td>
+          <td style="min-width: 120px"></td>
+          <td>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-0">
+          <td>1.</td>
+          <td>65</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+        <tr class="border-0">
+          <td>1.</td>
+          <td>Update software</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+        <tr class="border-0">
+          <td>2.</td>
+          <td>Update software</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+        <tr class="border-0">
+          <td>3.</td>
+          <td>Update software</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+        <tr class="border-0">
+          <td>4.</td>
+          <td>Update software</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+      </tbody>
+   </table>
+{% endblock %}
+
+{% block card_footer %}
+    <div>
+        <ul class="pagination pagination-sm m-0 float-right">
+          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+        </ul>
+    </div>
+    <hr style="border-top: 1px solid darkgrey;">
+    <div>
+      <div class="d-flex flex-row flex-wrap"><span>Проведен приход:&nbsp;</span> <span class="text-bold">5 081 366.52 грн</span></div>
+      <div class="d-flex flex-row flex-wrap"><span>Проведен расход:&nbsp;</span>  <span class="text-bold">2 042 796.02 грн</span></div>
+    </div>
+    </div>
+{% endblock %}
+
+
+{% block  script_2a %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+             $('#paybox').DataTable({
+                 searching: false,
+                 ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+
+
+            });
+        });
+    </script>
+    <script type="module" src="{% static 'admin_panel/paybox/paybox.js' %}"></script>
+{% endblock %}

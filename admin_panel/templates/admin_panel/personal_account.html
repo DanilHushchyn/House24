@@ -1,0 +1,145 @@
+{% extends 'admin_panel/base_2a.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head_2a %}
+    <link rel="stylesheet" href="{% static 'admin_panel/personal_account/personal_account.css' %}">
+{% endblock %}
+{% block name %}
+    Лицевые счета
+ {% endblock %}
+{% block navigation %}
+    <li class="breadcrumb-item active">Лицевые счета</li>
+{% endblock %}
+{% block action_list %}
+    <li><a class="dropdown-item" href="#">Добавить лицевой счёт</a></li>
+    <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
+{% endblock %}
+
+{% block card_body %}
+   <table id="personal_account" class="table border-0 table-bordered table-hover  linkedRow w-100">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Статус</th>
+          <th>Квартира</th>
+          <th>Дом</th>
+          <th>Секция</th>
+          <th>Владелец</th>
+          <th>Остаток (грн)</th>
+          <th></th>
+        </tr>
+        <tr class="border-0" >
+           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
+           <td style="min-width: 190px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Активен</option>
+                        <option>Не активен</option>
+                    </select>
+               </div>
+          </td>
+          <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
+          <td  style="min-width: 145px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Дом 1</option>
+                        <option>Дом 2</option>
+                        <option>Дом 3</option>
+                    </select>
+               </div>
+          </td>
+          <td  style="min-width: 145px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Секция 1</option>
+                        <option>Секция 2</option>
+                        <option>Секция 3</option>
+                    </select>
+               </div>
+          </td>
+          <td  style="min-width: 200px">
+              <div class="form-group mb-0">
+                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                    <option></option>
+                    <option>Владелец 1</option>
+                    <option>Владелец 2</option>
+                    <option>Владелец 3</option>
+                    <option>Владелец 4</option>
+                    <option>Владелец 5</option>
+                  </select>
+              </div>
+          </td>
+          <td  style="min-width: 145px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Есть долг</option>
+                        <option>Нет долга</option>
+                    </select>
+               </div>
+          </td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-0">
+          <td>1.</td>
+          <td>65</td>
+          <td>
+            <div class="progress progress-xs">
+              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+            </div>
+          </td>
+          <td><span class="badge bg-danger">55%</span></td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td>Update software</td>
+          <td class="ps-1 pe-1">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
+              </div>
+          </td>
+        </tr>
+      </tbody>
+   </table>
+{% endblock %}
+
+{% block card_footer %}
+    <div>
+
+    </div>
+    <hr style="border-top: 1px solid darkgrey;">
+    <div>
+      <div class="d-flex flex-row flex-wrap"><span>Количество счетов:&nbsp;</span> <span class="text-bold">59</span></div>
+    </div>
+    </div>
+{% endblock %}
+
+
+{% block  script_2a %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+             $('#personal_account').DataTable({
+                 searching: false,
+                 ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+
+            });
+        });
+    </script>
+    <script type="module" src="{% static 'admin_panel/personal_account/personal_account.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'admin_panel/base_2b.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head_2b %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
+    <link rel="stylesheet" href="{% static 'admin_panel/application/application.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block name %}
+    Счетчики
+ {% endblock %}
+{% block navigation %}
+    <li class="breadcrumb-item active">Счетчики</li>
+{% endblock %}
+{% block action_list %}
+    <a class="btn btn-success" href="#">Добавить показание</a>
+{% endblock %}
+
+{% block card_body %}
+   <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
+      <thead>
+        <tr>
+          <th>Дом</th>
+          <th>Секция</th>
+          <th>№ квартиры</th>
+          <th>Счетчик</th>
+          <th>Текущие показания</th>
+          <th>Ед. изм.</th>
+          <th></th>
+        </tr>
+        <tr class="border-0" >
+           <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Секция 1</option>
+                    </select>
+               </div>
+           </td>
+            <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Секция 1</option>
+                    </select>
+               </div>
+            </td>
+           <td style="min-width: 50px"><input type="text" class="form-control rounded-0"></td>
+           <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>счётчик 1</option>
+                    </select>
+               </div>
+           </td>
+           <td style="min-width: 170px"></td>
+           <td style="min-width: 100px"></td>
+           <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-0">
+          <td>1.</td>
+          <td>Дом зелёный</td>
+          <td>
+              Дом зелёный
+          </td>
+          <td>
+              Дом зелёный
+          </td>
+          <td>
+              Дом зелёный
+          </td>
+          <td>
+              Дом зелёный
+          </td>
+          <td class="ps-1 pe-1 text-center">
+              <div class="btn-group">
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-gauge"></i></a>
+                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-eye"></i></a>
+              </div>
+          </td>
+        </tr>
+      </tbody>
+   </table>
+{% endblock %}
+
+{% block card_footer %}
+    <div>
+        <ul class="pagination pagination-sm m-0 float-right">
+          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block  script_2b %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+             $('#indication').DataTable({
+                 searching: false,
+                 ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+            });
+        });
+    </script>
+    <script type="module" src="{% static 'admin_panel/application/application.js' %}"></script>
+{% endblock %}

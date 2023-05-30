@@ -1,0 +1,60 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'admin_panel/system_settings/services/services.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Платежные реквизиты</h4>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-primary card-outline card-success ps-3">
+            <div class="card-header p-0 border-bottom-0">
+            </div>
+            <div class="card-body">
+                <form action="#">
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-7 text-right">
+                            <div class="form-group">
+                                <a href="#" class="btn btn-default">Отменить</a>
+                                <button type="submit" class="btn btn-success">Сохранить</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+
+{% block  script %}
+    <script type="module" src="{% static 'admin_panel/system_settings/services/services.js' %}"></script>
+{% endblock %}
