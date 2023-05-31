@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'admin_panel.apps.AdminPanelConfig',
+    'website.apps.WebsiteConfig',
     'easy_thumbnails',
 ]
 
@@ -76,14 +77,19 @@ WSGI_APPLICATION = 'House24.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        "NAME": 'house24',
+        "USER": 'postgres',
+        "PASSWORD": 'buzaho4114',
+        "HOST": 'localhost',
+        "PORT": 5432,
+
     }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-AUTH_USER_MODEL = "admin_panel.HouseUser"
+AUTH_USER_MODEL = "admin_panel.CustomUser"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
