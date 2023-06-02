@@ -19,4 +19,10 @@ urlpatterns = [
     path("system_payment_details", admin_panel.views.system_payment_details, name='system_payment_details'),
     path("system_payment_articles", admin_panel.views.system_payment_articles, name='system_payment_articles'),
 
+    path("main_page", admin_panel.views.main_page, name='main_page'),
+    path("about_us", admin_panel.views.about_us, name='about_us'),
+    path("services", admin_panel.views.services, name='services'),
+    path("tariffs", admin_panel.views.tariffs, name='tariffs'),
+    path("contacts", admin_panel.views.contacts, name='contacts'),
+
 ]

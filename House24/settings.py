@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'admin_panel.apps.AdminPanelConfig',
+    'cabinet.apps.CabinetConfig',
     'website.apps.WebsiteConfig',
     'easy_thumbnails',
 ]

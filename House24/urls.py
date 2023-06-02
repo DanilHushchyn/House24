@@ -19,4 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', include('admin_panel.urls')),
+    path('cabinet/', include('cabinet.urls')),
 ]

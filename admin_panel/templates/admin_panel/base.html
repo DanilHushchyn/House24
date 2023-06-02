@@ -180,62 +180,62 @@
         <ul class="nav nav-pills nav-sidebar flex-column mb-3" data-widget="treeview" role="menu" data-accordion="false" style="font-size: 14px">
 
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'statistic' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'statistic' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-light fa-chart-line">
                 <span class="p-2">Статистика</span></i>
 
             </a>
           </li>
            <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'paybox' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'paybox' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-light fa-dollar-sign">
                 <span class="p-2">Касса</span></i>
             </a>
           </li>
            <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'receipt' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'receipt' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-file">
                 <span class="p-2">Квитанции на оплату</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'personal_account' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'personal_account' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-credit-card">
                 <span class="p-2">Лицевые счета</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'flat' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'flat' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-key">
                 <span class="p-2">Квартиры</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'client' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'client' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-users">
                 <span class="p-2">Владельцы квартир</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'house' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'house' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-building">
                 <span class="p-2">Дома</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'message' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'message' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-envelope">
                 <span class="p-2">Сообщения</span></i>
             </a>
           </li>
             <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'application' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'application' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-screwdriver-wrench">
                 <span class="p-2">Заявки вызова мастера</span></i>
             </a>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'indications' %}" class="nav-link h-100 d-flex flex-row align-items-center">
+            <a href="{% url 'indications' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-calculator">
                 <span class="p-2">Показания счётчиков</span></i>
             </a>
@@ -250,31 +250,31 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'main_page' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Главная страница</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'about_us' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>О нас</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'services' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Услуги</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'tariffs' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Тарифы</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'contacts' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Контакты</p>
                 </a>

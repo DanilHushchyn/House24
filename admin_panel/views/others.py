@@ -59,3 +59,4 @@ def system_payment_details(request):
 
 def system_payment_articles(request):
     return render(request, 'admin_panel/system_settings/payment_articles.html')
+

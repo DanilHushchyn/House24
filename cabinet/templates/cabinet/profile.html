@@ -1,0 +1,171 @@
+{% extends 'cabinet/base.html' %}
+{%  load static %}
+{# Load the tag library #}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+{# Read the documentation for more information #}
+
+{% block head %}
+{% endblock %}
+{% block content %}
+
+    <div class="content-wrapper" style="position: relative;height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row">
+             <div class="col-sm-6">
+                <h4 class="mb-0">Профиль</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                  <li class="breadcrumb-item active">Профиль</li>
+                </ol>
+            </div>
+        </div>
+
+      </div><!-- /.container-fluid -->
+      <hr style="border-top: 1px solid darkgrey;">
+
+    </section>
+
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-success card-outline">
+              <div class="card-body box-profile">
+                <div class="text-center">
+                  <img class="profile-user-img img-fluid img-circle"
+                       src="{% static 'admin_panel/imgs/user-avatar.jpg' %}"
+                       alt="User profile picture">
+                </div>
+
+                <h3 class="profile-username text-center">Пользователь пользователей</h3>
+
+                <p class="text-muted text-center">Владелец квартиры</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Телефон</b> <a class="float-right">+380990220202</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Телеграмм</b> <a class="float-right">+380990220202</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Вайбер</b> <a class="float-right">+380990220202</a>
+                  </li>
+                </ul>
+
+                <a href="#" class="btn btn-primary btn-block"><b>Изменить</b></a>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- About Me Box -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">About Me</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <p class="text-muted">
+                  Обо мне
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <h4>Мои квартиры</h4>
+              <hr style="border-top: 1px solid darkgrey;">
+            <div class="card card-success card-outline">
+              <div class="card-header p-2">
+                <h5>Описание квартиры</h5>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                    <p>ЖК Башня Чкалов</p>
+                    <div class="row">
+                            <div class="col-12 col-md-6">
+                                <img src="{% static 'admin_panel/imgs/placehold.jpg' %}" style="width: 100%" class="img-responsive largeImg mb-2" alt="">
+                            </div>
+                            <div class="row col-12 col-md-6 text-center">
+                                <div class="col-6 mb-2">
+                                    <img src="{% static 'admin_panel/imgs/placehold.jpg' %}"style="width: 100%" class="img-responsive smallImg" alt="">
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <img src="{% static 'admin_panel/imgs/placehold.jpg' %}" style="width: 100%" class="img-responsive smallImg" alt="">
+                                </div>
+                                <div class="col-6 mb-0">
+                                    <img src="{% static 'admin_panel/imgs/placehold.jpg' %}" style="width: 100%" class="img-responsive smallImg" alt="">
+                                </div>
+                                <div class="col-6 mb-0">
+                                    <img src="{% static 'admin_panel/imgs/placehold.jpg' %}" style="width: 100%" class="img-responsive smallImg" alt="">
+                                </div>
+                            </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Описание</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                    <th style="font-weight:normal;">ЖК "Башня Чкалов"</th>
+                                </tr>
+                                <tr>
+                                    <td>Адрес</td>
+                                    <td>ул. Большая Арнаутская, 21</td>
+                                </tr>
+                                <tr>
+                                    <td>№ квартиры</td>
+                                    <td>3425</td>
+                                </tr>
+                                <tr>
+                                    <td>Площадь</td>
+                                    <td>
+                                        34.00м<sup>2</sup>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Этаж</td>
+                                    <td>Этаж 2</td>
+                                </tr>
+                                <tr>
+                                    <td>Секция</td>
+                                    <td>Секция 2</td>
+                                </tr>
+                                <tr>
+                                    <td>Лицевой счет</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}
