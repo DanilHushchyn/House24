@@ -1,0 +1,116 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="content-wrapper" style="height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Профиль владельца</h4>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'clients' %}">Владельцы квартир</a></li>
+                <li class="breadcrumb-item">Профиль владельца</li>
+                <li class="breadcrumb-item">Редактирование</li>
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-primary card-outline card-success ps-3">
+            <div class="card-header p-0 border-bottom-0">
+            </div>
+            <div class="card-body p-2">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 col-12 pe-3">
+{#                            {% bootstrap_form form layout='vertical' %}#}
+                              <div class="d-flex flex-wrap justify-content-center justify-content-sm-start">
+                                  <div class="me-3 mb-3">
+                                      {% if form.avatar.value == '' %}
+                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;" src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" alt="">
+                                        {% else %}
+                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;" src="{{ form.instance.avatar.url }}" alt="">
+                                      {% endif %}
+                                  </div>
+                                  <div class="flex-grow text-left">
+                                    {% bootstrap_field form.avatar %}
+                                  </div>
+                              </div>
+                              {% bootstrap_field form.first_name %}
+                              {% bootstrap_field form.last_name %}
+                              {% bootstrap_field form.patronymic %}
+                              {% bootstrap_field form.birthday %}
+                              <h3 class="p-0 pt-3 fs-5">Контактные данные</h3>
+                                <hr style="border-top: 1px solid darkgrey;">
+                              {% bootstrap_field form.phone %}
+                              {% bootstrap_field form.viber %}
+                              {% bootstrap_field form.telegram %}
+                              {% bootstrap_field form.email %}
+                        </div>
+                        <div class="col-md-6 col-12 ps-3">
+                            {% bootstrap_field form.status %}
+                            {% bootstrap_field form.ID %}
+                            {% bootstrap_field form.bio %}
+
+                            <h3 class="p-0 pt-3 fs-5">Изменить пароль</h3>
+                            <hr style="border-top: 1px solid darkgrey;">
+                                <div class="d-flex flex-wrap align-items-center mb-3">
+                                    <div class="flex-grow-1">
+                                        {% bootstrap_field form.password1 %}
+                                    </div>
+                                    <div class="" style="margin-top: 16px;">
+                                        <button class="btn btn-default rounded-0" id="generatePass" type="button">
+                                            Сгенерировать
+                                        </button>
+                                    </div>
+                                    <div class="" style="margin-top: 16px;">
+                                        <button type="button" class="btn btn-primary rounded-0" style="height: 38px" id="showPass">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                              {% bootstrap_field form.password2 %}
+                        </div>
+                    </div>
+                    <div class="col-12 text-right">
+                        {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
+                        {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+
+{% block  script %}
+        <script type="application/javascript">
+            $('.avatar').removeClass('form-control')
+        </script>
+        <script type="module" src="{% static 'admin_panel/system_settings/users/users.js' %}"></script>
+{% endblock %}

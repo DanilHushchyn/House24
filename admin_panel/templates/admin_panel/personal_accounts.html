@@ -19,7 +19,7 @@
     <li class="breadcrumb-item active">Лицевые счета</li>
 {% endblock %}
 {% block action_list %}
-    <li><a class="dropdown-item" href="#">Добавить лицевой счёт</a></li>
+    <li><a class="dropdown-item" href="{% url 'add_personal_account' %}">Добавить лицевой счёт</a></li>
     <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
 {% endblock %}
 
@@ -93,25 +93,39 @@
         </tr>
       </thead>
       <tbody>
+        {% for personal_account in personal_accounts %}
         <tr class="border-0">
-          <td>1.</td>
-          <td>65</td>
+          <td>{{ personal_account.number }}</td>
           <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
+              {% if personal_account.get_status_display == 'Активен' %}
+                  <span class="badge text-bg-success text-white">Активен</span>
+                  {% elif personal_account.get_status_display == 'Не активен' %}
+                  <span class="badge text-bg-danger text-white">Не Активен</span>
+              {% endif %}</td>
+          <td>
+              {{ personal_account.flat.number }}
           </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
+          <td>
+              {{ personal_account.house.title }}
+          </td>
+          <td>
+              {{ personal_account.section.title }}
+          </td>
+          <td>
+              {{ personal_account.flat_owner }}
+          </td>
+          <td>остаток грн</td>
           <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
+              <form action="{% url 'delete_personal_account' personal_account.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="btn-group">
+                      <a class="btn btn-default" href="{% url 'update_personal_account' personal_account.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
+              </form>
           </td>
         </tr>
+        {% endfor %}
       </tbody>
    </table>
 {% endblock %}
@@ -122,7 +136,7 @@
     </div>
     <hr style="border-top: 1px solid darkgrey;">
     <div>
-      <div class="d-flex flex-row flex-wrap"><span>Количество счетов:&nbsp;</span> <span class="text-bold">59</span></div>
+      <div class="d-flex flex-row flex-wrap"><span>Количество счетов:&nbsp;</span> <span class="text-bold">{{ personal_accounts.count }}</span></div>
     </div>
     </div>
 {% endblock %}
@@ -139,6 +153,10 @@
                 "bInfo" : false
 
             });
+        });
+         $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+
         });
     </script>
     <script type="module" src="{% static 'admin_panel/personal_account/personal_account.js' %}"></script>

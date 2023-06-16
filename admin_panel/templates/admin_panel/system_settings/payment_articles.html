@@ -16,7 +16,7 @@
 
 {% endblock %}
 {% block content %}
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->
     <section class="content-header pb-0">
       <div class="container-fluid">
@@ -36,7 +36,7 @@
         <hr style="border-top: 1px solid darkgrey;">
         <div class="row mb-3">
           <div class="dropdown text-right">
-              <a class="btn btn-success" href="#">Добавить статью</a>
+              <a class="btn btn-success" href="{% url 'add_payment_article' %}">Добавить статью</a>
           </div>
           <!-- ./col -->
         </div>
@@ -59,16 +59,27 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="border-0">
-                          <td>1.</td>
-                          <td>65</td>
-                          <td class="ps-1 pe-1 text-center" style="width: 100px">
-                              <div class="btn-group">
-                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-                              </div>
-                          </td>
-                        </tr>
+                      {% for row in rows %}
+                            <tr class="border-0">
+                              <td>{{ row.title }}</td>
+                              {% if row.debit_credit == 'plus' %}
+                                  <td class="text-success">Приход</td>
+                              {% else %}
+                                  <td class="text-danger">Расход</td>
+                              {% endif %}
+                              <td class="ps-1 pe-1 text-center" style="width: 100px">
+                                  <div class="btn-group">
+                                      <form action="{% url 'delete_payment_article' row.id %}" method="post">
+                                          {% csrf_token %}
+                                          <a class="btn btn-default" href="{% url 'update_payment_article' row.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                                      </form>
+                                  </div>
+                              </td>
+                            </tr>
+                      {% endfor %}
+
+
                       </tbody>
                    </table>
               </div>
@@ -97,5 +108,13 @@
                 "bInfo" : false
             });
         });
+       $("form").on('submit', function() {
+            if(confirm('Вы уверены, что хотите удалить этот элемент?')) {
+                return true;
+            }
+            return false;
+        });
     </script>
 {% endblock %}
+
+

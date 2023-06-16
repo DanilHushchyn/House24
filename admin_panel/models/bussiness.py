@@ -10,16 +10,31 @@ class TariffSystem(models.Model):
     title = models.CharField(verbose_name='Название тарифа', max_length=100, default='', blank=True)
     description = models.TextField(verbose_name="Описание тарифа", default='', blank=True)
     date_edited = models.DateTimeField(auto_now=True)
-    service = models.ForeignKey('Service', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.title}"
 
     class Meta:
         db_table = 'tariff_system'
 
 
+class TariffService(models.Model):
+    price = models.DecimalField(verbose_name='Цена', default=0, max_digits=5, decimal_places=2)
+    currency = models.CharField(verbose_name='Валюта', blank=True, default='грн')
+    tariff = models.ForeignKey('TariffSystem', on_delete=models.SET_NULL, null=True, blank=True)
+    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = 'tariff_service'
+
+
 class Service(models.Model):
     title = models.CharField(verbose_name='Услуга', max_length=100, default='', blank=True)
-    show_in_indication = models.BooleanField(default=False)
-    measure = models.ForeignKey('Measure', on_delete=models.SET_NULL, null=True, blank=True)
+    show_in_indication = models.BooleanField(default=False, verbose_name="Показывать в счетчиках")
+    measure = models.ForeignKey('Measure', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Ед. изм.")
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         db_table = 'service'
@@ -27,6 +42,9 @@ class Service(models.Model):
 
 class Measure(models.Model):
     title = models.CharField(verbose_name='Ед. изм.', max_length=100, default='', blank=True)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         db_table = 'measure'
@@ -40,15 +58,13 @@ class PaymentDetail(models.Model):
         db_table = 'payment_detail'
 
 
-
 class Article(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100, default='', blank=True)
     PLUS_MINUS = (
         ('plus', 'Приход'),
         ('minus', 'Расход'),
     )
-    debit_credit = models.CharField(verbose_name='Приход/расход', choices=PLUS_MINUS, max_length=100, default='plus',
-                                    blank=True)
+    debit_credit = models.CharField(verbose_name='Приход/расход', choices=PLUS_MINUS, max_length=100, default='plus', )
 
     class Meta:
         db_table = 'article'
@@ -61,9 +77,9 @@ class PersonalAccount(models.Model):
         ('disabled', 'Не активен'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='active', verbose_name='Статус')
-    section = models.ForeignKey('Section', on_delete=models.SET_NULL, null=True, blank=True)
-    house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True, blank=True)
-    flat = models.OneToOneField('Flat', on_delete=models.SET_NULL, null=True, blank=True)
+    section = models.ForeignKey('Section', verbose_name="Секция", on_delete=models.SET_NULL, null=True, blank=True)
+    house = models.ForeignKey('House', verbose_name="Дом", on_delete=models.SET_NULL, null=True, blank=True)
+    flat = models.OneToOneField('Flat', verbose_name="Квартира", on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = 'personal_account'
@@ -76,7 +92,7 @@ class Paybox(models.Model):
     total = models.DecimalField(default=0, blank=True, decimal_places=2, max_digits=20)
     flat_owner = models.ForeignKey('FlatOwner', on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey("Article", on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey('HouseUser', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'paybox'
@@ -130,7 +146,7 @@ class Application(models.Model):
         ('complete', 'Выполнено'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
-    user = models.ForeignKey('HouseUser', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE, verbose_name='Квартира')
     flat_owner = models.ForeignKey('FlatOwner', on_delete=models.CASCADE)
 
@@ -142,7 +158,7 @@ class Message(models.Model):
     title = models.CharField(max_length=100, default='', blank=True)
     description = models.TextField(default='', blank=True)
     date_published = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey('HouseUser', on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey('Personal', on_delete=models.CASCADE, null=True)
     flat_owner = models.ManyToManyField('FlatOwner')
 
     class Meta:

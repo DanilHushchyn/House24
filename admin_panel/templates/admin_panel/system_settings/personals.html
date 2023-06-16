@@ -19,7 +19,7 @@
     <li class="breadcrumb-item active">Пользователи</li>
 {% endblock %}
 {% block action_list %}
-    <a class="btn btn-success" href="#">Добавить пользователя</a>
+    <a class="btn btn-success" href="{% url 'add_personal' %}">Добавить пользователя</a>
 {% endblock %}
 
 {% block card_body %}
@@ -61,25 +61,35 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="border-0">
-          <td>1.</td>
-          <td>65</td>
+       {% for personal in personals %}
+         <tr class="border-0">
+          <td>{{ personal.user.id }}</td>
+          <td>{{ personal.user.last_name }}{{ personal.first_name }}</td>
+          <td>{{ personal.get_role_display }}</td>
+          <td>{{ personal.user.phone }}</td>
+          <td>{{ personal.user.email }}</td>
           <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
+              {% if personal.user.get_status_display == 'Активен' %}
+                  <span class="badge text-bg-success text-white">Активен</span>
+                  {% elif personal.user.get_status_display == 'Новый' %}
+                  <span class="badge text-bg-warning text-white">Новый</span>
+                  {% else %}
+                  <span class="badge text-bg-danger text-white">Отключён</span>
+              {% endif %}
           </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
           <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-rotate-right"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
+              <form action="{% url 'delete_personal' personal.user.id %}" method="post">
+                  <div class="btn-group">
+                          {% csrf_token %}
+                          <a class="btn btn-default" href="{% url 'personals' %}" role="button"><i class="fa-solid fa-rotate-right"></i></a>
+                          <a class="btn btn-default" href="{% url 'update_personal' personal.user_id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
+              </form>
+
           </td>
         </tr>
+       {% endfor %}
       </tbody>
    </table>
 {% endblock %}
@@ -108,6 +118,9 @@
                 "bInfo" : false
 
             });
+        });
+        $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
         });
     </script>
     <script type="module" src="{% static 'admin_panel/system_settings/users/users.js' %}"></script>

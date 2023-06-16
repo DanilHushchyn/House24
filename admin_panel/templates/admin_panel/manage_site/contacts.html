@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
 
-</body>
-</html>
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="content-wrapper" style="height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+         <div class="col-sm-6">
+            <h4 class="mb-0">Редактирование страницы</h4>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item">Редактирование страницы</li>
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-primary card-outline card-success ps-3">
+            <div class="card-header ps-0 border-bottom-0 text-gray-dark">
+                <h5 class="p-0 fs-5">Редактирование страницы "Контакты"</h5>
+                        <hr style="border-top: 1px solid darkgrey;">
+            </div>
+            <div class="card-body ps-0">
+                <form method="post" action="{% url 'contacts' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h5 class="p-0 fs-5">Контактная информация</h5>
+                    <hr style="border-top: 1px solid darkgrey;">
+                    {% bootstrap_form contacts_form %}
+                    {% bootstrap_form seo_form %}
+
+
+
+                    {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
+                    {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
+
+                </form>
+            </div>
+
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+
+{% block  script %}
+
+{% endblock %}

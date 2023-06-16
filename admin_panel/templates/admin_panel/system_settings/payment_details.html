@@ -10,12 +10,11 @@
 {# Read the documentation for more information#}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'admin_panel/system_settings/services/services.css' %}">
 {% endblock %}
 
 
 {% block content %}
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->
     <section class="content-header pb-0">
       <div class="container-fluid">
@@ -35,15 +34,34 @@
             <div class="card-header p-0 border-bottom-0">
             </div>
             <div class="card-body">
-                <form action="#">
-                    <div class="row">
-                        <div class="col-xs-12 col-lg-7 text-right">
-                            <div class="form-group">
-                                <a href="#" class="btn btn-default">Отменить</a>
-                                <button type="submit" class="btn btn-success">Сохранить</button>
-                            </div>
-
+                <form method="post" action="{% url 'system_payment_details' %}">
+                    {% csrf_token %}
+                       {% for message in messages %}
+                        <div class="alert  {% for tag in message.extra_tags.split %}
+                              {{tag}} {%endfor%} fade show"
+                             role="alert">
+                              <div class="d-flex justify-content-end">
+                                    <button type="button"
+                                            class="close btn-sm btn btn-danger"
+                                            data-dismiss="alert"
+                                            aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                    </button>
+                              </div>
+                              <hr>
+                              <p class="text-center">
+                                    {{ message | safe }}
+                              </p>
                         </div>
+                        {% endfor %}
+                    <div class="row">
+                        <div class="col-12 col-lg-7 text-left">
+                            {% bootstrap_form form layout='vertical' %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-7 text-right">
+                        {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
+                        {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
                     </div>
                 </form>
             </div>
@@ -56,5 +74,5 @@
 {% endblock %}
 
 {% block  script %}
-    <script type="module" src="{% static 'admin_panel/system_settings/services/services.js' %}"></script>
+
 {% endblock %}

@@ -23,7 +23,7 @@
     <li class="breadcrumb-item active">Квартиры</li>
 {% endblock %}
 {% block action_list %}
-    <a class="btn btn-success" href="#">Добавить квартиру</a>
+    <a class="btn btn-success" href="{% url 'add_flat' %}">Добавить квартиру</a>
 {% endblock %}
 
 {% block card_body %}
@@ -91,25 +91,30 @@
         </tr>
       </thead>
       <tbody>
+      {% for flat in flats %}
         <tr class="border-0">
-          <td>1.</td>
-          <td>65</td>
+          <td>{{ flat.number }}</td>
+          <td>{{ flat.house.title }}</td>
           <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
+            {{ flat.section.title }}
           </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
+          <td>{{ flat.floor.title }}</td>
+          <td>{{ flat.flat_owner }}</td>
+          <td>остаток грн</td>
           <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
+              <form action="{% url 'delete_flat' flat.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="btn-group">
+                      <a class="btn btn-default" href="{% url 'update_flat' flat.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
+              </form>
           </td>
         </tr>
+      {% endfor %}
+
       </tbody>
+
    </table>
 {% endblock %}
 
@@ -125,7 +130,7 @@
     </div>
     <hr style="border-top: 1px solid darkgrey;">
     <div>
-      <div class="d-flex flex-row flex-wrap"><span>Количество квартир:&nbsp;</span> <span class="text-bold">172</span></div>
+      <div class="d-flex flex-row flex-wrap"><span>Количество квартир:&nbsp;</span> <span class="text-bold">{{ flats.count }}</span></div>
     </div>
     </div>
 {% endblock %}
@@ -154,6 +159,10 @@
               minimumResultsForSearch: -1
 
         })
+        $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+
+        });
     </script>
     <script type="module" src="{% static 'admin_panel/flat/flat.js' %}"></script>
 {% endblock %}

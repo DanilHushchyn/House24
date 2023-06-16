@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'admin_panel.apps.AdminPanelConfig',
     'cabinet.apps.CabinetConfig',
     'website.apps.WebsiteConfig',
+    "django_cleanup",
     'easy_thumbnails',
 ]
 
@@ -67,6 +68,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'check_relation': 'admin_panel.templatetags.check_relation'
+            }
         },
     },
 ]
@@ -109,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -119,8 +123,8 @@ USE_TZ = True
 
 THUMBNAIL_ALIASES = {
     '': {
-        'default': {
-            'size': (96, 96),
+        'main': {
+            'size': (500, 300),
             'crop': 'scale',
         },
     },
