@@ -72,9 +72,49 @@ function clearSelects() {
      $('.form-section-select').children().remove()
      $('.form-floor-select').children().remove()
      $('.form-section-select').append(`
-       <option>Выберите...</option>
+       <option value="">Выберите...</option>
      `)
      $('.form-floor-select').append(`
-       <option>Выберите...</option>
+       <option value="">Выберите...</option>
      `)
 }
+
+
+
+
+
+
+
+$('.personal_account-select').select2({
+     placeholder: {
+        id: "",
+        text: "или выберите из списка..." //Should be text not placeholder
+    },
+    allowClear: true,
+
+})
+
+//Set the default placeholder
+var defaultPlaceholder = $('.personal_account-select').attr('placeholder');
+$('#select2-my-select2-container .select2-selection__rendered').html(defaultPlaceholder);
+
+//Update the placeholder when a selection is made
+$('#my-select2').on('change', function() {
+    var selectedValue = $('#my-select2').val();
+    if (selectedValue) {
+        $('#select2-my-select2-container .select2-selection__rendered').html(selectedValue);
+    } else {
+        $('#select2-my-select2-container .select2-selection__rendered').html(defaultPlaceholder);
+    }
+});
+
+
+
+$('.personal_account-res').parent().removeClass('mb-3')
+$('.personal_account-select').on('change',function () {
+     if($('.personal_account-select option:selected').text()==='или выберите из списка...'){
+    }else {
+        $('.personal_account-res').val($('.personal_account-select option:selected').text())
+    }
+})
+

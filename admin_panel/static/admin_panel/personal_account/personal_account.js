@@ -1,4 +1,4 @@
-if ($('.form-house-select option:selected').text()==='Выберите...'){
+if($('.form-house-select option:selected').text()==='Выберите...'){
     clearSelects()
 }else{
     // $.ajax({
@@ -59,7 +59,7 @@ $('.form-section-select').on('change',function () {
     if($('.form-section-select option:selected').text()==='Выберите...'){
          $('.form-flat-select').children().remove()
          $('.form-flat-select').append(`
-           <option>Выберите...</option>
+           <option value="">Выберите...</option>
          `)
         $('#user-fullname').text('не выбран')
         $('#user-phone').text('не выбран')
@@ -75,7 +75,7 @@ $('.form-section-select').on('change',function () {
             success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
                  $('.form-flat-select').children().remove()
                  $('.form-flat-select').append(`
-                   <option>Выберите...</option>
+                   <option value="">Выберите...</option>
                  `)
                 data = JSON.parse(data)
                 for(let flat of JSON.parse(data['flats'])){
@@ -115,12 +115,32 @@ $('.form-flat-select').on('change',function () {
     }
 })
 function clearSelects() {
+
      $('.form-section-select').children().remove()
      $('.form-section-select').append(`
-       <option>Выберите...</option>
+       <option value="">Выберите...</option>
      `)
      $('.form-flat-select').children().remove()
      $('.form-flat-select').append(`
-       <option>Выберите...</option>
+       <option value="">Выберите...</option>
      `)
+    $('#user-fullname').text('не выбран')
+    $('#user-phone').text('не выбран')
+}
+$('.number').attr('value',generateNumber())
+function generateNumber() {
+    var chars = "0123456789";
+    var string_length = 5;
+    var randomstring1 = '';
+    var randomstring2 = '';
+    for (var i=0; i<string_length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        randomstring1 += chars.substring(rnum,rnum+1);
+    }
+    for (var i=0; i<string_length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        randomstring2 += chars.substring(rnum,rnum+1);
+    }
+    let result = randomstring1+'-'+randomstring2
+    return result;
 }

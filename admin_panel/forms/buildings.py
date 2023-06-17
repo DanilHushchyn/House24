@@ -1,4 +1,5 @@
 import django.forms as forms
+from django.db.models import Q
 from django.forms import modelformset_factory
 
 from ..models import *
@@ -57,25 +58,89 @@ FloorFormset = forms.modelformset_factory(model=Floor, form=FloorForm, can_delet
 
 class FlatForm(forms.ModelForm):
     square = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Площадь')
-    section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция',
+    section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция', required=False,
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
-    floor = forms.ModelChoiceField(queryset=Floor.objects.all(), label='Этаж',
+    floor = forms.ModelChoiceField(queryset=Floor.objects.all(), label='Этаж', required=False,
                                    widget=forms.Select(attrs={'class': 'form-floor-select'}))
+    house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
+                                   widget=forms.Select(attrs={'class': 'form-house-select'}))
+    personal_account_res = forms.CharField(label='Лицевой счёт', required=False, widget=forms.TextInput(
+        attrs={'class': 'personal_account-res', 'placeholder': ''}))
+    personal_account = forms.ModelChoiceField(queryset=PersonalAccount.objects.filter(flat__isnull=True),
+                                              widget=forms.Select(attrs={'class': 'personal_account-select'}), label='',
+                                              required=False)
 
     def __init__(self, *args, **kwargs):
         super(FlatForm, self).__init__(*args, **kwargs)
+
+        self.fields['personal_account'].queryset = PersonalAccount.objects.filter(flat__isnull=True)
+
         self.fields['house'].empty_label = "Выберите..."
         self.fields['section'].empty_label = "Выберите..."
         self.fields['floor'].empty_label = "Выберите..."
         self.fields['flat_owner'].empty_label = "Выберите..."
         self.fields['tariff'].empty_label = "Выберите..."
+        # self.fields['personal_account'].empty_label = "или выберите из списка..."
+        if self.instance.pk:
+            if hasattr(self.instance, 'personal_account'):
+                self.fields['personal_account_res'].initial = self.instance.personal_account
+                self.fields['personal_account'].queryset = PersonalAccount.objects.filter(
+                    Q(flat__isnull=True) | Q(flat=self.instance.personal_account.flat))
+                self.fields['personal_account'].initial = self.instance.personal_account
+            else:
+                self.fields['personal_account'].queryset = PersonalAccount.objects.filter(
+                    Q(flat__isnull=True))
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+        if instance.pk:
+            if self.cleaned_data['personal_account_res'] == '':
+                pa = instance.personal_account
+                pa.flat = None
+                pa.house = None
+                pa.section = None
+                pa.save()
+            else:
+                if hasattr(instance, 'personal_account'):
+                    pa = instance.personal_account
+                    pa.flat = None
+                    pa.section = None
+                    pa.house = None
+                    pa.save()
+                number = self.cleaned_data['personal_account_res']
+                personal_account, created = PersonalAccount.objects.get_or_create(number=number)
+                personal_account.flat = instance
+                personal_account.section = instance.section
+                personal_account.house = instance.house
+                personal_account.save()
+                # if self.cleaned_data['personal_account'] is None:
+                #     if hasattr(instance, 'personal_account'):
+                #         pa = instance.personal_account
+                #         instance.personal_account.flat = None
+                #         pa.save()
+                #     else:
+                #         pass
+                # else:
+                #     # чищу от предыдущего значения лицевой счёт
+                #     # чтобы не нарушать уникальность ключей
+                #     if hasattr(instance, 'personal_account'):
+                #         pa = instance.personal_account
+                #         pa.flat = None
+                #         pa.house = None
+                #         pa.section = None
+                #         pa.save()
+                #     personal_account = self.cleaned_data['personal_account']
+                #     personal_account.flat = instance
+                #     personal_account.house = instance.house
+                #     personal_account.section = instance.section
+                #     personal_account.save()
+        return instance
 
     class Meta:
         model = Flat
         fields = '__all__'
         widgets = {
             'number': forms.TextInput(attrs={'placeholder': ''}),
-            'house': forms.Select(attrs={'class': 'form-house-select'}),
         }
-
-

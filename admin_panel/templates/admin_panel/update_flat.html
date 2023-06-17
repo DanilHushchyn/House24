@@ -9,9 +9,8 @@
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
 {% block head %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
 {% endblock %}
-
-
 {% block content %}
     <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->
@@ -54,7 +53,8 @@
                             {% bootstrap_field form.tariff %}
                         </div>
                         <div class="col-12 col-md-6">
-
+                            {% bootstrap_field form.personal_account_res %}
+                            {% bootstrap_field form.personal_account %}
                         </div>
                     </div>
                     <div class="col-12 text-right">
@@ -72,5 +72,6 @@
 {% endblock %}
 
 {% block  script %}
-     <script type="module" src="{% static 'admin_panel/flat/flat.js' %}"></script>
+    <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script type="module" src="{% static 'admin_panel/flat/flat.js' %}"></script>
 {% endblock %}

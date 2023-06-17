@@ -22,8 +22,6 @@ def receipt(request):
     return render(request, 'admin_panel/receipt.html')
 
 
-def personal_account(request):
-    return render(request, 'admin_panel/personal_accounts.html')
 
 
 class FlatListView(ListView):

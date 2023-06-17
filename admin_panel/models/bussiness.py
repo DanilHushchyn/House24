@@ -71,7 +71,7 @@ class Article(models.Model):
 
 
 class PersonalAccount(models.Model):
-    number = models.CharField(verbose_name='№', max_length=100, default='', blank=True)
+    number = models.CharField(verbose_name='№', max_length=100, unique=True, default='', blank=True)
     STATUS_CHOICE = (
         ('active', 'Активен'),
         ('disabled', 'Не активен'),
@@ -79,7 +79,12 @@ class PersonalAccount(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='active', verbose_name='Статус')
     section = models.ForeignKey('Section', verbose_name="Секция", on_delete=models.SET_NULL, null=True, blank=True)
     house = models.ForeignKey('House', verbose_name="Дом", on_delete=models.SET_NULL, null=True, blank=True)
-    flat = models.OneToOneField('Flat', verbose_name="Квартира", on_delete=models.SET_NULL, null=True, blank=True)
+    flat = models.OneToOneField('Flat', verbose_name="Квартира", on_delete=models.SET_NULL,
+                                related_name='personal_account',
+                                null=True, blank=True)
+
+    def __str__(self):
+        return self.number
 
     class Meta:
         db_table = 'personal_account'

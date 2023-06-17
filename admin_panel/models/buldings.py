@@ -40,6 +40,14 @@ class Flat(models.Model):
     def __str__(self):
         return f"{self.number}"
 
+    def delete(self, using=None, keep_parents=False):
+        if hasattr(self, 'personal_account'):
+            pa = self.personal_account
+            pa.section = None
+            pa.house = None
+            pa.save()
+        super().delete()
+
     class Meta:
         db_table = 'flat'
 
