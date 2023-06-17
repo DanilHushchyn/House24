@@ -125,7 +125,7 @@ class Receipt(models.Model):
 
 class Indication(models.Model):
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
-    date_published = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateField()
     STATUS_CHOICE = (
         ('new', 'Новое'),
         ('considered', 'Учтено'),

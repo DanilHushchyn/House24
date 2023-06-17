@@ -22,8 +22,6 @@ def receipt(request):
     return render(request, 'admin_panel/receipt.html')
 
 
-
-
 class FlatListView(ListView):
     template_name = 'admin_panel/flats.html'
     context_object_name = 'flats'
@@ -312,5 +310,26 @@ def application(request):
     return render(request, 'admin_panel/application.html')
 
 
-def indications(request):
-    return render(request, 'admin_panel/indications.html')
+class IndicationList(ListView):
+    template_name = 'admin_panel/indications.html'
+    context_object_name = 'indications'
+    queryset = Indication.objects.all()
+
+
+class CreateIndication(CreateView):
+    model = PersonalAccount
+    template_name = 'admin_panel/get_indication_form.html'
+    form_class = IndicationForm
+    success_url = reverse_lazy('indications')
+
+
+class UpdateIndication(UpdateView):
+    model = PersonalAccount
+    template_name = 'admin_panel/update_personal_account.html'
+    form_class = PersonalAccountForm
+    success_url = reverse_lazy('personal_accounts')
+
+
+class DeleteIndication(DeleteView):
+    success_url = reverse_lazy('personal_accounts')
+    queryset = PersonalAccount.objects.all()
