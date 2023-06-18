@@ -36,11 +36,12 @@ urlpatterns = [
     path("application", admin_panel.views.application, name='application'),
 
 
-    path("indications", admin_panel.views.CounterList.as_view(), name='indications'),
-    path("counter_indications", admin_panel.views.IndicationCounterList.as_view(), name='counter_indications'),
+    path("counters", admin_panel.views.CounterList.as_view(), name='counters'),
+    path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
-    # path("indication/update/<str:pk>", admin_panel.views.UpdateIndication.as_view(), name='update_indication'),
-    # path("indication/delete/<str:pk>", admin_panel.views.DeleteIndication.as_view(), name='delete_indication'),
+    path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),
+    path("indication/update/<str:pk>", admin_panel.views.UpdateIndication.as_view(), name='update_indication'),
+    path("indication/delete/<str:pk>", admin_panel.views.DeleteIndication.as_view(), name='delete_indication'),
 
 
     path("system_services", admin_panel.views.ServicesView.as_view(), name='system_services'),

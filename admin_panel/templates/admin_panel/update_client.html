@@ -9,6 +9,8 @@
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
 {% block head %}
+        <link rel="stylesheet" href="{% static 'node_modules/flatpickr/dist/flatpickr.min.css' %}">
+
 {% endblock %}
 
 
@@ -109,8 +111,18 @@
 {% endblock %}
 
 {% block  script %}
+
+        <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/flatpickr.js' %}"></script>
+        <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
         <script type="application/javascript">
             $('.avatar').removeClass('form-control')
+
+            $(".birthday").flatpickr({
+                dateFormat: "d.m.Y",
+                locale: "ru", // locale for this instance only
+
+            });
+            $('.birthday').addClass('bg-white')
         </script>
         <script type="module" src="{% static 'admin_panel/system_settings/users/users.js' %}"></script>
 {% endblock %}

@@ -1,0 +1,214 @@
+{% extends 'admin_panel/base_2b.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head_2b %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
+    <link rel="stylesheet" href="{% static 'admin_panel/application/application.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block name %}
+    Показания счетчиков, кв.{{ flat.number }}
+ {% endblock %}
+{% block navigation %}
+    <li class="breadcrumb-item"><a href="{% url 'counters' %}">Счётчики</a></li>
+    <li class="breadcrumb-item active">Показания счетчиков, кв.{{ flat.number }}</li>
+{% endblock %}
+{% block action_list %}
+    <a class="btn btn-success" href="{% url 'add_new_indication' flat.id service.id %}">Добавить показание</a>
+{% endblock %}
+
+{% block card_body %}
+   <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Статус</th>
+          <th>Дата</th>
+          <th>Месяц</th>
+          <th>Дом</th>
+          <th>Секция</th>
+          <th>№ квартиры</th>
+          <th>Счетчик</th>
+          <th>Показания</th>
+          <th>Ед. изм.</th>
+          <th></th>
+        </tr>
+        <tr class="border-0" >
+        <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
+         <td style="min-width: 190px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Новое</option>
+                        <option>Учтено</option>
+                        <option>Учтено и оплачено</option>
+                        <option>Нулевое</option>
+                    </select>
+               </div>
+          </td>
+        <td style="min-width: 150px">
+           <input type="text" class="daterange" name="daterange" value="" />
+          </td>
+        <td style="min-width: 120px"></td>
+           <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Секция 1</option>
+                    </select>
+               </div>
+           </td>
+            <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>Секция 1</option>
+                    </select>
+               </div>
+            </td>
+           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
+           <td style="min-width: 150px">
+               <div class="form-group mb-0" >
+                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
+                        <option></option>
+                        <option>счётчик 1</option>
+                    </select>
+               </div>
+           </td>
+           <td style="min-width: 170px"></td>
+           <td style="min-width: 100px"></td>
+           <td></td>
+        </tr>
+      </thead>
+      <tbody>
+      {% for indication in indications %}
+        <tr class="border-0">
+          <td>{{ indication.number }}</td>
+          <td>{% if indication.get_status_display == 'Новое' %}
+                  <span class="badge text-bg-warning text-white">Новое</span>
+                  {% elif indication.get_status_display == 'Учтено' %}
+                  <span class="badge text-bg-success text-white">Учтено</span>
+                  {% elif indication.get_status_display == 'Учтено и оплачено' %}
+                  <span class="badge text-bg-success text-white">Учтено и оплачено</span>
+                  {% else %}
+                  <span class="badge text-bg-primary text-white">Нулевое</span>
+              {% endif %}</td>
+          <td>{{ indication.date_published }}</td>
+          <td>{{ indication.date_published }}</td>
+          <td>{{ indication.flat.house }}</td>
+          <td>{{ indication.flat.section }}</td>
+          <td>
+              {{ indication.flat.number }}
+          </td>
+          <td>
+              {{ indication.service.title }}
+          </td>
+          <td style="background: #F0FBF0">
+             {{ indication.indication_val }}
+          </td>
+          <td style="background: #F0FBF0">
+              {{ indication.service.measure }}
+          </td>
+          <td class="ps-1 pe-1 text-center">
+               <form action="{% url 'delete_indication' indication.id %}" method="post">
+                  {% csrf_token %}
+                   <div class="btn-group">
+
+                      <a class="btn btn-default" href="{% url 'update_indication' indication.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                   </div>
+               </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+   </table>
+{% endblock %}
+
+{% block card_footer %}
+    <div>
+        <ul class="pagination pagination-sm m-0 float-right">
+          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block  script_2b %}
+    <script type="application/javascript">
+
+        $(document).ready(function () {
+             $('#indication').DataTable({
+                 searching: false,
+                 ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+            });
+        });
+        $(function() {
+          $('input[name="daterange"]').daterangepicker({
+            opens: 'center',
+            autoUpdateInput: false,
+            applyButtonClasses: "btn-success",
+
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Применить",
+                "cancelLabel": "Отменить",
+                "fromLabel": "С",
+                "toLabel": "По",
+                "customRangeLabel": "Custom",
+                "weekLabel": "Нд",
+                "daysOfWeek": [
+                    "Вс",
+                    "Пн",
+                    "Вт",
+                    "Ср",
+                    "Чт",
+                    "Пт",
+                    "Сб"
+                ],
+                "monthNames": [
+                    "Январь",
+                    "Февраль",
+                    "Март",
+                    "Апрель",
+                    "Май",
+                    "Июнь",
+                    "Июль",
+                    "Август",
+                    "Сентябрь",
+                    "Октябрь",
+                    "Ноябрь",
+                    "Декабрь"
+                ],
+                "firstDay": 1
+          },},);
+          $('.daterange').on('apply.daterangepicker', function(ev, picker) {
+              $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+          });
+          $('.daterange').on('cancel.daterangepicker', function(ev, picker) {
+              $(this).val('');
+          });
+        });
+           $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+
+        });
+    </script>
+    <script type="module" src="{% static 'admin_panel/application/application.js' %}"></script>
+{% endblock %}

@@ -37,7 +37,7 @@ class IndicationForm(forms.ModelForm):
                                      widget=forms.Select(attrs={'class': 'form-service-select'}))
     flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира',
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
-    date_published = forms.DateField(label='', widget=forms.DateInput(attrs={'class': '', 'placeholder': ''}))
+    date_published = forms.DateField(label='', widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
 
     def __init__(self, *args, **kwargs):
         super(IndicationForm, self).__init__(*args, **kwargs)

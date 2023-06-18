@@ -3,7 +3,7 @@ import json
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import *
 
 from admin_panel.forms import *
@@ -310,31 +310,118 @@ def application(request):
     return render(request, 'admin_panel/application.html')
 
 
-class IndicationCounterList(ListView):
-    template_name = 'admin_panel/counters.html'
-    context_object_name = 'indications'
-    queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
-
 class CounterList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
 
 
+class CounterIndicationsList(ListView):
+    template_name = 'admin_panel/counter_indications_list.html'
+    context_object_name = 'indications'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
+        context['service'] = Service.objects.get(pk=self.kwargs['service'])
+        return context
+
+    def get_queryset(self):
+        queryset = Indication.objects.filter(flat_id=self.kwargs['flat'], service_id=self.kwargs['service'])
+        return queryset
+
+
 class CreateIndication(CreateView):
-    model = PersonalAccount
+    model = Indication
     template_name = 'admin_panel/get_indication_form.html'
     form_class = IndicationForm
-    success_url = reverse_lazy('indications')
+    success_url = reverse_lazy('counters')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_new_indication'] = False
+        return context
+
+    def post(self, request, *args, **kwargs):
+        indication_form = IndicationForm(request.POST)
+        if indication_form.is_valid():
+            obj = indication_form.save()
+            if request.POST['action'] == 'save_and_new':
+                indication_form = IndicationForm(initial={'indication_val': obj.indication_val, 'service': obj.service})
+                data = {
+                    'form': indication_form
+                }
+                return render(request, 'admin_panel/get_indication_form.html', context=data)
+            else:
+                return redirect('counters')
+        else:
+            data = {
+                'form': indication_form
+            }
+            return render(request, 'admin_panel/get_indication_form.html', context=data)
+
+
+class CreateNewIndication(CreateView):
+    model = Indication
+    template_name = 'admin_panel/get_indication_form.html'
+    form_class = IndicationForm
+
+    def get_success_url(self):
+        category = self.kwargs['category']  # Retrieve the category value from the URL
+        return '/category/{}/'.format(category)  # Build the URL using the retrieved value
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_new_indication'] = True
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        flat = Flat.objects.get(pk=self.kwargs['flat'])
+        service = Service.objects.get(pk=self.kwargs['service'])
+        initial['house'] = flat.house
+        initial['section'] = flat.section
+        initial['flat'] = flat
+        initial['service'] = service
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        form = IndicationForm(request.POST)
+        if form.is_valid():
+            obj = form.save()
+            if request.POST['action'] == 'save_and_new':
+                indication_form = IndicationForm(initial={'indication_val': obj.indication_val, 'service': obj.service})
+                data = {
+                    'form': indication_form
+                }
+                return render(request, 'admin_panel/get_indication_form.html', context=data)
+            else:
+                url = reverse('counter_indications', args=[obj.flat.id, obj.service.id])
+                return redirect(url)
+        else:
+            data = {
+                'form': form,
+                'create_new_indication': True,
+            }
+            return render(request, 'admin_panel/get_indication_form.html', context=data)
+
 
 
 class UpdateIndication(UpdateView):
-    model = PersonalAccount
-    template_name = 'admin_panel/update_personal_account.html'
-    form_class = PersonalAccountForm
-    success_url = reverse_lazy('personal_accounts')
+    model = Indication
+    template_name = 'admin_panel/update_indication.html'
+    form_class = IndicationForm
+    success_url = reverse_lazy('counters')
+
+    def get(self, request, pk, *args, **kwargs):
+        obj = Indication.objects.get(pk=pk)
+        form = IndicationForm(instance=obj, initial={'house': obj.flat.house, 'section': obj.flat.section, })
+        data = {
+            'form': form,
+        }
+        return render(request, 'admin_panel/update_indication.html', context=data)
 
 
 class DeleteIndication(DeleteView):
-    success_url = reverse_lazy('personal_accounts')
-    queryset = PersonalAccount.objects.all()
+    success_url = reverse_lazy('counters')
+    queryset = Indication.objects.all()

@@ -61,6 +61,20 @@ $('.form-section-select').on('change',function () {
          $('.form-flat-select').append(`
            <option value="">Выберите...</option>
          `)
+          $.ajax({
+            url: `/admin/get_house-info/${$('.form-house-select option:selected').val()}`,         /* Куда отправить запрос */
+            method: 'get',             /* Метод запроса (post или get) */
+            dataType: 'html',
+            context: 'html',
+            success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                data = JSON.parse(data)
+                for(let flat of JSON.parse(data['flats'])){
+                    $('.form-flat-select').append($(`
+                        <option value="${flat['pk']}">${flat['fields']['number']}</option>
+                    `))
+                }
+            }
+        });
         $('#user-fullname').text('не выбран')
         $('#user-phone').text('не выбран')
     }else {

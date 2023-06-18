@@ -87,8 +87,8 @@
           </td>
           <td class="ps-1 pe-1 text-center">
               <div class="btn-group">
-                  <a class="btn btn-default" title="Снять новое показание счетчика" href="#" role="button"><i class="fa-solid fa-gauge"></i></a>
-                  <a class="btn btn-default" title="Открыть историю показаний для счетчика" href="#" role="button"><i class="fa-solid fa-eye"></i></a>
+                  <a class="btn btn-default" title="Снять новое показание счетчика" target="_blank" href="{% url 'add_new_indication' indication.flat.id indication.service.id %}" role="button"><i class="fa-solid fa-gauge"></i></a>
+                  <a class="btn btn-default" title="Открыть историю показаний для счетчика" href="{% url 'counter_indications' indication.flat.id  indication.service.id %}" role="button"><i class="fa-solid fa-eye"></i></a>
               </div>
           </td>
         </tr>
