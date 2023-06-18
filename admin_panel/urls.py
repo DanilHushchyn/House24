@@ -33,8 +33,14 @@ urlpatterns = [
 
 
     path("message", admin_panel.views.message, name='message'),
-    path("application", admin_panel.views.application, name='application'),
 
+
+    path("applications", admin_panel.views.ApplicationList.as_view(), name='applications'),
+    path("application/add", admin_panel.views.CreateApplication.as_view(), name='add_application'),
+    # path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
+    #      name='update_application'),
+    path("application/delete/<str:pk>", admin_panel.views.DeleteApplication.as_view(),
+         name='delete_application'),
 
     path("counters", admin_panel.views.CounterList.as_view(), name='counters'),
     path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),

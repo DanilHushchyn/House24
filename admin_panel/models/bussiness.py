@@ -142,10 +142,10 @@ class Indication(models.Model):
         db_table = 'indication'
 
 class Application(models.Model):
-    date_published = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateField()
     comment = models.TextField(verbose_name="Комментарий", default='', blank=True)
     description = models.TextField(verbose_name="Описание", default='', blank=True)
-    time_published = models.TimeField(auto_now_add=True)
+    time_published = models.TimeField()
     STATUS_CHOICE = (
         ('new', 'Новое'),
         ('in work', 'В работе'),

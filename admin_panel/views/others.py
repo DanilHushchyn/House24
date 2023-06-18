@@ -306,8 +306,29 @@ def message(request):
     return render(request, 'admin_panel/message.html')
 
 
-def application(request):
-    return render(request, 'admin_panel/application.html')
+class ApplicationList(ListView):
+    template_name = 'admin_panel/applications.html'
+    context_object_name = 'applications'
+    queryset = Application.objects.all()
+
+
+class CreateApplication(CreateView):
+    model = Application
+    template_name = 'admin_panel/get_application_form.html'
+    form_class = ApplicationForm
+    success_url = reverse_lazy('personal_accounts')
+
+
+# class UpdateApplication(UpdateView):
+#     model = Application
+#     template_name = 'admin_panel/update_personal_account.html'
+#     form_class = PersonalAccountForm
+#     success_url = reverse_lazy('applications')
+
+
+class DeleteApplication(DeleteView):
+    success_url = reverse_lazy('applications')
+    queryset = Application.objects.all()
 
 
 class CounterList(ListView):
@@ -404,7 +425,6 @@ class CreateNewIndication(CreateView):
                 'create_new_indication': True,
             }
             return render(request, 'admin_panel/get_indication_form.html', context=data)
-
 
 
 class UpdateIndication(UpdateView):
