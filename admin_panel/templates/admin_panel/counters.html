@@ -69,28 +69,30 @@
         </tr>
       </thead>
       <tbody>
+      {% for indication in indications %}
         <tr class="border-0">
-          <td>1.</td>
-          <td>Дом зелёный</td>
+          <td>{{ indication.flat.house }}</td>
+          <td>{{ indication.flat.section }}</td>
           <td>
-              Дом зелёный
+              {{ indication.flat.number }}
           </td>
           <td>
-              Дом зелёный
+              {{ indication.service.title }}
           </td>
-          <td>
-              Дом зелёный
+          <td style="background: #F0FBF0">
+             {{ indication.indication_val }}
           </td>
-          <td>
-              Дом зелёный
+          <td style="background: #F0FBF0">
+              {{ indication.service.measure }}
           </td>
           <td class="ps-1 pe-1 text-center">
               <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-gauge"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-eye"></i></a>
+                  <a class="btn btn-default" title="Снять новое показание счетчика" href="#" role="button"><i class="fa-solid fa-gauge"></i></a>
+                  <a class="btn btn-default" title="Открыть историю показаний для счетчика" href="#" role="button"><i class="fa-solid fa-eye"></i></a>
               </div>
           </td>
         </tr>
+      {% endfor %}
       </tbody>
    </table>
 {% endblock %}

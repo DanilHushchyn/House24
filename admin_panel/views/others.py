@@ -310,10 +310,15 @@ def application(request):
     return render(request, 'admin_panel/application.html')
 
 
-class IndicationList(ListView):
-    template_name = 'admin_panel/indications.html'
+class IndicationCounterList(ListView):
+    template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
-    queryset = Indication.objects.all()
+    queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
+
+class CounterList(ListView):
+    template_name = 'admin_panel/counters.html'
+    context_object_name = 'indications'
+    queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
 
 
 class CreateIndication(CreateView):

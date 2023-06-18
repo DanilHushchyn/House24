@@ -33,6 +33,7 @@
             <!-- Main content -->
             <section class="content">
                 <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
                 <div class="row ps-2">
                     <div class="col-12">
                             <div class="d-flex justify-content-center align-items-start flex-column flex-sm-row align-items-sm-center justify-content-sm-start">
@@ -59,16 +60,24 @@
                     <div class="card-header p-0 border-bottom-0">
                     </div>
                     <div class="card-body p-2">
-                            {% csrf_token %}
-                            {% bootstrap_field form.status %}
-                            {% bootstrap_field form.house %}
-                            {% bootstrap_field form.section %}
-                            {% bootstrap_field form.flat %}
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    {% bootstrap_field form.house %}
+                                    {% bootstrap_field form.section %}
+                                    {% bootstrap_field form.flat %}
+                                    {% bootstrap_field form.service %}
 
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    {% bootstrap_field form.status %}
+                                    {% bootstrap_field form.indication_val %}
+                                </div>
+                            </div>
                             <div class="col-12 text-right">
                                 {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
                                 {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
                             </div>
+
                     </div>
 
                 </div>
@@ -79,5 +88,5 @@
   </div>
 {% endblock %}
 {% block  script %}
-{#     <script type="module" src="{% static 'admin_panel/in/personal_account.js' %}"></script>#}
+     <script type="module" src="{% static 'admin_panel/indication/indication.js' %}"></script>
 {% endblock %}

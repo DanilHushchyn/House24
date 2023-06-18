@@ -19,7 +19,7 @@ class TariffSystem(models.Model):
 
 
 class TariffService(models.Model):
-    price = models.DecimalField(verbose_name='Цена', default=0, max_digits=5, decimal_places=2)
+    price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
     currency = models.CharField(verbose_name='Валюта', blank=True, default='грн')
     tariff = models.ForeignKey('TariffSystem', on_delete=models.SET_NULL, null=True, blank=True)
     service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
@@ -125,6 +125,8 @@ class Receipt(models.Model):
 
 class Indication(models.Model):
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
+    indication_val = models.DecimalField(max_digits=6, decimal_places=1, verbose_name='Показания', null=True,
+                                         blank=True)
     date_published = models.DateField()
     STATUS_CHOICE = (
         ('new', 'Новое'),
@@ -138,7 +140,6 @@ class Indication(models.Model):
 
     class Meta:
         db_table = 'indication'
-
 
 class Application(models.Model):
     date_published = models.DateTimeField(auto_now_add=True)

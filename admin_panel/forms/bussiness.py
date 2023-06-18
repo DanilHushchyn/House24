@@ -32,7 +32,10 @@ class IndicationForm(forms.ModelForm):
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
                                    widget=forms.Select(attrs={'class': 'form-house-select'}))
-    flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира', required=False,
+    service = forms.ModelChoiceField(queryset=Service.objects.filter(show_in_indication=True), label='Счётчик',
+                                     required=False,
+                                     widget=forms.Select(attrs={'class': 'form-service-select'}))
+    flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира',
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
     date_published = forms.DateField(label='', widget=forms.DateInput(attrs={'class': '', 'placeholder': ''}))
 
@@ -41,8 +44,12 @@ class IndicationForm(forms.ModelForm):
         self.fields['house'].empty_label = "Выберите..."
         self.fields['section'].empty_label = "Выберите..."
         self.fields['flat'].empty_label = "Выберите..."
+        self.fields['service'].empty_label = "Выберите..."
         self.fields['date_published'].initial = timezone.now().date()
 
     class Meta:
         model = Indication
         fields = '__all__'
+        widgets = {
+            'indication_val': forms.NumberInput(attrs={'placeholder': ''})
+        }
