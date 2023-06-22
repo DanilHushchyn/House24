@@ -10,12 +10,11 @@
 {# Read the documentation for more information#}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'admin_panel/message/message.css' %}">
 {% endblock %}
 
 
 {% block content %}
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->
     <section class="content-header pb-0">
       <div class="container-fluid">
@@ -34,7 +33,7 @@
         <hr style="border-top: 1px solid darkgrey;">
         <div class="row mb-3">
             <div class="dropdown text-right">
-                <a class="btn btn-success" href="#">Отправить сообщение</a>
+                <a class="btn btn-success" href="{% url 'add_mailbox' %}">Отправить сообщение</a>
             </div>
           <!-- ./col -->
         </div>
@@ -86,42 +85,42 @@
                             <b>Дата</b>
                         </td>
                       </tr>
-                      <tr>
-                        <td>
-                          <div class="icheck-primary">
-                            <input type="checkbox" value="" id="check2">
-                            <label for="check2"></label>
-                          </div>
-                        </td>
-                        <td class="mailbox-name"><a href="read-mail.html">Alexander Pierce</a></td>
-                        <td class="mailbox-subject"><b>AdminLTE 3.0 Issue</b> - Trying to find a solution to this problem...
-                        </td>
-                        <td class="mailbox-date">28 mins ago</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div class="icheck-primary">
-                            <input type="checkbox" value="" id="check2">
-                            <label for="check2"></label>
-                          </div>
-                        </td>
-                        <td class="mailbox-name"><a href="read-mail.html">Alexander Pierce</a></td>
-                        <td class="mailbox-subject"><b>AdminLTE 3.0 Issue</b> - Trying to find a solution to this problem...
-                        </td>
-                        <td class="mailbox-date">28 mins ago</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div class="icheck-primary">
-                            <input type="checkbox" value="" id="check2">
-                            <label for="check2"></label>
-                          </div>
-                        </td>
-                        <td class="mailbox-name"><a href="read-mail.html">Alexander Pierce</a></td>
-                        <td class="mailbox-subject"><b>AdminLTE 3.0 Issue</b> - Trying to find a solution to this problem...
-                        </td>
-                        <td class="mailbox-date">28 mins ago</td>
-                      </tr>
+                      {% for mailbox in mailboxes %}
+                              <tr style="cursor: pointer">
+                                    <td>
+                                      <div class="icheck-primary">
+                                        <input type="checkbox" value="" id="check2">
+                                        <label for="check2"></label>
+                                      </div>
+                                    </td>
+                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-name">
+                                        {% if mailbox.house is None %}
+                                            Всем
+                                        {% else %}
+                                            {{ mailbox.house}}
+                                            {% if mailbox.section is None %}
+                                            {% else %}
+                                                , {{ mailbox.section }}
+                                            {% endif %}
+                                            {% if mailbox.floor is None %}
+                                            {% else %}
+                                                , {{ mailbox.floor }}
+                                            {% endif %}
+                                            {% if mailbox.flat is None %}
+                                            {% else %}
+                                                , кв.{{ mailbox.flat }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-subject">
+                                        <b>{{ mailbox.title }}</b>
+                                        - {{ mailbox.description }}
+                                    </td>
+                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-date">
+                                        {{ mailbox.date_published|date:"d.m.Y" }}-{{ mailbox.date_published|time:"h:i"  }}
+                                    </td>
+                              </tr>
+                      {% endfor %}
                   </tbody>
                 </table>
                 <!-- /.table -->
@@ -164,6 +163,13 @@
           }
           $(this).data('clicks', !clicks)
         })
+        document.addEventListener("DOMContentLoaded", function(event) {
+            const rows = document.querySelectorAll("td[data-href]");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
     </script>
-    <script type="module" src="{% static 'admin_panel/message/message.js' %}"></script>
 {% endblock %}

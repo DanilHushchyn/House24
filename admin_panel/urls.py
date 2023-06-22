@@ -5,7 +5,14 @@ import admin_panel.views
 urlpatterns = [
     path("statistic", admin_panel.views.statistic, name='statistic'),
     path("paybox", admin_panel.views.paybox, name='paybox'),
-    path("receipt", admin_panel.views.receipt, name='receipt'),
+
+
+
+    path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
+    # path("receipt/add", admin_panel.views.CreatePersonalAccount.as_view(), name='add_personal_account'),
+    # path("receipt/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
+    # path("receipt/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
+
 
 
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
@@ -32,13 +39,18 @@ urlpatterns = [
     path("house/delete/<str:pk>", admin_panel.views.DeleteHouseView.as_view(), name='delete_house'),
 
 
-    path("message", admin_panel.views.message, name='message'),
+    path("mailbox", admin_panel.views.MailboxList.as_view(), name='mailboxes'),
+    path("mailbox/add", admin_panel.views.CreateMailbox.as_view(), name='add_mailbox'),
+    path("mailbox/detail/<str:pk>", admin_panel.views.MailboxDetail.as_view(), name='mailbox_detail'),
+
+    path("mailbox/delete/<str:pk>", admin_panel.views.DeleteMailbox.as_view(),
+         name='delete_mailbox'),
 
 
     path("applications", admin_panel.views.ApplicationList.as_view(), name='applications'),
     path("application/add", admin_panel.views.CreateApplication.as_view(), name='add_application'),
-    # path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
-    #      name='update_application'),
+    path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
+         name='update_application'),
     path("application/delete/<str:pk>", admin_panel.views.DeleteApplication.as_view(),
          name='delete_application'),
 
@@ -86,6 +98,8 @@ urlpatterns = [
     path("get_measure/<str:pk>", admin_panel.views.GetMeasureView.as_view(), name='get_measure'),
     path("get_role/<str:pk>", admin_panel.views.GetRoleView.as_view(), name='get_role'),
     path("get_house-info/<str:pk>", admin_panel.views.GetHouseInfoView.as_view(), name='get_house-info'),
+    path("get_flat_owner-info/<str:pk>", admin_panel.views.GetFlatOwnerInfo.as_view(), name='get_flat_owner-info'),
     path("get_section-info/<str:pk>", admin_panel.views.GetSectionInfoView.as_view(), name='get_section-info'),
     path("get_flat-info/<str:pk>", admin_panel.views.GetFlatInfoView.as_view(), name='get_flat-info'),
+    path("get_all_flats", admin_panel.views.GetAllFlats.as_view(), name='get_all_flats'),
 ]

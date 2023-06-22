@@ -19,6 +19,9 @@ class TariffSiteForm(forms.ModelForm):
         model = TariffSite
         fields = '__all__'
         exclude = ('seo', 'gallery')
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'summernote'})
+        }
 
 
 class AboutUsForm(forms.ModelForm):
@@ -38,6 +41,11 @@ class ContactForm(forms.ModelForm):
         model = Contacts
         fields = '__all__'
         exclude = ('seo',)
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 8, 'class': 'summernote'}),
+            'coordinate': forms.Textarea(attrs={'rows': 6}),
+
+        }
 
 
 class AboutUsDocumentForm(forms.ModelForm):
@@ -80,10 +88,30 @@ class InfoPhotoForm(forms.ModelForm):
         }
 
 
-InfoPhotoFormset = forms.modelformset_factory(model=InfoPhoto, form=InfoPhotoForm, extra=0)
+InfoPhotoFormset = forms.modelformset_factory(model=InfoPhoto, form=InfoPhotoForm, extra=0, can_delete=True)
+
+
+class InfoPhotoLiteForm(forms.ModelForm):
+    img = forms.FileField(label='Файл')
+    title = forms.CharField(label='Подпись')
+
+    class Meta:
+        model = InfoPhoto
+        fields = '__all__'
+        exclude = ('gallery', 'description')
+        widgets = {
+            'img': forms.FileInput(attrs={'class': ''}),
+        }
+
+
+InfoPhotoLiteFormset = forms.modelformset_factory(model=InfoPhoto, form=InfoPhotoLiteForm, extra=0, can_delete=True)
 
 
 class SeoForm(forms.ModelForm):
     class Meta:
         model = Seo
         fields = '__all__'
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 6}),
+            'keywords': forms.Textarea(attrs={'rows': 6})
+        }

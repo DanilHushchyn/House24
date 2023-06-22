@@ -18,8 +18,30 @@ def paybox(request):
     return render(request, 'admin_panel/paybox.html')
 
 
-def receipt(request):
-    return render(request, 'admin_panel/receipt.html')
+class ReceiptListView(ListView):
+    template_name = 'admin_panel/personal_accounts.html'
+    context_object_name = 'personal_accounts'
+    queryset = PersonalAccount.objects.all()
+
+
+class CreateReceipt(CreateView):
+    model = PersonalAccount
+    template_name = 'admin_panel/get_personal_account_form.html'
+    form_class = PersonalAccountForm
+    success_url = reverse_lazy('personal_accounts')
+
+
+#
+# class UpdatePersonalAccount(UpdateView):
+#     model = PersonalAccount
+#     template_name = 'admin_panel/update_personal_account.html'
+#     form_class = PersonalAccountForm
+#     success_url = reverse_lazy('personal_accounts')
+#
+#
+# class DeletePersonalAccount(DeleteView):
+#     success_url = reverse_lazy('personal_accounts')
+#     queryset = PersonalAccount.objects.all()
 
 
 class FlatListView(ListView):
@@ -285,9 +307,33 @@ class GetHouseInfoView(View):
         sections = serializers.serialize('json', house.section_set.all())
         floors = serializers.serialize('json', house.floor_set.all())
         flats = serializers.serialize('json', house.flat_set.all())
+        house = serializers.serialize('json', [house])
         data = {
+            "house": house,
             "sections": sections,
             "floors": floors,
+            "flats": flats,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class GetFlatOwnerInfo(View):
+    def get(self, request, pk):
+        flat_owner = FlatOwner.objects.prefetch_related('flat_set').get(pk=pk)
+        flats = serializers.serialize('json', flat_owner.flat_set.select_related('house').all())
+
+        data = {
+            "flats": flats,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class GetAllFlats(View):
+    def get(self, request):
+        flats = Flat.objects.all()
+        flats = serializers.serialize('json', flats)
+
+        data = {
             "flats": flats,
         }
         return JsonResponse(data, safe=False)
@@ -302,8 +348,32 @@ class DeleteHouseView(DeleteView):
         return redirect('houses')
 
 
-def message(request):
-    return render(request, 'admin_panel/message.html')
+class MailboxList(ListView):
+    template_name = 'admin_panel/mailbox.html'
+    context_object_name = 'mailboxes'
+    queryset = MailBox.objects.all()
+
+
+class CreateMailbox(CreateView):
+    model = MailBox
+    template_name = 'admin_panel/get_mailbox_form.html'
+    form_class = MailBoxForm
+    success_url = reverse_lazy('mailboxes')
+
+
+class MailboxDetail(DetailView):
+    model = MailBox
+    template_name = 'admin_panel/read_mailbox.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mailbox'] = MailBox.objects.get(pk=self.kwargs['pk'])
+        return context
+
+
+class DeleteMailbox(DeleteView):
+    success_url = reverse_lazy('mailboxes')
+    queryset = MailBox.objects.all()
 
 
 class ApplicationList(ListView):
@@ -315,15 +385,15 @@ class ApplicationList(ListView):
 class CreateApplication(CreateView):
     model = Application
     template_name = 'admin_panel/get_application_form.html'
+    form_class = CreateApplicationForm
+    success_url = reverse_lazy('applications')
+
+
+class UpdateApplication(UpdateView):
+    model = Application
+    template_name = 'admin_panel/update_application.html'
     form_class = ApplicationForm
-    success_url = reverse_lazy('personal_accounts')
-
-
-# class UpdateApplication(UpdateView):
-#     model = Application
-#     template_name = 'admin_panel/update_personal_account.html'
-#     form_class = PersonalAccountForm
-#     success_url = reverse_lazy('applications')
+    success_url = reverse_lazy('applications')
 
 
 class DeleteApplication(DeleteView):

@@ -35,6 +35,7 @@ class CustomUser(AbstractUser):
 
 
 class Personal(models.Model):
+
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     ROLE_CHOICE = (
         ('director', 'Директор'),
@@ -46,6 +47,9 @@ class Personal(models.Model):
 
     def __str__(self):
         return f"{self.user.last_name} {self.user.first_name}"
+
+    def application_label(self):
+        return f"{self.get_role_display()} - {self.user.last_name} {self.user.first_name}"
 
     role = models.CharField(max_length=50, choices=ROLE_CHOICE, default='director', verbose_name='Роль')
 

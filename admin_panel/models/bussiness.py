@@ -141,18 +141,29 @@ class Indication(models.Model):
     class Meta:
         db_table = 'indication'
 
+
 class Application(models.Model):
     date_published = models.DateField()
     comment = models.TextField(verbose_name="Комментарий", default='', blank=True)
     description = models.TextField(verbose_name="Описание", default='', blank=True)
     time_published = models.TimeField()
     STATUS_CHOICE = (
+        ('', 'Выберите...'),
         ('new', 'Новое'),
         ('in work', 'В работе'),
         ('complete', 'Выполнено'),
     )
-    status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='', verbose_name='Статус')
     user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True)
+    ROLE_CHOICE = (
+        ('', 'Любой специалист'),
+        ('director', 'Директор'),
+        ('manager', 'Управляющий'),
+        ('accountant', 'Бухгалтер'),
+        ('electrician', 'Электрик'),
+        ('plumber', 'Сантехник'),
+    )
+    user_type = models.CharField(choices=ROLE_CHOICE, max_length=100, default='')
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE, verbose_name='Квартира')
     flat_owner = models.ForeignKey('FlatOwner', on_delete=models.CASCADE)
 
@@ -160,12 +171,16 @@ class Application(models.Model):
         db_table = 'application'
 
 
-class Message(models.Model):
-    title = models.CharField(max_length=100, default='', blank=True)
-    description = models.TextField(default='', blank=True)
-    date_published = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey('Personal', on_delete=models.CASCADE, null=True)
-    flat_owner = models.ManyToManyField('FlatOwner')
+class MailBox(models.Model):
+    title = models.CharField(max_length=100, verbose_name='', default='', blank=True)
+    description = models.TextField(default='', verbose_name='', blank=True)
+    date_published = models.DateTimeField(auto_now=True)
+    sender = models.ForeignKey('Personal', on_delete=models.CASCADE, null=True)
+    house = models.ForeignKey('House', on_delete=models.CASCADE, null=True, blank=True)
+    floor = models.ForeignKey('Floor', on_delete=models.CASCADE, null=True, blank=True)
+    section = models.ForeignKey('Section', on_delete=models.CASCADE, null=True, blank=True)
+    flat = models.ForeignKey('Flat', on_delete=models.CASCADE, null=True, blank=True)
+    flat_owners = models.ManyToManyField('FlatOwner')
 
     class Meta:
-        db_table = 'message'
+        db_table = 'mailbox'

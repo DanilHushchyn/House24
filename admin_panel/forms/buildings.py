@@ -20,10 +20,6 @@ class HouseUserForm(forms.ModelForm):
     user = forms.ModelChoiceField(queryset=Personal.objects.all(), label='ФИО',
                                   widget=forms.Select(attrs={'class': 'form-role-select'}))
 
-    # def __init__(self, *args, **kwargs):
-    #     super(HouseUserForm, self).__init__(*args, **kwargs)
-    #     self.fields['user'].empty_label = "Выберите..."
-
     class Meta:
         model = HouseUser
         fields = ('user',)
@@ -62,7 +58,7 @@ class FlatForm(forms.ModelForm):
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     floor = forms.ModelChoiceField(queryset=Floor.objects.all(), label='Этаж', required=False,
                                    widget=forms.Select(attrs={'class': 'form-floor-select'}))
-    house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
+    house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом',
                                    widget=forms.Select(attrs={'class': 'form-house-select'}))
     personal_account_res = forms.CharField(label='Лицевой счёт', required=False, widget=forms.TextInput(
         attrs={'class': 'personal_account-res', 'placeholder': ''}))
@@ -80,7 +76,7 @@ class FlatForm(forms.ModelForm):
         self.fields['floor'].empty_label = "Выберите..."
         self.fields['flat_owner'].empty_label = "Выберите..."
         self.fields['tariff'].empty_label = "Выберите..."
-        # self.fields['personal_account'].empty_label = "или выберите из списка..."
+        self.fields['personal_account'].empty_label = "или выберите из списка..."
         if self.instance.pk:
             if hasattr(self.instance, 'personal_account'):
                 self.fields['personal_account_res'].initial = self.instance.personal_account
@@ -97,11 +93,7 @@ class FlatForm(forms.ModelForm):
             instance.save()
         if instance.pk:
             if self.cleaned_data['personal_account_res'] == '':
-                pa = instance.personal_account
-                pa.flat = None
-                pa.house = None
-                pa.section = None
-                pa.save()
+                pass
             else:
                 if hasattr(instance, 'personal_account'):
                     pa = instance.personal_account
@@ -115,27 +107,6 @@ class FlatForm(forms.ModelForm):
                 personal_account.section = instance.section
                 personal_account.house = instance.house
                 personal_account.save()
-                # if self.cleaned_data['personal_account'] is None:
-                #     if hasattr(instance, 'personal_account'):
-                #         pa = instance.personal_account
-                #         instance.personal_account.flat = None
-                #         pa.save()
-                #     else:
-                #         pass
-                # else:
-                #     # чищу от предыдущего значения лицевой счёт
-                #     # чтобы не нарушать уникальность ключей
-                #     if hasattr(instance, 'personal_account'):
-                #         pa = instance.personal_account
-                #         pa.flat = None
-                #         pa.house = None
-                #         pa.section = None
-                #         pa.save()
-                #     personal_account = self.cleaned_data['personal_account']
-                #     personal_account.flat = instance
-                #     personal_account.house = instance.house
-                #     personal_account.section = instance.section
-                #     personal_account.save()
         return instance
 
     class Meta:

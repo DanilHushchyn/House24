@@ -111,10 +111,16 @@ class SiteServicesView(FormView):
         return render(request, 'admin_panel/manage_site/services.html', context=data)
 
     def post(self, request, *args, **kwargs):
-        seo_form = SeoForm(instance=Seo.objects.get(id=SeviceSite.objects.first().seo_id), prefix='seo')
+        seo_form = SeoForm(request.POST, instance=Seo.objects.get(id=SeviceSite.objects.first().seo_id), prefix='seo')
         info_photo_formset = InfoPhotoFormset(request.POST, request.FILES, prefix="info_photo")
-        if seo_form.is_valid() and info_photo_formset.is_valid():
-            info_photo_formset.save()
+        service_site = SeviceSite.objects.first()
+
+        if info_photo_formset.is_valid() and seo_form.is_valid():
+            instances = info_photo_formset.save()
+
+            for instance in instances:
+                instance.gallery_id = service_site.gallery.id
+                instance.save()
             seo_form.save()
         else:
             data = {
@@ -126,7 +132,6 @@ class SiteServicesView(FormView):
 
 
 class DeletePhotoView(FormView):
-
     def get(self, request, pk, *args, **kwargs):
         obj = Photo.objects.get(id=pk)
         obj.delete()
@@ -134,20 +139,18 @@ class DeletePhotoView(FormView):
 
 
 class DeleteDocView(FormView):
-
     def get(self, request, pk, *args, **kwargs):
         obj = AboutUsDocument.objects.get(id=pk)
         obj.delete()
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-
 class SiteTariffsView(FormView):
     def get(self, request, *args, **kwargs):
         tariff_site = TariffSite.objects.prefetch_related('gallery__infophoto_set').first()
+        tariff_site_form = TariffSiteForm(instance=tariff_site)
         seo_form = SeoForm(instance=Seo.objects.get(id=tariff_site.seo_id), prefix='seo')
-        info_photo_formset = InfoPhotoFormset(queryset=tariff_site.gallery.infophoto_set.all(), prefix="info_photo")
-        tariff_site_form = TariffSiteForm(instance=tariff_site, prefix='tariff')
+        info_photo_formset = InfoPhotoLiteFormset(queryset=tariff_site.gallery.infophoto_set.all(), prefix="info_photo")
         data = {
             "tariff_site_form": tariff_site_form,
             "info_photo_formset": info_photo_formset,
@@ -156,15 +159,19 @@ class SiteTariffsView(FormView):
         return render(request, 'admin_panel/manage_site/tariffs.html', context=data)
 
     def post(self, request, *args, **kwargs):
-        seo_form = SeoForm(instance=Seo.objects.get(id=TariffSite.objects.first().seo_id), prefix='seo')
-        info_photo_formset = InfoPhotoFormset(request.POST, request.FILES, prefix="info_photo")
-        tariff_site_form = TariffSiteForm(instance=TariffSite.objects.first(), prefix='tariff')
-        if seo_form.is_valid() and info_photo_formset.is_valid() and tariff_site_form.is_valid():
+        seo_form = SeoForm(request.POST, instance=Seo.objects.get(id=TariffSite.objects.first().seo_id), prefix='seo')
+        info_photo_formset = InfoPhotoLiteFormset(request.POST, request.FILES, prefix="info_photo")
+        tariff_site = TariffSite.objects.first()
+        tariff_site_form = TariffSiteForm(request.POST, instance=tariff_site)
+        if info_photo_formset.is_valid() and seo_form.is_valid() and tariff_site_form.is_valid():
             tariff_site_form.save()
-            info_photo_formset.save()
+            instances = info_photo_formset.save()
+
+            for instance in instances:
+                instance.gallery_id = tariff_site.gallery.id
+                instance.save()
             seo_form.save()
         else:
-
             data = {
                 "tariff_site_form": tariff_site_form,
                 "info_photo_formset": info_photo_formset,

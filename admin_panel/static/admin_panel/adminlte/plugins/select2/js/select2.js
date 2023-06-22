@@ -906,7 +906,7 @@ S2.define('select2/results',[
 
     if (data.results == null || data.results.length === 0) {
       if (this.$results.children().length === 0) {
-        this.trigger('results:message', {
+        this.trigger('results:mailbox', {
           message: 'noResults'
         });
       }
@@ -1253,7 +1253,7 @@ S2.define('select2/results',[
       params.element.addClass('select2-results__option--highlighted');
     });
 
-    container.on('results:message', function (params) {
+    container.on('results:mailbox', function (params) {
       self.displayMessage(params);
     });
 
@@ -3643,7 +3643,7 @@ S2.define('select2/data/ajax',[
           return;
         }
 
-        self.trigger('results:message', {
+        self.trigger('results:mailbox', {
           message: 'errorLoading'
         });
       });
@@ -3922,7 +3922,7 @@ S2.define('select2/data/minimumInputLength',[
     params.term = params.term || '';
 
     if (params.term.length < this.minimumInputLength) {
-      this.trigger('results:message', {
+      this.trigger('results:mailbox', {
         message: 'inputTooShort',
         args: {
           minimum: this.minimumInputLength,
@@ -3954,7 +3954,7 @@ S2.define('select2/data/maximumInputLength',[
 
     if (this.maximumInputLength > 0 &&
         params.term.length > this.maximumInputLength) {
-      this.trigger('results:message', {
+      this.trigger('results:mailbox', {
         message: 'inputTooLong',
         args: {
           maximum: this.maximumInputLength,
@@ -4009,7 +4009,7 @@ S2.define('select2/data/maximumSelectionLength',[
         var count = currentData != null ? currentData.length : 0;
         if (self.maximumSelectionLength > 0 &&
           count >= self.maximumSelectionLength) {
-          self.trigger('results:message', {
+          self.trigger('results:mailbox', {
             message: 'maximumSelected',
             args: {
               maximum: self.maximumSelectionLength
@@ -4411,7 +4411,7 @@ S2.define('select2/dropdown/attachBody',[
       self._resizeDropdown();
     });
 
-    container.on('results:message', function () {
+    container.on('results:mailbox', function () {
       self._positionDropdown();
       self._resizeDropdown();
     });

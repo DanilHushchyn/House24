@@ -93,7 +93,7 @@ $('.personal_account-select').select2({
     allowClear: true,
 
 })
-
+// $('.personal_account-select').on
 //Set the default placeholder
 var defaultPlaceholder = $('.personal_account-select').attr('placeholder');
 $('#select2-my-select2-container .select2-selection__rendered').html(defaultPlaceholder);
@@ -115,6 +115,8 @@ $('.personal_account-select').on('change',function () {
      if($('.personal_account-select option:selected').text()==='или выберите из списка...'){
     }else {
         $('.personal_account-res').val($('.personal_account-select option:selected').text())
+         $(this).val("").trigger("change");
+
     }
 })
 

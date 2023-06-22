@@ -35,7 +35,7 @@
     </section>
             <!-- Main content -->
             <section class="content">
-                <form method="post" action="{% url 'add_application' %}" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
                 <div class="row ps-2">
@@ -62,8 +62,17 @@
                     <div class="card-header p-0 border-bottom-0">
                     </div>
                     <div class="card-body p-2">
-                            <div class="col-12 col-sm-6 pe-4 ps-0">
-                                {% bootstrap_field form.flat_owner %}
+                            <div class="row">
+                                <div class="col-12 col-sm-6 pe-4 ps-0">
+                                    <a class="user_link" href="{% url 'update_client' form.instance.flat_owner.user.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
+                                    {% bootstrap_field form.flat_owner %}
+                                    <p><b>Телефон:</b> <a href="tel:{{ form.instance.flat_owner.user.phone }}">{{ form.instance.flat_owner.user.phone }}</a></p>
+                                </div>
+                                <div class="col-12 col-sm-6 pe-4">
+                                    <p><b>Дом: </b> <a href="{% url 'update_house' form.instance.flat.house.id %}">{{ form.instance.flat.house.title }}</a></p>
+                                    <p><b>Секция: </b> {{ form.instance.flat.section.title }}</p>
+                                    <p><b>Этаж: </b> {{ form.instance.flat.floor.title }}</p>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 col-sm-6 pe-4">
@@ -103,6 +112,7 @@
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
 
     <script type="application/javascript">
+        $('.user_link').appendTo("label[for='id_flat_owner']")
         $('.select2').select2({
               placeholder: 'Выберите...',
               allowClear: true,

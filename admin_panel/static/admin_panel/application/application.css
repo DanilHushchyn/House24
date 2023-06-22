@@ -5,4 +5,8 @@
   cursor: pointer;
 }
 
+input:focus {
+  color: green;
+}
+
 /*# sourceMappingURL=application.css.map */
