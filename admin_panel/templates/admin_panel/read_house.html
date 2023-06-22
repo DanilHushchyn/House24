@@ -1,0 +1,103 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="content-wrapper" style="height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Дом {{ house.title }}</h4>
+          </div>
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'houses' %}">Дома</a></li>
+                <li class="breadcrumb-item active">Дом {{ house.title }}</li>
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-success card-outline">
+            <div class="card-header text-right">
+                <a class="btn btn-primary" href="{% url 'update_house' house.id %}">Редактировать дом</a>
+            </div>
+
+            <!-- /.card-header -->
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-xs-12 col-lg-4">
+                        <table class="table table-bordered table-striped table-view">
+                            <tbody>
+                                <tr>
+                                    <td>Название</td>
+                                    <td>{{ house.title }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Адрес</td>
+                                    <td>{{ house.address }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Секций</td>
+                                    <td>{{ house.section_set.count  }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Этажей</td>
+                                    <td>{{ house.floor_set.count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Пользователи</td>
+                                    <td>
+                                        {% for user in users %}
+                                            <p class="no-margin"><strong>{{ user.user.get_role_display }}:</strong>
+                                                <a href="/admin/user-admin/14">{{ user.user }}</a>
+                                            </p>
+                                        {% endfor %}
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-xs-12 col-lg-8">
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer p-3">
+            </div>
+       </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+
+{% block  script %}
+    <script type="application/javascript">
+        $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+
+        });
+    </script>
+{% endblock %}

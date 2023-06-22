@@ -62,13 +62,13 @@
       </thead>
       <tbody>
        {% for personal in personals %}
-         <tr class="border-0">
-          <td>{{ personal.user.id }}</td>
-          <td>{{ personal.user.last_name }}{{ personal.first_name }}</td>
-          <td>{{ personal.get_role_display }}</td>
-          <td>{{ personal.user.phone }}</td>
-          <td>{{ personal.user.email }}</td>
-          <td>
+         <tr style="cursor:pointer" class="border-0">
+          <td data-href="{% url 'read_personal' personal.id %}">{{ personal.user.id }}</td>
+          <td data-href="{% url 'read_personal' personal.id %}">{{ personal.user.last_name }}{{ personal.first_name }}</td>
+          <td data-href="{% url 'read_personal' personal.id %}">{{ personal.get_role_display }}</td>
+          <td data-href="{% url 'read_personal' personal.id %}">{{ personal.user.phone }}</td>
+          <td data-href="{% url 'read_personal' personal.id %}">{{ personal.user.email }}</td>
+          <td data-href="{% url 'read_personal' personal.id %}">
               {% if personal.user.get_status_display == 'Активен' %}
                   <span class="badge text-bg-success text-white">Активен</span>
                   {% elif personal.user.get_status_display == 'Новый' %}
@@ -100,14 +100,13 @@
           <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
           <li class="page-item"><a class="page-link" href="#">1</a></li>
           <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
           <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
         </ul>
     </div>
 {% endblock %}
 
 
-{% block  script_2a %}
+{% block  script_2b %}
     <script type="application/javascript">
         $(document).ready(function () {
              $('#users').DataTable({
@@ -121,6 +120,15 @@
         });
         $("form").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
+        });
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            const rows = document.querySelectorAll("td[data-href]");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
         });
     </script>
     <script type="module" src="{% static 'admin_panel/system_settings/users/users.js' %}"></script>

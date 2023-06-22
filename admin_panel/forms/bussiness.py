@@ -170,3 +170,41 @@ class MailBoxForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'placeholder': 'Тема сообщения'}),
             'description': forms.Textarea(attrs={'placeholder': 'Текст сообщения:'})
         }
+
+
+class ReceiptForm(forms.ModelForm):
+    date_published = forms.DateField(label='',
+                                     widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
+    start_date = forms.DateField(label='Период с',
+                                 widget=forms.DateInput(attrs={'class': 'start-date', 'placeholder': ''}))
+    end_date = forms.DateField(label='Период по',
+                               widget=forms.DateInput(attrs={'class': 'end-date', 'placeholder': ''}))
+    number = forms.CharField(label='',
+                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+    section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция', required=False,
+                                     widget=forms.Select(attrs={'class': 'form-section-select'}))
+    house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
+                                   widget=forms.Select(attrs={'class': 'form-house-select'}))
+    flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира', required=False,
+                                  widget=forms.Select(attrs={'class': 'form-flat-select'}))
+    tariff = forms.ModelChoiceField(queryset=TariffSystem.objects.all(), label='Тариф',
+                                  widget=forms.Select(attrs={'class': 'form-tariff-select'}))
+    personal_account = forms.CharField(label='Лицевой счет',
+                                       widget=forms.TextInput(attrs={'class': 'personal_account', 'placeholder': ''}))
+    is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
+                                     label='Проведена')
+
+    def __init__(self, *args, **kwargs):
+        super(ReceiptForm, self).__init__(*args, **kwargs)
+        self.fields['house'].empty_label = "Выберите..."
+        self.fields['section'].empty_label = "Выберите..."
+        self.fields['flat'].empty_label = "Выберите..."
+        self.fields['tariff'].empty_label = "Выберите..."
+        self.fields['date_published'].initial = timezone.now().date()
+        self.fields['start_date'].initial = timezone.now().date()
+        self.fields['end_date'].initial = timezone.now().date()
+
+    class Meta:
+        model = Receipt
+        fields = '__all__'
+        exclude = ('service',)

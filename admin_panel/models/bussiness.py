@@ -106,7 +106,7 @@ class Paybox(models.Model):
 class Receipt(models.Model):
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
     is_complete = models.BooleanField(default=True, )
-    date_published = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateField()
     STATUS_CHOICE = (
         ('paid', 'Оплачена'),
         ('partially_paid', 'Частично оплачена'),
@@ -117,6 +117,7 @@ class Receipt(models.Model):
     end_date = models.DateField()
     service = models.ManyToManyField('Service', blank=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE)
+    tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE)
     total_price = models.DecimalField(default=0, blank=True, decimal_places=2, max_digits=20)
 
     class Meta:

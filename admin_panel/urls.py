@@ -9,7 +9,7 @@ urlpatterns = [
 
 
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
-    # path("receipt/add", admin_panel.views.CreatePersonalAccount.as_view(), name='add_personal_account'),
+    path("receipt/add", admin_panel.views.CreateReceipt.as_view(), name='add_receipt'),
     # path("receipt/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
     # path("receipt/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
 
@@ -36,6 +36,8 @@ urlpatterns = [
     path("houses", admin_panel.views.HouseListView.as_view(), name='houses'),
     path("houses/add", admin_panel.views.CreateHouseView.as_view(), name='add_house'),
     path("house/update/<str:pk>", admin_panel.views.UpdateHouseView.as_view(), name='update_house'),
+    path("house/detail/<str:pk>", admin_panel.views.HouseDetail.as_view(), name='read_house'),
+
     path("house/delete/<str:pk>", admin_panel.views.DeleteHouseView.as_view(), name='delete_house'),
 
 
@@ -51,6 +53,8 @@ urlpatterns = [
     path("application/add", admin_panel.views.CreateApplication.as_view(), name='add_application'),
     path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
          name='update_application'),
+    path("application/detail/<str:pk>", admin_panel.views.ApplicationDetail.as_view(), name='read_application'),
+
     path("application/delete/<str:pk>", admin_panel.views.DeleteApplication.as_view(),
          name='delete_application'),
 
@@ -59,16 +63,17 @@ urlpatterns = [
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
     path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),
     path("indication/update/<str:pk>", admin_panel.views.UpdateIndication.as_view(), name='update_indication'),
+    path("indication/detail/<str:pk>", admin_panel.views.IndicationDetail.as_view(), name='read_indication'),
     path("indication/delete/<str:pk>", admin_panel.views.DeleteIndication.as_view(), name='delete_indication'),
 
 
     path("system_services", admin_panel.views.ServicesView.as_view(), name='system_services'),
     path("system_tariffs", admin_panel.views.TariffsListView.as_view(), name='system_tariffs'),
     path("system_tariffs/add", admin_panel.views.CreateTariffView.as_view(), name='add_tariff'),
+    path("system_tariffs/detail/<str:pk>", admin_panel.views.TariffDetail.as_view(), name='tariff_detail'),
     path("system_tariffs/delete/<str:pk>", admin_panel.views.DeleteTariffView.as_view(), name='delete_tariff'),
     path("system_tariffs/update/<str:pk>", admin_panel.views.UpdateTariffView.as_view(), name='update_tariff'),
     path("system_tariffs/copy/<str:pk>", admin_panel.views.CopyTariffView.as_view(), name='copy_tariff'),
-
     path("system_payment_details", admin_panel.views.UpdatePaymentDetailView.as_view(), name='system_payment_details'),
 
     path("personals", admin_panel.views.PersonalListView.as_view(),
@@ -77,6 +82,8 @@ urlpatterns = [
          name='add_personal'),
     path("personals/update/<str:pk>", admin_panel.views.UpdatePersonalView.as_view(),
          name='update_personal'),
+    path("personal/detail/<str:pk>", admin_panel.views.PersonalDetail.as_view(), name='read_personal'),
+
     path("personals/delete/<str:pk>", admin_panel.views.DeletePersonalView.as_view(),
          name='delete_personal'),
 

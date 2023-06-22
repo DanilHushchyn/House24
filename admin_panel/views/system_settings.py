@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import *
 from admin_panel.forms import *
 
@@ -48,6 +48,19 @@ class ServicesView(FormView):
 class TariffsListView(ListView):
     template_name = 'admin_panel/system_settings/tariffs.html'
     model = TariffSystem
+
+
+class TariffDetail(DetailView):
+    model = TariffSystem
+    template_name = 'admin_panel/system_settings/read_tariff.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tariff = TariffSystem.objects.get(pk=self.kwargs['pk'])
+
+        context['tariff'] = tariff
+        context['tariffservices'] = tariff.tariffservice_set.all()
+        return context
 
 
 class DeleteTariffView(DeleteView):
@@ -180,11 +193,20 @@ class CreateTariffView(FormView):
         return redirect('system_tariffs')
 
 
-
 class PersonalListView(ListView):
     template_name = 'admin_panel/system_settings/personals.html'
     context_object_name = 'personals'
     queryset = Personal.objects.all()
+
+
+class PersonalDetail(DetailView):
+    model = Personal
+    template_name = 'admin_panel/system_settings/read_personal.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['personal'] = Personal.objects.get(pk=self.kwargs['pk'])
+        return context
 
 
 class PersonalSignUpView(CreateView):

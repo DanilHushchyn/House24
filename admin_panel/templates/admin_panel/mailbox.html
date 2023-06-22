@@ -93,7 +93,7 @@
                                         <label for="check2"></label>
                                       </div>
                                     </td>
-                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-name">
+                                    <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-name">
                                         {% if mailbox.house is None %}
                                             Всем
                                         {% else %}
@@ -112,11 +112,11 @@
                                             {% endif %}
                                         {% endif %}
                                     </td>
-                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-subject">
+                                    <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-subject">
                                         <b>{{ mailbox.title }}</b>
                                         - {{ mailbox.description }}
                                     </td>
-                                    <td data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-date">
+                                    <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-date">
                                         {{ mailbox.date_published|date:"d.m.Y" }}-{{ mailbox.date_published|time:"h:i"  }}
                                     </td>
                               </tr>

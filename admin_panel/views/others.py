@@ -18,17 +18,22 @@ def paybox(request):
     return render(request, 'admin_panel/paybox.html')
 
 
-class ReceiptListView(ListView):
-    template_name = 'admin_panel/personal_accounts.html'
-    context_object_name = 'personal_accounts'
+class ReceiptList(ListView):
+    template_name = 'admin_panel/receipts.html'
+    context_object_name = 'receipts'
     queryset = PersonalAccount.objects.all()
 
 
 class CreateReceipt(CreateView):
-    model = PersonalAccount
-    template_name = 'admin_panel/get_personal_account_form.html'
-    form_class = PersonalAccountForm
-    success_url = reverse_lazy('personal_accounts')
+    model = Receipt
+    template_name = 'admin_panel/get_receipt_form.html'
+    form_class = ReceiptForm
+    success_url = reverse_lazy('receipts')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['indications'] = Indication.objects.order_by('date_published').all()
+        return context
 
 
 #
@@ -142,6 +147,22 @@ class HouseListView(ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
     queryset = House.objects.all()
+
+
+class HouseDetail(DetailView):
+    model = House
+    template_name = 'admin_panel/read_house.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        house = House.objects.prefetch_related('gallery__photo_set','houseuser_set').get(pk=self.kwargs['pk'])
+        photos = house.gallery.photo_set.all()
+        users = house.houseuser_set.all()
+        context['house'] = house
+        context['photos'] = photos
+        context['users'] = users
+
+        return context
 
 
 class CreateHouseView(FormView):
@@ -382,6 +403,17 @@ class ApplicationList(ListView):
     queryset = Application.objects.all()
 
 
+class ApplicationDetail(DetailView):
+    model = Application
+    template_name = 'admin_panel/read_application.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        application = Application.objects.get(pk=self.kwargs['pk'])
+        context['application'] = application
+        return context
+
+
 class CreateApplication(CreateView):
     model = Application
     template_name = 'admin_panel/get_application_form.html'
@@ -420,6 +452,17 @@ class CounterIndicationsList(ListView):
     def get_queryset(self):
         queryset = Indication.objects.filter(flat_id=self.kwargs['flat'], service_id=self.kwargs['service'])
         return queryset
+
+
+class IndicationDetail(DetailView):
+    model = Indication
+    template_name = 'admin_panel/read_indication.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        indication = Indication.objects.get(pk=self.kwargs['pk'])
+        context['indication'] = indication
+        return context
 
 
 class CreateIndication(CreateView):

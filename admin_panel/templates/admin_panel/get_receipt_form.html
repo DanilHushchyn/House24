@@ -1,0 +1,231 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+{% block head %}
+        <link rel="stylesheet" href="{% static 'node_modules/flatpickr/dist/flatpickr.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper" style="height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Новая квитанция</h4>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'receipts' %}">Квитанции</a></li>
+                <li class="breadcrumb-item">Новая квитанция</li>
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+            <!-- Main content -->
+            <section class="content">
+                <form method="post" action="{% url 'add_receipt' %}" enctype="multipart/form-data">
+                    <div class="row ps-2">
+                        <div class="col-12">
+                               <div class="d-flex justify-content-center align-items-start flex-column flex-sm-row align-items-sm-center justify-content-sm-start">
+                                    <div class="d-flex">
+                                        <div class=" d-inline-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
+                                            №
+                                        </div>
+                                        <div class="">
+                                            {% bootstrap_field form.number %}
+                                        </div>
+                                    </div>
+                                    <div class="ps-2 pb-3 pe-2"><span>от</span></div>
+                                    <div class="d-flex">
+                                        <div class="d-inline-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                        </div>
+                                        {% bootstrap_field form.date_published %}
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                  <!-- Default box -->
+                   <div class="card card-primary card-outline card-success ps-3">
+                        <div class="card-header p-0 border-bottom-0">
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    {% bootstrap_field form.house %}
+                                    {% bootstrap_field form.section %}
+                                    {% bootstrap_field form.flat %}
+
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    {% bootstrap_field form.is_complete %}
+                                    {% bootstrap_field form.status %}
+                                    {% bootstrap_field form.tariff %}
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="d-flex justify-content-center align-items-start flex-column flex-md-row align-items-sm-start justify-content-sm-start">
+                                                <div class="d-flex flex-column">
+                                                    <label class="form-label" for="id_start_date">Период по</label>
+                                                    <div class="d-flex flex-row justify-content-center">
+                                                        <div class="d-inline-flex align-items-center align-self-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da;">
+                                                            <i class="fa-solid fa-calendar-days"></i>
+                                                        </div>
+                                                        <input type="text" name="start_date" value="{{ form.start_date.value }}" class="form-control start-date rounded-0 shadow-none" placeholder="" required="" id="id_start_date">
+                                                    </div>
+                                                </div>
+                                                <div class="ps-2  pe-2"></div>
+                                                <div class="d-flex flex-column">
+                                                    <label class="form-label" for="id_end_date">Период по</label>
+                                                    <div class="d-flex flex-row justify-content-center">
+                                                        <div class="d-inline-flex align-items-center align-self-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da;">
+                                                            <i class="fa-solid fa-calendar-days"></i>
+                                                        </div>
+                                                        <input type="text" name="end_date" class="form-control end-date rounded-0 shadow-none" value="{{ form.end_date.value }}" placeholder="" required="" id="id_end_date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    {% bootstrap_field form.personal_account %}
+                                    <p><b>Владелец:</b> <span id="user-fullname">не выбран</span></p>
+                                    <p><b>Телефон:</b> <span id="user-phone">не выбран</span></p>
+                                </div>
+                            </div>
+                            <div class="table-responsive no-padding">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 200px;">Услуга</th>
+                                            <!--<th style="min-width: 180px;">Показания</th>-->
+                                            <th style="min-width: 180px;">Расход</th>
+                                            <th style="min-width: 120px;">Ед. изм.</th>
+                                            <th style="min-width: 180px;">Цена за ед., грн.</th>
+                                            <th style="min-width: 180px;">Стоимость, грн.</th>
+                                            <th style="width: 40px; min-width: 40px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="form-invoiceservice-rows">
+
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" valing="middle">
+                                                <button type="button" class="btn btn-default btn-hover-change form-row-add-service-btn">
+                                                    Добавить услугу
+                                                </button>
+                                                <button type="button" class="btn btn-default set-tariff-services">
+                                                    Установить все услуги согласно тарифу
+                                                </button>
+                                                <button type="button" class="btn btn-default add-counters">
+                                                    Добавить показания счетчиков
+                                                </button>
+                                            </td>
+                                            <td style="min-width: 180px;">
+                                                <div class="h4">
+                                                    Итого: <b><span id="price-total">0.00</span></b> грн
+                                                </div>
+                                            </td>
+                                            <td style="width: 40px; min-width: 40px;"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                   </div>
+                   <div class="card card-primary card-outline card-success ps-3">
+                        <div class="card-header pt-3 border-bottom-0">
+                            <h3 class="card-title">Показания счетчиков</h3>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="box-body table-responsive no-padding">
+                                <table class="table table-bordered table-hover table-striped table-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 125px">№</th>
+                                            <th style="min-width: 125px">Статус</th>
+                                            <th style="min-width: 145px">Дата</th>
+                                            <th style="min-width: 125px">Месяц</th>
+                                            <th style="min-width: 200px">Дом</th>
+                                            <th style="min-width: 160px">Секция</th>
+                                            <th style="min-width: 140px">№ квартиры</th>
+                                            <th>Счетчик</th>
+                                            <th style="min-width: 90px">Показания</th>
+                                            <th style="min-width: 120px">Ед. изм.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for indication in indications %}
+                                            <tr>
+                                                <td>{{ indication.number }}</td>
+                                                <td>
+                                                      {% if indication.get_status_display == 'Новое' %}
+                                                          <span class="badge text-bg-warning text-white">Новое</span>
+                                                          {% elif indication.get_status_display == 'Учтено' %}
+                                                          <span class="badge text-bg-success text-white">Учтено</span>
+                                                          {% elif indication.get_status_display == 'Учтено и оплачено' %}
+                                                          <span class="badge text-bg-success text-white">Учтено и оплачено</span>
+                                                          {% else %}
+                                                          <span class="badge text-bg-primary text-white">Нулевое</span>
+                                                      {% endif %}
+                                                </td>
+                                                <td>{{ indication.date_published }}</td>
+                                                <td>{{ indication.date_published|date:'F Y' }}</td>
+                                                <td>{{ indication.flat.house}}</td>
+                                                <td>{{ indication.flat.section}}</td>
+                                                <td>{{ indication.flat.number}}</td>
+                                                <td>{{ indication.service.title}}</td>
+                                                <td style="background: #F0FBF0">
+                                                    {{ indication.indication_val }}
+                                                </td>
+                                                <td style="background: #F0FBF0">
+                                                    {{ indication.service.measure }}
+                                                </td>
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                   </div>
+                </form>
+
+            </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}
+{% block  script %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/flatpickr.js' %}"></script>
+     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
+    <script type="application/javascript">
+        $(".publishing-date, .start-date, .end-date").flatpickr({
+                dateFormat: "d.m.Y",
+                locale: "ru", // locale for this instance only
+        });
+
+        $('.publishing-date, .start-date, .end-date').addClass('bg-white')
+
+    </script>
+    <script type="module" src="{% static 'admin_panel/receipt/receipt_form.js' %}"></script>
+
+{% endblock %}

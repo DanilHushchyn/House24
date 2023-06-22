@@ -109,7 +109,7 @@ $('#my-select2').on('change', function() {
 });
 
 
-
+$('.personal_account-select').val("").trigger("change");
 $('.personal_account-res').parent().removeClass('mb-3')
 $('.personal_account-select').on('change',function () {
      if($('.personal_account-select option:selected').text()==='или выберите из списка...'){

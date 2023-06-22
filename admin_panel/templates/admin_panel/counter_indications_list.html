@@ -92,8 +92,9 @@
       <tbody>
       {% for indication in indications %}
         <tr class="border-0">
-          <td>{{ indication.number }}</td>
-          <td>{% if indication.get_status_display == 'Новое' %}
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.number }}</td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+              {% if indication.get_status_display == 'Новое' %}
                   <span class="badge text-bg-warning text-white">Новое</span>
                   {% elif indication.get_status_display == 'Учтено' %}
                   <span class="badge text-bg-success text-white">Учтено</span>
@@ -101,21 +102,22 @@
                   <span class="badge text-bg-success text-white">Учтено и оплачено</span>
                   {% else %}
                   <span class="badge text-bg-primary text-white">Нулевое</span>
-              {% endif %}</td>
-          <td>{{ indication.date_published }}</td>
-          <td>{{ indication.date_published }}</td>
-          <td>{{ indication.flat.house }}</td>
-          <td>{{ indication.flat.section }}</td>
-          <td>
+              {% endif %}
+          </td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published }}</td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published }}</td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.flat.house }}</td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.flat.section }}</td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
               {{ indication.flat.number }}
           </td>
-          <td>
+          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
               {{ indication.service.title }}
           </td>
-          <td style="background: #F0FBF0">
+          <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
              {{ indication.indication_val }}
           </td>
-          <td style="background: #F0FBF0">
+          <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
               {{ indication.service.measure }}
           </td>
           <td class="ps-1 pe-1 text-center">
@@ -208,6 +210,15 @@
            $("form").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
+        });
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            const rows = document.querySelectorAll("td[data-href]");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
         });
     </script>
     <script type="module" src="{% static 'admin_panel/application/application.js' %}"></script>

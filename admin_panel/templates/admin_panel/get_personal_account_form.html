@@ -35,14 +35,13 @@
                 <form method="post" action="{% url 'add_personal_account' %}" enctype="multipart/form-data">
                 <div class="row ps-2">
                     <div class="col-12">
-                            <div class="form-group ">
-                                <div class="input-group">
-                                    <div class="input-group-addon d-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
+                            <div class="d-flex justify-content-center align-items-start flex-column flex-sm-row align-items-sm-center justify-content-sm-start">
+                                <div class="d-flex">
+                                     <div class="d-inline-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
                                         №
                                     </div>
-                                    <div class="">
-                                        {% bootstrap_field form.number %}
-                                    </div>
+                                    {% bootstrap_field form.number %}
+
                                 </div>
                             </div>
                     </div>
@@ -60,8 +59,8 @@
                             <p><b>Владелец:</b> <span id="user-fullname">не выбран</span></p>
                             <p><b>Телефон:</b> <span id="user-phone">не выбран</span></p>
                             <div class="col-12 text-right">
-                                {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
-                                {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
+                                {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success mb-3" %}
+                                {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default mb-3" %}
                             </div>
                     </div>
 
