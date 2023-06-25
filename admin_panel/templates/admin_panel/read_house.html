@@ -50,23 +50,23 @@
                         <table class="table table-bordered table-striped table-view">
                             <tbody>
                                 <tr>
-                                    <td>Название</td>
+                                    <td class="font-weight-bold">Название</td>
                                     <td>{{ house.title }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Адрес</td>
+                                    <td class="font-weight-bold">Адрес</td>
                                     <td>{{ house.address }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Секций</td>
+                                    <td class="font-weight-bold">Секций</td>
                                     <td>{{ house.section_set.count  }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Этажей</td>
+                                    <td class="font-weight-bold">Этажей</td>
                                     <td>{{ house.floor_set.count }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Пользователи</td>
+                                    <td class="font-weight-bold">Пользователи</td>
                                     <td>
                                         {% for user in users %}
                                             <p class="no-margin"><strong>{{ user.user.get_role_display }}:</strong>
@@ -80,6 +80,35 @@
                         </table>
                     </div>
                     <div class="col-xs-12 col-lg-8">
+                        <div class="row d-flex justify-content-center">
+                            {% for photo in photos %}
+                                {% if forloop.first %}
+                                    {% if photo.img == '' %}
+                                          <div class="col-12 col-md-6 mb-3 mb-md-0 text-center">
+                                                <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 350px;object-fit: cover;" alt="Изображение #1. Размер: (522x350)">
+                                          </div>
+                                    {% else %}
+                                          <div class="col-12 col-md-6 mb-3 mb-md-0 text-center">
+                                                <img src="{{ photo.img.url }}" class="img-fluid" style="min-height: 350px;object-fit: cover;" alt="Изображение #1. Размер: (522x350)">
+                                          </div>
+
+                                    {% endif %}
+                                    <div class="col-12 col-md-6 row d-flex align-content-between">
+                                {% else %}
+                                    {% if photo.img == '' %}
+                                       <div class="col-12 col-sm-6 mb-3 mb-md-0 text-center">
+                                            <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 160px;object-fit: cover;"  alt="Изображение #2. Размер: (248x160)">
+                                       </div>
+                                    {% else %}
+                                        <div class="col-12 col-sm-6 mb-3 mb-md-0 text-center">
+                                            <img src="{{ photo.img.url }}" class="img-fluid" style="min-height: 160px;object-fit: cover;"  alt="Изображение #2. Размер: (248x160)">
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                            {% endfor %}
+                                    </div>
+                        </div>
                     </div>
                 </div>
             </div>

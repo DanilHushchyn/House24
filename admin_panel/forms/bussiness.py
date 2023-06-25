@@ -188,11 +188,14 @@ class ReceiptForm(forms.ModelForm):
     flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира', required=False,
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
     tariff = forms.ModelChoiceField(queryset=TariffSystem.objects.all(), label='Тариф',
-                                  widget=forms.Select(attrs={'class': 'form-tariff-select'}))
+                                    widget=forms.Select(attrs={'class': 'form-tariff-select'}))
     personal_account = forms.CharField(label='Лицевой счет',
                                        widget=forms.TextInput(attrs={'class': 'personal_account', 'placeholder': ''}))
     is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
                                      label='Проведена')
+    total_price = forms.DecimalField(
+        widget=forms.TextInput(attrs={'placeholder': '', 'class': 'total_price'}),
+        required=False, label='')
 
     def __init__(self, *args, **kwargs):
         super(ReceiptForm, self).__init__(*args, **kwargs)
@@ -203,8 +206,39 @@ class ReceiptForm(forms.ModelForm):
         self.fields['date_published'].initial = timezone.now().date()
         self.fields['start_date'].initial = timezone.now().date()
         self.fields['end_date'].initial = timezone.now().date()
+        self.fields['total_price'].initial = 0
 
     class Meta:
         model = Receipt
         fields = '__all__'
         exclude = ('service',)
+
+
+class ReceiptServiceForm(forms.ModelForm):
+    consumption = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'consumption'}),
+                                     required=False, label='')
+    unit_price = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'unit_price'}),
+                                    required=False, label='')
+    total_service_price = forms.DecimalField(
+        widget=forms.TextInput(attrs={'placeholder': '', 'class': 'total_service_price'}),
+        required=False, label='')
+    service = forms.ModelChoiceField(queryset=Service.objects.all(), label='',
+                                     required=False,
+                                     widget=forms.Select(attrs={'class': 'form-service-select'}))
+    measure = forms.ModelChoiceField(queryset=Measure.objects.all(), label='',
+                                     required=False,
+                                     widget=forms.Select(attrs={'class': 'form-measure-select'}))
+
+    def __init__(self, *args, **kwargs):
+        super(ReceiptServiceForm, self).__init__(*args, **kwargs)
+        self.fields['service'].empty_label = "Выберите..."
+        self.fields['measure'].empty_label = "Выберите..."
+
+    class Meta:
+        model = ReceiptService
+        fields = '__all__'
+        exclude = ('receipt',)
+
+
+ReceiptServiceFormset = forms.modelformset_factory(model=ReceiptService, form=ReceiptServiceForm, can_delete=True,
+                                                   extra=0)

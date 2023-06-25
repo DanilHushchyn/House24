@@ -1,6 +1,7 @@
 import json
 
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -33,7 +34,19 @@ class CreateReceipt(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['indications'] = Indication.objects.order_by('date_published').all()
+        context['service_formset'] = ReceiptServiceFormset(prefix='service')
+        context['measures'] = Measure.objects.all()
+        context['services'] = Service.objects.all()
         return context
+
+
+class GetIndicationsSortedList(View):
+    def get(self, request, flat_id):
+        indications = Indication.objects.order_by('date_published').filter(flat_id=flat_id)
+        data = {
+            "indications": indications,
+        }
+        return render(request, 'admin_panel/ajax_indication_table.html', context=data)
 
 
 #
@@ -62,6 +75,17 @@ class CreateFlatView(CreateView):
     success_url = reverse_lazy('flats')
 
 
+class FlatDetail(DetailView):
+    model = Flat
+    template_name = 'admin_panel/read_flat.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        flat = Flat.objects.get(pk=self.kwargs['pk'])
+        context['flat'] = flat
+        return context
+
+
 class UpdateFlatView(UpdateView):
     model = Flat
     template_name = 'admin_panel/update_flat.html'
@@ -78,6 +102,17 @@ class PersonalAccountListView(ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
     queryset = PersonalAccount.objects.all()
+
+
+class PersonalAccountDetail(DetailView):
+    model = PersonalAccount
+    template_name = 'admin_panel/read_personal_account.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
+        context['personal_account'] = personal_account
+        return context
 
 
 class CreatePersonalAccount(CreateView):
@@ -103,6 +138,20 @@ class ClientListView(ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
     queryset = FlatOwner.objects.all()
+
+
+class ClientDetail(DetailView):
+    model = FlatOwner
+    template_name = 'admin_panel/read_client.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        client = FlatOwner.objects.prefetch_related("flat_set").get(pk=self.kwargs['pk'])
+
+        context['client'] = client
+        context['flats'] = client.flat_set.all()
+
+        return context
 
 
 class ClientSignUpView(CreateView):
@@ -155,7 +204,7 @@ class HouseDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        house = House.objects.prefetch_related('gallery__photo_set','houseuser_set').get(pk=self.kwargs['pk'])
+        house = House.objects.prefetch_related('gallery__photo_set', 'houseuser_set').get(pk=self.kwargs['pk'])
         photos = house.gallery.photo_set.all()
         users = house.houseuser_set.all()
         context['house'] = house
@@ -310,15 +359,31 @@ class GetSectionInfoView(View):
 
 class GetFlatInfoView(View):
     def get(self, request, pk):
+        data = {}
         flat = Flat.objects.get(pk=pk)
-        flat_owner = FlatOwner.objects.get(flat=flat)
-        user = CustomUser.objects.get(flatowner=flat_owner)
-        flat_owner = serializers.serialize('json', [flat_owner])
-        user = serializers.serialize('json', [user])
-        data = {
-            "flat_owner": flat_owner,
-            "user": user,
-        }
+        try:
+            flat_owner_obj = FlatOwner.objects.get(flat=flat)
+            flat_owner = serializers.serialize('json', [flat_owner_obj])
+            data['flat_owner'] = flat_owner
+            user = CustomUser.objects.get(flatowner=flat_owner_obj)
+            user = serializers.serialize('json', [user])
+            data['user'] = user
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if flat.personal_account is not None:
+                personal_account = flat.personal_account
+                personal_account = serializers.serialize('json', [personal_account])
+                data['personal_account'] = personal_account
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if flat.tariff is not None:
+                tariff = TariffSystem.objects.get(pk=flat.tariff.pk)
+                tariff = serializers.serialize('json', [tariff])
+                data['tariff'] = tariff
+        except ObjectDoesNotExist:
+            pass
         return JsonResponse(data, safe=False)
 
 
@@ -335,6 +400,40 @@ class GetHouseInfoView(View):
             "floors": floors,
             "flats": flats,
         }
+        return JsonResponse(data, safe=False)
+
+
+class GetTariffInfoView(View):
+    def get(self, request, pk):
+        tariff = TariffSystem.objects.prefetch_related('tariffservice_set').get(pk=pk)
+        tariff_services = serializers.serialize('json', tariff.tariffservice_set.all())
+        data = {
+            "tariff_services": tariff_services,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class GetServiceInfoView(View):
+    def get(self, request, pk):
+        service = Service.objects.get(pk=pk)
+        service = serializers.serialize('json', [service])
+        data = {
+            "service": service,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class GetIndicationInfoView(View):
+    def get(self, request, flat_id, service_id):
+        indication = Indication.objects.filter(flat_id=flat_id, service_id=service_id)
+        if indication.count() != 0:
+            indication = serializers.serialize('json', indication)
+            data = {
+                "indication": indication,
+            }
+        else:
+            return JsonResponse({}, safe=False)
+
         return JsonResponse(data, safe=False)
 
 

@@ -18,18 +18,21 @@ urlpatterns = [
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
     path("personal_accounts/add", admin_panel.views.CreatePersonalAccount.as_view(), name='add_personal_account'),
     path("personal_accounts/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
+    path("personal_accounts/detail/<str:pk>", admin_panel.views.PersonalAccountDetail.as_view(), name='read_personal_account'),
     path("personal_accounts/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
 
 
     path("flats", admin_panel.views.FlatListView.as_view(), name='flats'),
     path("flats/add", admin_panel.views.CreateFlatView.as_view(), name='add_flat'),
     path("flats/update/<str:pk>", admin_panel.views.UpdateFlatView.as_view(), name='update_flat'),
+    path("flats/detail/<str:pk>", admin_panel.views.FlatDetail.as_view(), name='read_flat'),
     path("flats/delete/<str:pk>", admin_panel.views.DeleteFlatView.as_view(), name='delete_flat'),
 
 
     path("clients", admin_panel.views.ClientListView.as_view(), name='clients'),
     path("clients/add", admin_panel.views.ClientSignUpView.as_view(), name='add_client'),
     path("clients/update/<str:pk>", admin_panel.views.UpdateClientView.as_view(), name='update_client'),
+    path("clients/detail/<str:pk>", admin_panel.views.ClientDetail.as_view(), name='read_client'),
     path("clients/delete/<str:pk>", admin_panel.views.DeleteClientView.as_view(), name='delete_client'),
 
 
@@ -108,5 +111,9 @@ urlpatterns = [
     path("get_flat_owner-info/<str:pk>", admin_panel.views.GetFlatOwnerInfo.as_view(), name='get_flat_owner-info'),
     path("get_section-info/<str:pk>", admin_panel.views.GetSectionInfoView.as_view(), name='get_section-info'),
     path("get_flat-info/<str:pk>", admin_panel.views.GetFlatInfoView.as_view(), name='get_flat-info'),
+    path("get_tariff-info/<str:pk>", admin_panel.views.GetTariffInfoView.as_view(), name='get_tariff-info'),
     path("get_all_flats", admin_panel.views.GetAllFlats.as_view(), name='get_all_flats'),
+    path("get_service-info/<str:pk>", admin_panel.views.GetServiceInfoView.as_view(), name='get_service-info'),
+    path("get_indication-info/<str:flat_id>/<str:service_id>", admin_panel.views.GetIndicationInfoView.as_view(), name='get_indication-info'),
+    path("get_indication-sorted-list/<str:flat_id>", admin_panel.views.GetIndicationsSortedList.as_view(), name='get_indication-sorted-list'),
 ]

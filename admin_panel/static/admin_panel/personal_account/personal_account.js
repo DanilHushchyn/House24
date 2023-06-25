@@ -119,9 +119,10 @@ $('.form-flat-select').on('change',function () {
                 data = JSON.parse(data)
                 let flat_owner_obj = JSON.parse(data['flat_owner'])[0]['fields']
                 let user_obj = JSON.parse(data['user'])[0]['fields']
+
                 $('#user-fullname').text(`${user_obj['last_name']} ${user_obj['first_name']} ${flat_owner_obj['patronymic']}`)
                 $('#user-phone').text(`${user_obj['phone']}`)
-
+                $('.personal_account').val(personal_account_obj)
 
             }
         });

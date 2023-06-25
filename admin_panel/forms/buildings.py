@@ -93,6 +93,12 @@ class FlatForm(forms.ModelForm):
             instance.save()
         if instance.pk:
             if self.cleaned_data['personal_account_res'] == '':
+                if hasattr(instance, 'personal_account'):
+                    pa = instance.personal_account
+                    pa.flat = None
+                    pa.section = None
+                    pa.house = None
+                    pa.save()
                 pass
             else:
                 if hasattr(instance, 'personal_account'):

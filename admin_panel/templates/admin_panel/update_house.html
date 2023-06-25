@@ -64,11 +64,11 @@
                                         {% if forloop.first %}
                                             {% if photo_form.img.value == '' %}
                                                   <div class="col-12 col-md-6 mb-3 mb-md-0 text-center">
-                                                        <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 350px" alt="Изображение #1. Размер: (522x350)">
+                                                        <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 350px;object-fit: cover;" alt="Изображение #1. Размер: (522x350)">
                                                   </div>
                                             {% else %}
                                                   <div class="col-12 col-md-6 mb-3 mb-md-0 text-center">
-                                                        <img src="{{ photo_form.instance.img.url }}" class="img-fluid" style="min-height: 350px" alt="Изображение #1. Размер: (522x350)">
+                                                        <img src="{{ photo_form.instance.img.url }}" class="img-fluid" style="min-height: 350px;object-fit: cover;" alt="Изображение #1. Размер: (522x350)">
                                                   </div>
 
                                             {% endif %}
@@ -76,11 +76,11 @@
                                         {% else %}
                                             {% if photo_form.img.value == '' %}
                                                <div class="col-12 col-sm-6 mb-3 mb-md-0 text-center">
-                                                    <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 160px"  alt="Изображение #2. Размер: (248x160)">
+                                                    <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" class="img-fluid" style="min-height: 160px;object-fit: cover;"  alt="Изображение #2. Размер: (248x160)">
                                                </div>
                                             {% else %}
                                                 <div class="col-12 col-sm-6 mb-3 mb-md-0 text-center">
-                                                    <img src="{{ photo_form.instance.img.url }}" class="img-fluid" style="min-height: 160px"  alt="Изображение #2. Размер: (248x160)">
+                                                    <img src="{{ photo_form.instance.img.url }}" class="img-fluid" style="min-height: 160px;object-fit: cover;"  alt="Изображение #2. Размер: (248x160)">
                                                 </div>
                                             {% endif %}
                                         {% endif %}

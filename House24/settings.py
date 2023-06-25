@@ -131,6 +131,10 @@ THUMBNAIL_ALIASES = {
             'size': (650, 300),
             'crop': 'scale',
         },
+        'house': {
+            'size': (522, 350),
+            'crop': 'scale',
+        },
     },
 }
 THUMBNAIL_BASEDIR = 'thumbnails'

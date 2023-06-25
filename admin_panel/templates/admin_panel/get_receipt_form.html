@@ -4,6 +4,7 @@
 {% load django_bootstrap5 %}
 {# Load CSS and JavaScript#}
 {% bootstrap_css %}
+
 {% bootstrap_javascript %}
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
@@ -107,26 +108,45 @@
                                 </div>
                             </div>
                             <div class="table-responsive no-padding">
+                                {{ service_formset.management_form }}
+                                <div class="measure__select d-none">
+                                        {% for measure in measures %}
+                                            <option value={{ measure.id }}>{{ measure.title }}</option>
+                                        {% endfor %}
+                                </div>
+                                <div class="service__select d-none">
+                                        {% for service in services %}
+                                            <option value={{ service.id }}>{{ service.title }}</option>
+                                        {% endfor %}
+                                </div>
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <th style="min-width: 200px;">Услуга</th>
                                             <!--<th style="min-width: 180px;">Показания</th>-->
                                             <th style="min-width: 180px;">Расход</th>
-                                            <th style="min-width: 120px;">Ед. изм.</th>
+                                            <th style="min-width: 200px;">Ед. изм.</th>
                                             <th style="min-width: 180px;">Цена за ед., грн.</th>
-                                            <th style="min-width: 180px;">Стоимость, грн.</th>
+                                            <th style="min-width: 200px;">Стоимость, грн.</th>
                                             <th style="width: 40px; min-width: 40px;"></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="form-invoiceservice-rows">
-
-
+                                    <tbody id="form-receiptservice-rows">
+{#                                        {% for service_form in service_formset %}#}
+{#                                            <tr class="form-receiptservice-row">#}
+{#                                                <td>{% bootstrap_field service_form.service wrapper_class='' %}</td>#}
+{#                                                <td>{% bootstrap_field service_form.consumption wrapper_class='' %}</td>#}
+{#                                                <td>{% bootstrap_field service_form.measure wrapper_class='' %}</td>#}
+{#                                                <td>{% bootstrap_field service_form.unit_price wrapper_class='' %}</td>#}
+{#                                                <td>{% bootstrap_field service_form.total_service_price wrapper_class='' %}</td>#}
+{#                                                <td><button type="button" class="btn btn-default service__delete"  title="Удалить услугу"><i class="fa fa-trash"></i></button></td>#}
+{#                                            </tr>#}
+{#                                        {% endfor %}#}
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="4" valing="middle">
-                                                <button type="button" class="btn btn-default btn-hover-change form-row-add-service-btn">
+                                                <button type="button" class="btn btn-default btn-hover-change add__service">
                                                     Добавить услугу
                                                 </button>
                                                 <button type="button" class="btn btn-default set-tariff-services">
@@ -137,7 +157,8 @@
                                                 </button>
                                             </td>
                                             <td style="min-width: 180px;">
-                                                <div class="h4">
+                                                <div class="h5">
+                                                    {% bootstrap_field form.total_price wrapper_class='d-none' %}
                                                     Итого: <b><span id="price-total">0.00</span></b> грн
                                                 </div>
                                             </td>
@@ -170,7 +191,7 @@
                                             <th style="min-width: 120px">Ед. изм.</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody class="indications-table">
                                         {% for indication in indications %}
                                             <tr>
                                                 <td>{{ indication.number }}</td>
@@ -188,7 +209,13 @@
                                                 <td>{{ indication.date_published }}</td>
                                                 <td>{{ indication.date_published|date:'F Y' }}</td>
                                                 <td>{{ indication.flat.house}}</td>
-                                                <td>{{ indication.flat.section}}</td>
+                                                <td>
+                                                     {% if indication.flat.section is None %}
+                                                        (не задано)
+                                                     {% else %}
+                                                        {{ indication.flat.section}}
+                                                     {% endif %}
+                                                </td>
                                                 <td>{{ indication.flat.number}}</td>
                                                 <td>{{ indication.service.title}}</td>
                                                 <td style="background: #F0FBF0">
@@ -207,7 +234,6 @@
                         </div>
                    </div>
                 </form>
-
             </section>
     <!-- /.content -->
   </div>
@@ -227,5 +253,6 @@
 
     </script>
     <script type="module" src="{% static 'admin_panel/receipt/receipt_form.js' %}"></script>
+    <script type="module" src="{% static 'admin_panel/receipt/receipt-service-formset.js' %}"></script>
 
 {% endblock %}

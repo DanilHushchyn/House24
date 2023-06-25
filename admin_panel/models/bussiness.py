@@ -117,11 +117,22 @@ class Receipt(models.Model):
     end_date = models.DateField()
     service = models.ManyToManyField('Service', blank=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE)
-    tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE)
+    tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE,null=True,blank=True)
     total_price = models.DecimalField(default=0, blank=True, decimal_places=2, max_digits=20)
 
     class Meta:
         db_table = 'receipt'
+
+
+class ReceiptService(models.Model):
+    unit_price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
+    consumption = models.DecimalField(verbose_name='Цена', default=0, max_digits=15, decimal_places=2)
+    receipt = models.ForeignKey('Receipt', on_delete=models.SET_NULL, null=True, blank=True)
+    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
+    measure = models.ForeignKey('Measure', verbose_name='Ед. изм.', on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = 'receipt-service'
 
 
 class Indication(models.Model):

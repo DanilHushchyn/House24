@@ -52,7 +52,7 @@
                         {% for photo_form in photo_formset %}
                             <div class="col-12 col-md-4 p-2">
                                 <h5>Слайд {{ forloop.counter }}</h5>
-                                <img src="{% thumbnail photo_form.instance.img  'main' %}" class="img-fluid" alt="" >
+                                <img src="{% thumbnail photo_form.instance.img  'main' %}" style="object-fit: cover;" class="img-fluid" alt="" >
                                 <div class="mb-3">
                                     <label class="control-label mt-2" for="id_photo-{{ forloop.counter0 }}-img">Рекомендуемый размер: (1920x800)</label>
                                     <input type="file" name="photo-{{ forloop.counter0 }}-img" class="" accept="image/*" id="id_photo-{{ forloop.counter0 }}-img">
