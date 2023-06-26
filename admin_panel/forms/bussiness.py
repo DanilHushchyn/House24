@@ -192,6 +192,7 @@ class ReceiptForm(forms.ModelForm):
     personal_account = forms.CharField(label='Лицевой счет',
                                        widget=forms.TextInput(attrs={'class': 'personal_account', 'placeholder': ''}))
     is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
+                                     required=False,
                                      label='Проведена')
     total_price = forms.DecimalField(
         widget=forms.TextInput(attrs={'placeholder': '', 'class': 'total_price'}),
@@ -207,6 +208,32 @@ class ReceiptForm(forms.ModelForm):
         self.fields['start_date'].initial = timezone.now().date()
         self.fields['end_date'].initial = timezone.now().date()
         self.fields['total_price'].initial = 0
+
+    # def save(self, commit=True):
+    #     instance = super().save(commit=False)
+    #     if commit:
+    #         instance.save()
+    #     if instance.pk:
+    #         q = []
+    #         if self.cleaned_data['house']:
+    #             q.append(Q(house=self.cleaned_data['house']))
+    #             if self.cleaned_data['section']:
+    #                 q.append(Q(section=self.cleaned_data['section']))
+    #             if self.cleaned_data['floor']:
+    #                 q.append(Q(floor=self.cleaned_data['floor']))
+    #             if self.cleaned_data['flat']:
+    #                 q.append(Q(id=self.cleaned_data['flat'].id))
+    #             result = Q()
+    #             for item in q:
+    #                 result = result & item
+    #             flats = Flat.objects.filter(result)
+    #             for flat in flats:
+    #                 instance.flat_owners.add(flat.flat_owner)
+    #         else:
+    #             flat_owners = FlatOwner.objects.all()
+    #             for flat_owner in flat_owners:
+    #                 instance.flat_owners.add(flat_owner)
+    #     return instance
 
     class Meta:
         model = Receipt

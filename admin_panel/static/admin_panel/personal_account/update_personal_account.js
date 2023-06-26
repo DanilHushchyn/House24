@@ -63,8 +63,6 @@ if($('.form-house-select option:selected').text()==='Выберите...'){
                     $('.form-section-select').append($(`
                         <option value="${section['pk']}" selected>${section['fields']['title']}</option>
                     `))
-
-
                      $.ajax({
                         url: `/admin/get_section-info/${section['pk']}`,         /* Куда отправить запрос */
                         method: 'get',             /* Метод запроса (post или get) */
@@ -95,8 +93,6 @@ if($('.form-house-select option:selected').text()==='Выберите...'){
                                             let user_obj = JSON.parse(data['user'])[0]['fields']
                                             $('#user-fullname').text(`${user_obj['last_name']} ${user_obj['first_name']} ${flat_owner_obj['patronymic']}`)
                                             $('#user-phone').text(`${user_obj['phone']}`)
-
-
                                         }
                                     });
                                 }else{
@@ -105,18 +101,8 @@ if($('.form-house-select option:selected').text()==='Выберите...'){
                                     `))
                                 }
                             }
-
-
                         }
                     });
-
-
-
-
-
-
-
-
                 }else{
                      $('.form-section-select').append($(`
                         <option value="${section['pk']}" >${section['fields']['title']}</option>

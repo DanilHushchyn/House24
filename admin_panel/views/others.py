@@ -22,7 +22,7 @@ def paybox(request):
 class ReceiptList(ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
-    queryset = PersonalAccount.objects.all()
+    queryset = Receipt.objects.all()
 
 
 class CreateReceipt(CreateView):
@@ -34,10 +34,31 @@ class CreateReceipt(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['indications'] = Indication.objects.order_by('date_published').all()
-        context['service_formset'] = ReceiptServiceFormset(prefix='service')
+        context['service_formset'] = ReceiptServiceFormset(queryset=ReceiptService.objects.none(), prefix='service')
         context['measures'] = Measure.objects.all()
         context['services'] = Service.objects.all()
         return context
+
+    def post(self, request, *args, **kwargs):
+        service_formset = ReceiptServiceFormset(request.POST, prefix='service')
+        receipt_form = ReceiptForm(request.POST)
+        print(service_formset.errors)
+        if receipt_form.is_valid() and service_formset.is_valid():
+            obj = receipt_form.save()
+            instances = service_formset.save(commit=False)
+            for instance in instances:
+                instance.receipt_id = obj.id
+                instance.save()
+            return redirect('receipts')
+        else:
+            data = {
+                "indications": Indication.objects.order_by('date_published').all(),
+                "service_formset": service_formset,
+                "form": receipt_form,
+                'measures': Measure.objects.all(),
+                'services': Service.objects.all(),
+            }
+            return render(request, 'admin_panel/get_receipt_form.html', context=data)
 
 
 class GetIndicationsSortedList(View):
@@ -49,13 +70,46 @@ class GetIndicationsSortedList(View):
         return render(request, 'admin_panel/ajax_indication_table.html', context=data)
 
 
-#
-# class UpdatePersonalAccount(UpdateView):
-#     model = PersonalAccount
-#     template_name = 'admin_panel/update_personal_account.html'
-#     form_class = PersonalAccountForm
-#     success_url = reverse_lazy('personal_accounts')
-#
+class UpdateReceipt(UpdateView):
+    model = Receipt
+    template_name = 'admin_panel/update_receipt.html'
+    form_class = ReceiptForm
+    success_url = reverse_lazy('receipts')
+
+    def get(self, request, *args, **kwargs):
+        receipt = Receipt.objects.get(id=self.kwargs['pk'])
+        data = {
+            'indications': Indication.objects.order_by('date_published').filter(flat_id=receipt.flat.id),
+            'form': ReceiptForm(instance=receipt,
+                                initial={'house': receipt.flat.house, 'section': receipt.flat.section}),
+            'service_formset': ReceiptServiceFormset(prefix='service', queryset=ReceiptService.objects.filter(
+                receipt_id=self.kwargs['pk'])),
+            'services': Service.objects.all(),
+            'measures': Measure.objects.all(),
+        }
+        return render(request, 'admin_panel/update_receipt.html', context=data)
+
+    def post(self, request, pk, *args, **kwargs):
+        service_formset = ReceiptServiceFormset(request.POST, prefix='service')
+        receipt_form = ReceiptForm(request.POST, instance=Receipt.objects.get(id=pk))
+        if receipt_form.is_valid() and service_formset.is_valid():
+            obj = receipt_form.save()
+            instances = service_formset.save(commit=False)
+            for instance in instances:
+                instance.receipt_id = obj.id
+                instance.save()
+            return redirect('receipts')
+        else:
+            data = {
+                "indications": Indication.objects.order_by('date_published').all(),
+                "service_formset": service_formset,
+                "form": receipt_form,
+                'measures': Measure.objects.all(),
+                'services': Service.objects.all(),
+            }
+            return render(request, 'admin_panel/update_receipt.html', context=data)
+
+
 #
 # class DeletePersonalAccount(DeleteView):
 #     success_url = reverse_lazy('personal_accounts')

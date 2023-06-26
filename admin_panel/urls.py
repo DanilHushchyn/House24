@@ -10,7 +10,7 @@ urlpatterns = [
 
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
     path("receipt/add", admin_panel.views.CreateReceipt.as_view(), name='add_receipt'),
-    # path("receipt/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
+    path("receipt/update/<str:pk>", admin_panel.views.UpdateReceipt.as_view(), name='update_receipt'),
     # path("receipt/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
 
 
