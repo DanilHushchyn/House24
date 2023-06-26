@@ -22,7 +22,7 @@ class TariffService(models.Model):
     price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
     currency = models.CharField(verbose_name='Валюта', blank=True, default='грн')
     tariff = models.ForeignKey('TariffSystem', on_delete=models.SET_NULL, null=True, blank=True)
-    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
+    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL,null=True)
 
     class Meta:
         db_table = 'tariff_service'
@@ -127,7 +127,7 @@ class Receipt(models.Model):
 class ReceiptService(models.Model):
     unit_price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
     consumption = models.DecimalField(verbose_name='Цена', default=0, max_digits=15, decimal_places=2)
-    receipt = models.ForeignKey('Receipt', on_delete=models.SET_NULL, null=True, blank=True)
+    receipt = models.ForeignKey('Receipt', on_delete=models.CASCADE, null=True, blank=True)
     service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
     measure = models.ForeignKey('Measure', verbose_name='Ед. изм.', on_delete=models.SET_NULL, null=True, blank=True)
 

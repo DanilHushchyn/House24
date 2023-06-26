@@ -110,8 +110,8 @@ $('.form-house-select').on('change',function () {
     if($('.form-house-select option:selected').text()==='Выберите...'){
              clearSelects()
             $('.personal_account').val('')
-            $('.form-tariff-select option:selected').removeAttr('selected')
-            $(`.form-tariff-select option[value=""]`).attr('selected',true)
+            // $('.form-tariff-select option:selected').removeAttr('selected')
+            // $(`.form-tariff-select option[value=""]`).attr('selected',true)
     }else {
         let id = $(this).val()
         $.ajax({
@@ -158,8 +158,8 @@ $('.form-section-select').on('change',function () {
             }
         });
          $('.personal_account').val('')
-        $('.form-tariff-select option:selected').removeAttr('selected')
-        $(`.form-tariff-select option[value=""]`).attr('selected',true)
+        // $('.form-tariff-select option:selected').removeAttr('selected')
+        // $(`.form-tariff-select option[value=""]`).attr('selected',true)
         $('#user-fullname').text('не выбран')
         $('#user-phone').text('не выбран')
     }else {
@@ -193,15 +193,15 @@ $('.form-flat-select').on('change',function () {
         $('#user-fullname').text('не выбран')
         $('#user-phone').text('не выбран')
         $('.personal_account').val('')
-        $('.form-tariff-select option:selected').removeAttr('selected')
-        $(`.form-tariff-select option[value=""]`).attr('selected',true)
+        // $('.form-tariff-select option:selected').removeAttr('selected')
+        // $(`.form-tariff-select option[value=""]`).attr('selected',true)
 
     }else {
         $('#user-fullname').text('не выбран')
         $('#user-phone').text('не выбран')
         $('.personal_account').val('')
-        $('.form-tariff-select option:selected').removeAttr('selected')
-        $(`.form-tariff-select option[value=""]`).attr('selected',true)
+        // $('.form-tariff-select option:selected').removeAttr('selected')
+        // $(`.form-tariff-select option[value=""]`).attr('selected',true)
         let id = $(this).val()
         $.ajax({
             url: `/admin/get_flat-info/${id}`,         /* Куда отправить запрос */
@@ -230,15 +230,15 @@ $('.form-flat-select').on('change',function () {
                   console.log('JSON parse undefined:', e);
 
                 }
-                try {
-                  let tariff_obj = jQuery.parseJSON(data['tariff'])[0];
-                  $('.form-tariff-select option:selected').removeAttr('selected')
-                  $(`.form-tariff-select option[value="${tariff_obj['pk']}"]`).attr('selected',true)
-                } catch (e) {
-                  // Error occurred during parse, consider it undefined
-                  console.log('JSON parse undefined:', e);
-
-                }
+                // try {
+                //   let tariff_obj = jQuery.parseJSON(data['tariff'])[0];
+                //   $('.form-tariff-select option:selected').removeAttr('selected')
+                //   $(`.form-tariff-select option[value="${tariff_obj['pk']}"]`).attr('selected',true)
+                // } catch (e) {
+                //   // Error occurred during parse, consider it undefined
+                //   console.log('JSON parse undefined:', e);
+                //
+                // }
             }
         });
         $.ajax({

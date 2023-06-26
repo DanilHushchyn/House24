@@ -42,7 +42,6 @@ class CreateReceipt(CreateView):
     def post(self, request, *args, **kwargs):
         service_formset = ReceiptServiceFormset(request.POST, prefix='service')
         receipt_form = ReceiptForm(request.POST)
-        print(service_formset.errors)
         if receipt_form.is_valid() and service_formset.is_valid():
             obj = receipt_form.save()
             instances = service_formset.save(commit=False)
@@ -110,10 +109,59 @@ class UpdateReceipt(UpdateView):
             return render(request, 'admin_panel/update_receipt.html', context=data)
 
 
-#
-# class DeletePersonalAccount(DeleteView):
-#     success_url = reverse_lazy('personal_accounts')
-#     queryset = PersonalAccount.objects.all()
+class CopyReceipt(FormView):
+    def get(self, request, pk, *args, **kwargs):
+        copy = Receipt.objects.get(pk=pk)
+        receipt_form = ReceiptForm(instance=copy,initial={'house': copy.flat.house, 'section': copy.flat.section})
+
+        service_formset = ReceiptServiceFormset(queryset=ReceiptService.objects.filter(receipt_id=pk),
+                                                prefix='service')
+        data = {
+            'form': receipt_form,
+            'service_formset': service_formset,
+            "indications": Indication.objects.order_by('date_published').filter(flat_id=copy.flat.id),
+            'measures': Measure.objects.all(),
+            'services': Service.objects.all(),
+        }
+        return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        service_formset = ReceiptServiceFormset(request.POST, prefix='service')
+        receipt_form = ReceiptForm(request.POST)
+        if receipt_form.is_valid() and service_formset.is_valid():
+            obj = receipt_form.save()
+            instances = service_formset.save(commit=False)
+            for instance in instances:
+                instance.receipt_id = obj.id
+                instance.save()
+            return redirect('receipts')
+        else:
+            data = {
+                "indications": Indication.objects.order_by('date_published').all(),
+                "service_formset": service_formset,
+                "form": receipt_form,
+                'measures': Measure.objects.all(),
+                'services': Service.objects.all(),
+            }
+            return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+
+class ReceiptDetail(DetailView):
+    model = Receipt
+    template_name = 'admin_panel/read_receipt.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        receipt = Receipt.objects.get(pk=self.kwargs['pk'])
+        receipt_services = ReceiptService.objects.filter(receipt_id=self.kwargs['pk'])
+        context['receipt'] = receipt
+        context['receipt_services'] = receipt_services
+        return context
+
+
+class DeleteReceipt(DeleteView):
+    success_url = reverse_lazy('receipts')
+    queryset = Receipt.objects.all()
 
 
 class FlatListView(ListView):

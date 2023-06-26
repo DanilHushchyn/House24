@@ -159,16 +159,20 @@
                                         </tr>
                                     </thead>
                                     <tbody id="form-receiptservice-rows">
-{#                                        {% for service_form in service_formset %}#}
-{#                                            <tr class="form-receiptservice-row">#}
-{#                                                <td>{% bootstrap_field service_form.service wrapper_class='' %}</td>#}
-{#                                                <td>{% bootstrap_field service_form.consumption wrapper_class='' %}</td>#}
-{#                                                <td>{% bootstrap_field service_form.measure wrapper_class='' %}</td>#}
-{#                                                <td>{% bootstrap_field service_form.unit_price wrapper_class='' %}</td>#}
-{#                                                <td>{% bootstrap_field service_form.total_service_price wrapper_class='' %}</td>#}
-{#                                                <td><button type="button" class="btn btn-default service__delete"  title="Удалить услугу"><i class="fa fa-trash"></i></button></td>#}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
+                                        {% for service_form in service_formset %}
+                                            <tr class="form-receiptservice-row">
+                                                <td>{% bootstrap_field service_form.service wrapper_class='' %}</td>
+                                                <td>{% bootstrap_field service_form.consumption wrapper_class='' %}</td>
+                                                <td>{% bootstrap_field service_form.measure wrapper_class='' %}</td>
+                                                <td>{% bootstrap_field service_form.unit_price wrapper_class='' %}</td>
+                                                <td>{% bootstrap_field service_form.total_service_price wrapper_class='' %}</td>
+                                                <td>
+                                                    {% bootstrap_field service_form.id wrapper_class='d-none' %}
+                                                    {% bootstrap_field service_form.DELETE wrapper_class='d-none' %}
+                                                    <button type="button" class="btn btn-default service__delete"  title="Удалить услугу"><i class="fa fa-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                     <tfoot>
                                         <tr>
@@ -262,7 +266,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
                    </div>
                 </form>
@@ -284,6 +287,7 @@
         $('.publishing-date, .start-date, .end-date').addClass('bg-white')
 
     </script>
+    <script type="module" src="{% static 'admin_panel/receipt/recalculation.js' %}"></script>
     <script type="module" src="{% static 'admin_panel/receipt/receipt_form.js' %}"></script>
     <script type="module" src="{% static 'admin_panel/receipt/receipt-service-formset.js' %}"></script>
 

@@ -11,7 +11,9 @@ urlpatterns = [
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
     path("receipt/add", admin_panel.views.CreateReceipt.as_view(), name='add_receipt'),
     path("receipt/update/<str:pk>", admin_panel.views.UpdateReceipt.as_view(), name='update_receipt'),
-    # path("receipt/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
+    path("receipt/copy/<str:pk>", admin_panel.views.CopyReceipt.as_view(), name='copy_receipt'),
+    path("receipt/detail/<str:pk>", admin_panel.views.ReceiptDetail.as_view(), name='read_receipt'),
+    path("receipt/delete/<str:pk>", admin_panel.views.DeleteReceipt.as_view(), name='delete_receipt'),
 
 
 

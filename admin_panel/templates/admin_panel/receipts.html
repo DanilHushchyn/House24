@@ -94,34 +94,37 @@
               <td class="ps-0 pe-0 text-center">
                   <input type="checkbox" value="" name="selection[]">
               </td>
-              <td>{{ receipt.number }}</td>
-              <td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.number }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
                   {% if receipt.get_status_display == 'Оплачена' %}
                       <span class="badge text-bg-success text-white">Оплачена</span>
-                      {% elif receipt.get_status_display == 'Частино оплачена' %}
-                      <span class="badge text-bg-warning text-white">Частино оплачена</span>
+                      {% elif receipt.get_status_display == 'Частично оплачена' %}
+                      <span class="badge text-bg-warning text-white">Частично оплачена</span>
                       {% elif receipt.get_status_display == 'Не оплачена' %}
                       <span class="badge text-bg-danger text-white">Не оплачена</span>
                   {% endif %}
               </td>
-              <td>{{ receipt.date_published }}</td>
-              <td>{{ receipt.date_published|date:"F Y" }}</td>
-              <td>{{ receipt.flat }}, {{ receipt.flat.house }}</td>
-              <td>{{ receipt.flat.flat_owner }}</td>
-              <td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.date_published }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.date_published|date:"F Y" }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.flat }}, {{ receipt.flat.house }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.flat.flat_owner }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
                   {% if receipt.is_complete %}
                       Проведена
                   {% else %}
                       Не проведена
                   {% endif %}
               </td>
-              <td>{{ receipt.total_price }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.total_price }}</td>
               <td class="ps-1 pe-1  text-center">
-                  <div class="btn-group">
-                      <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-clone fa-rotate-90"></i></a>
-                      <a class="btn btn-default" href="{% url 'update_receipt' receipt.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-                  </div>
+                  <form action="{% url 'delete_receipt' receipt.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="btn-group">
+                          <a class="btn btn-default" href="{% url 'copy_receipt' receipt.id %}" role="button"><i class="fa-solid fa-clone fa-rotate-90"></i></a>
+                          <a class="btn btn-default" href="{% url 'update_receipt' receipt.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                      </div>
+                  </form>
               </td>
             </tr>
           {% endfor %}
@@ -172,6 +175,17 @@
                 select: true,
                 "bInfo" : false
 
+            });
+        });
+        $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+        });
+         document.addEventListener("DOMContentLoaded", function(event) {
+            const rows = document.querySelectorAll("td[data-href]");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
             });
         });
     </script>

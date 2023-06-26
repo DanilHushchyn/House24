@@ -98,7 +98,12 @@
                                 <div class="col-12 col-sm-6">
                                     {% bootstrap_field form.is_complete %}
                                     {% bootstrap_field form.status %}
-                                    {% bootstrap_field form.tariff %}
+                                    {% bootstrap_field form.tariff wrapper_class='d-none' %}
+
+                                    <p>
+                                        <b>Тариф:</b>
+                                        <a href="/admin/system_tariffs/update/{{ form.instance.tariff.id }}">{{ form.instance.tariff.title }}</a>
+                                    </p>
                                     <div class="row">
                                         <div class="col-12 mb-3">
                                             <div class="d-flex justify-content-center align-items-start flex-column flex-md-row align-items-sm-start justify-content-sm-start">
