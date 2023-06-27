@@ -22,8 +22,8 @@
     <li class="breadcrumb-item active">Касса</li>
 {% endblock %}
 {% block action_list %}
-    <li><a class="dropdown-item" href="#">Создать приход</a></li>
-    <li><a class="dropdown-item" href="#">Создать расход</a></li>
+    <li><a class="dropdown-item" href="{% url 'add_paybox' "plus" %}">Создать приход</a></li>
+    <li><a class="dropdown-item" href="{% url 'add_paybox' "minus" %}">Создать расход</a></li>
     <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
 {% endblock %}
 

@@ -15,8 +15,45 @@ def statistic(request):
     return render(request, 'admin_panel/statistic.html')
 
 
-def paybox(request):
-    return render(request, 'admin_panel/paybox.html')
+class PayboxList(ListView):
+    template_name = 'admin_panel/paybox.html'
+    context_object_name = 'paybox'
+    queryset = Paybox.objects.all()
+
+
+class CreatePaybox(FormView):
+    def get(self, request, income, *args, **kwargs):
+        form = PayboxForm()
+        if income == 'plus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
+        elif income == 'minus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="minus")
+        data = {
+            'income': income,
+            'form': form,
+        }
+        return render(request, 'admin_panel/get_paybox_form.html', context=data)
+
+    def post(self, request, income, *args, **kwargs):
+        form = PayboxForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            if income == 'plus':
+                if instance.personal_account is not None:
+                    personal_account = PersonalAccount.objects.get(pk=instance.personal_account_id)
+                    personal_account.balance = personal_account.balance + instance.total
+                    personal_account.save()
+                instance.debit_credit = 'plus'
+            elif income == 'minus':
+                instance.debit_credit = 'minus'
+            instance.save()
+            return redirect('paybox')
+        else:
+            data = {
+                'income': income,
+                'form': form,
+            }
+            return render(request, 'admin_panel/get_paybox_form.html', context=data)
 
 
 class ReceiptList(ListView):
@@ -112,7 +149,7 @@ class UpdateReceipt(UpdateView):
 class CopyReceipt(FormView):
     def get(self, request, pk, *args, **kwargs):
         copy = Receipt.objects.get(pk=pk)
-        receipt_form = ReceiptForm(instance=copy,initial={'house': copy.flat.house, 'section': copy.flat.section})
+        receipt_form = ReceiptForm(instance=copy, initial={'house': copy.flat.house, 'section': copy.flat.section})
 
         service_formset = ReceiptServiceFormset(queryset=ReceiptService.objects.filter(receipt_id=pk),
                                                 prefix='service')
@@ -542,10 +579,13 @@ class GetIndicationInfoView(View):
 class GetFlatOwnerInfo(View):
     def get(self, request, pk):
         flat_owner = FlatOwner.objects.prefetch_related('flat_set').get(pk=pk)
-        flats = serializers.serialize('json', flat_owner.flat_set.select_related('house').all())
-
+        flats = flat_owner.flat_set.select_related('house').all()
+        personal_accounts = PersonalAccount.objects.filter(flat__in=flats.values_list("id", flat=True))
+        flats = serializers.serialize('json', flats)
+        personal_accounts = serializers.serialize('json', personal_accounts)
         data = {
             "flats": flats,
+            "personal_accounts": personal_accounts,
         }
         return JsonResponse(data, safe=False)
 
@@ -554,9 +594,12 @@ class GetAllFlats(View):
     def get(self, request):
         flats = Flat.objects.all()
         flats = serializers.serialize('json', flats)
+        all_personal_accounts = PersonalAccount.objects.all()
+        all_personal_accounts = serializers.serialize('json', all_personal_accounts)
 
         data = {
             "flats": flats,
+            "all_personal_accounts": all_personal_accounts,
         }
         return JsonResponse(data, safe=False)
 

@@ -25,6 +25,7 @@ class PersonalAccountForm(forms.ModelForm):
     class Meta:
         model = PersonalAccount
         fields = '__all__'
+        exclude = ('balance',)
 
 
 class IndicationForm(forms.ModelForm):
@@ -209,32 +210,6 @@ class ReceiptForm(forms.ModelForm):
         self.fields['end_date'].initial = timezone.now().date()
         self.fields['total_price'].initial = 0
 
-    # def save(self, commit=True):
-    #     instance = super().save(commit=False)
-    #     if commit:
-    #         instance.save()
-    #     if instance.pk:
-    #         q = []
-    #         if self.cleaned_data['house']:
-    #             q.append(Q(house=self.cleaned_data['house']))
-    #             if self.cleaned_data['section']:
-    #                 q.append(Q(section=self.cleaned_data['section']))
-    #             if self.cleaned_data['floor']:
-    #                 q.append(Q(floor=self.cleaned_data['floor']))
-    #             if self.cleaned_data['flat']:
-    #                 q.append(Q(id=self.cleaned_data['flat'].id))
-    #             result = Q()
-    #             for item in q:
-    #                 result = result & item
-    #             flats = Flat.objects.filter(result)
-    #             for flat in flats:
-    #                 instance.flat_owners.add(flat.flat_owner)
-    #         else:
-    #             flat_owners = FlatOwner.objects.all()
-    #             for flat_owner in flat_owners:
-    #                 instance.flat_owners.add(flat_owner)
-    #     return instance
-
     class Meta:
         model = Receipt
         fields = '__all__'
@@ -269,3 +244,43 @@ class ReceiptServiceForm(forms.ModelForm):
 
 ReceiptServiceFormset = forms.modelformset_factory(model=ReceiptService, form=ReceiptServiceForm, can_delete=True,
                                                    extra=0)
+
+
+class PayboxForm(forms.ModelForm):
+    date_published = forms.DateField(label='',
+                                     widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
+    number = forms.CharField(label='',
+                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+    personal_account = forms.ModelChoiceField(label='Лицевой счет', queryset=PersonalAccount.objects.all(), required=False,
+                                              widget=forms.Select(
+                                                  attrs={'class': 'personal_account-select select2',
+                                                         'placeholder': ''}))
+    flat_owner = forms.ModelChoiceField(label='Владелец квартиры', queryset=FlatOwner.objects.all(), required=False,
+                                        widget=forms.Select(attrs={'class': 'form-flat_owner-select select2',
+                                                                   'placeholder': ''}))
+    user = PersonalChoiceField(label='Менеджер', required=False,
+                               queryset=Personal.objects.filter(role__in=['director', 'accountant', 'manager']),
+                               widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
+    article = forms.ModelChoiceField(label='Статья', queryset=Article.objects.all(),required=False,
+                                     widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
+    is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
+                                     required=False,
+                                     label='Проведен')
+
+    total = forms.DecimalField(label='Сумма', widget=forms.NumberInput(attrs={'placeholder': ''}))
+
+    def __init__(self, *args, **kwargs):
+        super(PayboxForm, self).__init__(*args, **kwargs)
+        self.fields['article'].empty_label = 'Выберите...'
+        self.fields['personal_account'].empty_label = 'Выберите...'
+        self.fields['flat_owner'].empty_label = 'Выберите...'
+        self.fields['user'].empty_label = 'Выберите...'
+        self.fields['date_published'].initial = timezone.now().date()
+
+    class Meta:
+        model = Paybox
+        fields = '__all__'
+        exclude = ('debit_credit',)
+        widgets = {
+            'comment': forms.Textarea(attrs={'placeholder': '', 'rows': 5, })
+        }

@@ -22,7 +22,7 @@ class TariffService(models.Model):
     price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
     currency = models.CharField(verbose_name='Валюта', blank=True, default='грн')
     tariff = models.ForeignKey('TariffSystem', on_delete=models.SET_NULL, null=True, blank=True)
-    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL,null=True)
+    service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'tariff_service'
@@ -66,6 +66,9 @@ class Article(models.Model):
     )
     debit_credit = models.CharField(verbose_name='Приход/расход', choices=PLUS_MINUS, max_length=100, default='plus', )
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         db_table = 'article'
 
@@ -82,6 +85,7 @@ class PersonalAccount(models.Model):
     flat = models.OneToOneField('Flat', verbose_name="Квартира", on_delete=models.SET_NULL,
                                 related_name='personal_account',
                                 null=True, blank=True)
+    balance = models.DecimalField(default=0, decimal_places=2, max_digits=20,)
 
     def __str__(self):
         return self.number
@@ -91,13 +95,20 @@ class PersonalAccount(models.Model):
 
 
 class Paybox(models.Model):
+    PLUS_MINUS = (
+        ('plus', 'Приход'),
+        ('minus', 'Расход'),
+    )
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
     comment = models.TextField(verbose_name="Комментарий", default='', blank=True)
     date_published = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(default=0, blank=True, decimal_places=2, max_digits=20)
+    total = models.DecimalField(verbose_name='Сумма', decimal_places=2, max_digits=20)
     flat_owner = models.ForeignKey('FlatOwner', on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey("Article", on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True, blank=True)
+    is_complete = models.BooleanField(default=True, )
+    personal_account = models.ForeignKey('PersonalAccount', on_delete=models.SET_NULL, null=True, blank=True)
+    debit_credit = models.CharField(verbose_name='Приход/расход', choices=PLUS_MINUS, max_length=100, default='plus', )
 
     class Meta:
         db_table = 'paybox'
@@ -117,7 +128,7 @@ class Receipt(models.Model):
     end_date = models.DateField()
     service = models.ManyToManyField('Service', blank=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE)
-    tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE,null=True,blank=True)
+    tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE, null=True, blank=True)
     total_price = models.DecimalField(default=0, blank=True, decimal_places=2, max_digits=20)
 
     class Meta:

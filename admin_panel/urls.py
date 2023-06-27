@@ -4,8 +4,12 @@ import admin_panel.views
 
 urlpatterns = [
     path("statistic", admin_panel.views.statistic, name='statistic'),
-    path("paybox", admin_panel.views.paybox, name='paybox'),
 
+    path("paybox", admin_panel.views.PayboxList.as_view(), name='paybox'),
+    path("paybox/add/<str:income>", admin_panel.views.CreatePaybox.as_view(), name='add_paybox'),
+    # path("paybox/update/<str:pk>", admin_panel.views.UpdatePaybox.as_view(), name='update_paybox'),
+    # path("paybox/detail/<str:pk>", admin_panel.views.PayboxDetail.as_view(), name='read_paybox'),
+    # path("paybox/delete/<str:pk>", admin_panel.views.DeletePaybox.as_view(), name='delete_paybox'),
 
 
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
