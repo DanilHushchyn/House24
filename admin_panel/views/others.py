@@ -20,10 +20,21 @@ class PayboxList(ListView):
     context_object_name = 'paybox'
     queryset = Paybox.objects.all()
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_plus = sum(Paybox.objects.filter(debit_credit='plus', is_complete=True).values_list('total', flat=True))
+        total_minus = sum(Paybox.objects.filter(debit_credit='minus', is_complete=True).values_list('total', flat=True))
+
+        context['total_plus'] = total_plus
+        context['total_minus'] = total_minus
+        return context
+
 
 class CreatePaybox(FormView):
     def get(self, request, income, *args, **kwargs):
         form = PayboxForm()
+        form.fields['date_published'].initial = timezone.now().date()
+
         if income == 'plus':
             form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
         elif income == 'minus':
@@ -36,10 +47,11 @@ class CreatePaybox(FormView):
 
     def post(self, request, income, *args, **kwargs):
         form = PayboxForm(request.POST)
+
         if form.is_valid():
             instance = form.save()
             if income == 'plus':
-                if instance.personal_account is not None:
+                if instance.personal_account is not None and instance.is_complete is True:
                     personal_account = PersonalAccount.objects.get(pk=instance.personal_account_id)
                     personal_account.balance = personal_account.balance + instance.total
                     personal_account.save()
@@ -49,11 +61,94 @@ class CreatePaybox(FormView):
             instance.save()
             return redirect('paybox')
         else:
+
             data = {
                 'income': income,
                 'form': form,
             }
             return render(request, 'admin_panel/get_paybox_form.html', context=data)
+
+
+class CopyPaybox(CreatePaybox):
+    def get(self, request, pk, *args, **kwargs):
+        copy = Paybox.objects.get(pk=pk)
+        form = PayboxForm(instance=copy)
+
+        if copy.debit_credit == 'plus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
+        elif copy.debit_credit == 'minus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="minus")
+        income = copy.debit_credit
+        data = {
+            'income': income,
+            'form': form,
+        }
+        return render(request, 'admin_panel/get_paybox_form.html', context=data)
+
+
+class PayboxDetail(DetailView):
+    model = Paybox
+    template_name = 'admin_panel/read_paybox.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paybox = Paybox.objects.get(pk=self.kwargs['pk'])
+        context['paybox'] = paybox
+        return context
+
+
+class UpdatePaybox(FormView):
+    def get(self, request, pk, *args, **kwargs):
+        paybox = Paybox.objects.get(pk=pk)
+        form = PayboxForm(instance=paybox)
+        if paybox.debit_credit == 'plus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
+        elif paybox.debit_credit == 'minus':
+            form.fields['article'].queryset = Article.objects.filter(debit_credit="minus")
+        data = {
+            'form': form,
+        }
+        return render(request, 'admin_panel/update_paybox.html', context=data)
+
+    def post(self, request, pk, *args, **kwargs):
+        paybox = Paybox.objects.get(pk=pk)
+        form = PayboxForm(request.POST, instance=paybox)
+        if form.is_valid():
+            instance = form.save()
+            if instance.debit_credit == 'plus':
+                if instance.personal_account is not None:
+                    personal_account = PersonalAccount.objects.get(pk=instance.personal_account_id)
+                    total = sum(
+                        Paybox.objects.filter(personal_account=personal_account,
+                                              is_complete=True).values_list('total', flat=True))
+                    personal_account.balance = total
+                    personal_account.save()
+            return redirect('paybox')
+        else:
+            data = {
+                'form': form,
+            }
+            return render(request, 'admin_panel/update_paybox.html', context=data)
+
+
+class DeletePaybox(FormView):
+    def post(self, request, pk, *args, **kwargs):
+        paybox = Paybox.objects.get(pk=pk)
+        if paybox.debit_credit == 'plus':
+            if paybox.personal_account is not None and paybox.is_complete is True:
+                personal_account = PersonalAccount.objects.get(pk=paybox.personal_account_id)
+                paybox.delete()
+                total = sum(
+                    Paybox.objects.filter(personal_account=personal_account,
+                                          is_complete=True).values_list('total', flat=True))
+                personal_account.balance = total
+                personal_account.save()
+            else:
+                paybox.delete()
+
+        else:
+            paybox.delete()
+        return redirect('paybox')
 
 
 class ReceiptList(ListView):
@@ -128,10 +223,14 @@ class UpdateReceipt(UpdateView):
     def post(self, request, pk, *args, **kwargs):
         service_formset = ReceiptServiceFormset(request.POST, prefix='service')
         receipt_form = ReceiptForm(request.POST, instance=Receipt.objects.get(id=pk))
+
         if receipt_form.is_valid() and service_formset.is_valid():
             obj = receipt_form.save()
-            instances = service_formset.save(commit=False)
+            instances = service_formset.save()
+            print(service_formset.errors)
+            print(instances)
             for instance in instances:
+                print('hello')
                 instance.receipt_id = obj.id
                 instance.save()
             return redirect('receipts')
@@ -237,6 +336,107 @@ class DeleteFlatView(DeleteView):
     queryset = Flat.objects.all()
 
 
+class FlatAcceptPayment(CreatePaybox):
+    def get(self, request, pk, *args, **kwargs):
+        initial = {}
+        flat = Flat.objects.get(pk=pk)
+        if flat.personal_account is not None and flat.flat_owner is not None:
+            initial['flat_owner'] = flat.flat_owner
+            initial['personal_account'] = flat.personal_account
+
+        form = PayboxForm(initial=initial)
+        form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
+        form.fields['date_published'].initial = timezone.now().date()
+
+        data = {
+            'income': 'plus',
+            'form': form,
+        }
+        return render(request, 'admin_panel/get_paybox_form.html', context=data)
+
+
+class FlatAcceptReceipt(FormView):
+    def get(self, request, pk, *args, **kwargs):
+        flat = Flat.objects.get(pk=pk)
+
+        receipt_form = ReceiptForm(
+            initial={
+                'house': flat.house,
+                'section': flat.section,
+                'flat': flat,
+                'tariff': flat.tariff,
+                'personal_account': flat.personal_account,
+            }
+        )
+
+        service_formset = ReceiptServiceFormset(queryset=ReceiptService.objects.none(),
+                                                prefix='service')
+        data = {
+            'form': receipt_form,
+            'service_formset': service_formset,
+            "indications": Indication.objects.order_by('date_published').filter(flat_id=flat.id),
+            'measures': Measure.objects.all(),
+            'services': Service.objects.all(),
+        }
+        return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        service_formset = ReceiptServiceFormset(request.POST, prefix='service')
+        receipt_form = ReceiptForm(request.POST)
+        if receipt_form.is_valid() and service_formset.is_valid():
+            obj = receipt_form.save()
+            instances = service_formset.save(commit=False)
+            for instance in instances:
+                instance.receipt_id = obj.id
+                instance.save()
+            return redirect('receipts')
+        else:
+            data = {
+                "indications": Indication.objects.order_by('date_published').all(),
+                "service_formset": service_formset,
+                "form": receipt_form,
+                'measures': Measure.objects.all(),
+                'services': Service.objects.all(),
+            }
+            return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+
+class FlatReceiptList(ListView):
+    template_name = 'admin_panel/receipts.html'
+    context_object_name = 'receipts'
+
+    def get_queryset(self):
+        flat = Flat.objects.get(pk=self.kwargs['pk'])
+        queryset = Receipt.objects.filter(flat_id=flat.id)
+        return queryset
+
+
+class FlatPayboxList(ListView):
+    template_name = 'admin_panel/paybox.html'
+    context_object_name = 'paybox'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        flat = Flat.objects.get(pk=self.kwargs['pk'])
+        if flat.personal_account is not None:
+            total_plus = sum(Paybox.objects.filter(debit_credit='plus',
+                                                   personal_account=flat.personal_account,
+                                                   is_complete=True).values_list('total', flat=True))
+        else:
+            total_plus = 0
+        context['total_plus'] = total_plus
+        return context
+
+    def get_queryset(self):
+        flat = Flat.objects.get(pk=self.kwargs['pk'])
+        if flat.personal_account is not None:
+            queryset = Paybox.objects.filter(personal_account=flat.personal_account)
+        else:
+            queryset = Paybox.objects.none()
+
+        return queryset
+
+
 class PersonalAccountListView(ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
@@ -271,6 +471,102 @@ class UpdatePersonalAccount(UpdateView):
 class DeletePersonalAccount(DeleteView):
     success_url = reverse_lazy('personal_accounts')
     queryset = PersonalAccount.objects.all()
+
+
+class PersonalAccountAcceptPayment(CreatePaybox):
+    def get(self, request, pk, *args, **kwargs):
+        initial = {}
+        personal_account = PersonalAccount.objects.get(pk=pk)
+        initial['personal_account'] = personal_account
+        if personal_account.flat is not None and personal_account.flat.flat_owner is not None:
+            initial['flat_owner'] = personal_account.flat.flat_owner
+        form = PayboxForm(initial=initial)
+        form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
+        form.fields['date_published'].initial = timezone.now().date()
+
+        data = {
+            'income': 'plus',
+            'form': form,
+        }
+        return render(request, 'admin_panel/get_paybox_form.html', context=data)
+
+
+class PersonalAccountAcceptReceipt(FormView):
+    def get(self, request, pk, *args, **kwargs):
+        personal_account = PersonalAccount.objects.get(pk=pk)
+
+        receipt_form = ReceiptForm(
+            initial={
+                'house': personal_account.flat.house,
+                'section': personal_account.flat.section,
+                'flat': personal_account.flat,
+                'tariff': personal_account.flat.tariff,
+                'personal_account': personal_account,
+            }
+        )
+
+        service_formset = ReceiptServiceFormset(queryset=ReceiptService.objects.none(),
+                                                prefix='service')
+        data = {
+            'form': receipt_form,
+            'service_formset': service_formset,
+            "indications": Indication.objects.order_by('date_published').filter(flat_id=personal_account.flat.id),
+            'measures': Measure.objects.all(),
+            'services': Service.objects.all(),
+        }
+        return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        service_formset = ReceiptServiceFormset(request.POST, prefix='service')
+        receipt_form = ReceiptForm(request.POST)
+        if receipt_form.is_valid() and service_formset.is_valid():
+            obj = receipt_form.save()
+            instances = service_formset.save(commit=False)
+            for instance in instances:
+                instance.receipt_id = obj.id
+                instance.save()
+            return redirect('receipts')
+        else:
+            data = {
+                "indications": Indication.objects.order_by('date_published').all(),
+                "service_formset": service_formset,
+                "form": receipt_form,
+                'measures': Measure.objects.all(),
+                'services': Service.objects.all(),
+            }
+            return render(request, 'admin_panel/get_receipt_form.html', context=data)
+
+
+class PersonalAccountReceiptList(ListView):
+    template_name = 'admin_panel/receipts.html'
+    context_object_name = 'receipts'
+
+    def get_queryset(self):
+        personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
+        if personal_account.flat is not None:
+            queryset = Receipt.objects.filter(flat_id=personal_account.flat.id)
+        else:
+            queryset = Receipt.objects.none()
+        return queryset
+
+
+class PersonalAccountPayboxList(ListView):
+    template_name = 'admin_panel/paybox.html'
+    context_object_name = 'paybox'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_plus = sum(Paybox.objects.filter(debit_credit='plus',
+                                               personal_account_id=self.kwargs['pk'],
+                                               is_complete=True).values_list('total', flat=True))
+
+        context['total_plus'] = total_plus
+        return context
+
+    def get_queryset(self):
+        personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
+        queryset = Paybox.objects.filter(personal_account=personal_account)
+        return queryset
 
 
 class ClientListView(ListView):
@@ -698,6 +994,20 @@ class CounterIndicationsList(ListView):
         return queryset
 
 
+class FlatIndicationsList(ListView):
+    template_name = 'admin_panel/flat_indications_list.html'
+    context_object_name = 'indications'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
+        return context
+
+    def get_queryset(self):
+        queryset = Indication.objects.filter(flat_id=self.kwargs['flat'])
+        return queryset
+
+
 class IndicationDetail(DetailView):
     model = Indication
     template_name = 'admin_panel/read_indication.html'
@@ -775,6 +1085,49 @@ class CreateNewIndication(CreateView):
                 return render(request, 'admin_panel/get_indication_form.html', context=data)
             else:
                 url = reverse('counter_indications', args=[obj.flat.id, obj.service.id])
+                return redirect(url)
+        else:
+            data = {
+                'form': form,
+                'create_new_indication': True,
+            }
+            return render(request, 'admin_panel/get_indication_form.html', context=data)
+
+
+class CreateIndicationForFlat(CreateView):
+    model = Indication
+    template_name = 'admin_panel/get_indication_form.html'
+    form_class = IndicationForm
+
+    def get_success_url(self):
+        category = self.kwargs['category']  # Retrieve the category value from the URL
+        return '/category/{}/'.format(category)  # Build the URL using the retrieved value
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_new_indication'] = True
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        flat = Flat.objects.get(pk=self.kwargs['flat'])
+        initial['house'] = flat.house
+        initial['section'] = flat.section
+        initial['flat'] = flat
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        form = IndicationForm(request.POST)
+        if form.is_valid():
+            obj = form.save()
+            if request.POST['action'] == 'save_and_new':
+                indication_form = IndicationForm(initial={'indication_val': obj.indication_val, 'service': obj.service})
+                data = {
+                    'form': indication_form
+                }
+                return render(request, 'admin_panel/get_indication_form.html', context=data)
+            else:
+                url = reverse('flat_indications', args=[obj.flat.id])
                 return redirect(url)
         else:
             data = {

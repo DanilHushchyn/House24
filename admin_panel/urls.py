@@ -5,11 +5,13 @@ import admin_panel.views
 urlpatterns = [
     path("statistic", admin_panel.views.statistic, name='statistic'),
 
+
     path("paybox", admin_panel.views.PayboxList.as_view(), name='paybox'),
     path("paybox/add/<str:income>", admin_panel.views.CreatePaybox.as_view(), name='add_paybox'),
-    # path("paybox/update/<str:pk>", admin_panel.views.UpdatePaybox.as_view(), name='update_paybox'),
-    # path("paybox/detail/<str:pk>", admin_panel.views.PayboxDetail.as_view(), name='read_paybox'),
-    # path("paybox/delete/<str:pk>", admin_panel.views.DeletePaybox.as_view(), name='delete_paybox'),
+    path("paybox/update/<str:pk>", admin_panel.views.UpdatePaybox.as_view(), name='update_paybox'),
+    path("paybox/copy/<str:pk>", admin_panel.views.CopyPaybox.as_view(), name='copy_paybox'),
+    path("paybox/detail/<str:pk>", admin_panel.views.PayboxDetail.as_view(), name='read_paybox'),
+    path("paybox/delete/<str:pk>", admin_panel.views.DeletePaybox.as_view(), name='delete_paybox'),
 
 
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
@@ -20,12 +22,15 @@ urlpatterns = [
     path("receipt/delete/<str:pk>", admin_panel.views.DeleteReceipt.as_view(), name='delete_receipt'),
 
 
-
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
     path("personal_accounts/add", admin_panel.views.CreatePersonalAccount.as_view(), name='add_personal_account'),
     path("personal_accounts/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
     path("personal_accounts/detail/<str:pk>", admin_panel.views.PersonalAccountDetail.as_view(), name='read_personal_account'),
     path("personal_accounts/delete/<str:pk>", admin_panel.views.DeletePersonalAccount.as_view(), name='delete_personal_account'),
+    path("personal_account_accept_payment/<str:pk>", admin_panel.views.PersonalAccountAcceptPayment.as_view(), name='personal_account_accept_payment'),
+    path("personal_account_accept_receipt/<str:pk>", admin_panel.views.PersonalAccountAcceptReceipt.as_view(), name='personal_account_accept_receipt'),
+    path("personal_account_receipts/<str:pk>", admin_panel.views.PersonalAccountReceiptList.as_view(), name='personal_account_receipts'),
+    path("personal_account_paybox/<str:pk>", admin_panel.views.PersonalAccountPayboxList.as_view(), name='personal_account_paybox'),
 
 
     path("flats", admin_panel.views.FlatListView.as_view(), name='flats'),
@@ -33,6 +38,14 @@ urlpatterns = [
     path("flats/update/<str:pk>", admin_panel.views.UpdateFlatView.as_view(), name='update_flat'),
     path("flats/detail/<str:pk>", admin_panel.views.FlatDetail.as_view(), name='read_flat'),
     path("flats/delete/<str:pk>", admin_panel.views.DeleteFlatView.as_view(), name='delete_flat'),
+    path("flat_accept_payment/<str:pk>", admin_panel.views.FlatAcceptPayment.as_view(),
+         name='flat_accept_payment'),
+    path("flat_accept_receipt/<str:pk>", admin_panel.views.FlatAcceptReceipt.as_view(),
+         name='flat_accept_receipt'),
+    path("flat_receipts/<str:pk>", admin_panel.views.FlatReceiptList.as_view(),
+         name='flat_receipts'),
+    path("flat_paybox/<str:pk>", admin_panel.views.FlatPayboxList.as_view(),
+         name='flat_paybox'),
 
 
     path("clients", admin_panel.views.ClientListView.as_view(), name='clients'),
@@ -46,14 +59,12 @@ urlpatterns = [
     path("houses/add", admin_panel.views.CreateHouseView.as_view(), name='add_house'),
     path("house/update/<str:pk>", admin_panel.views.UpdateHouseView.as_view(), name='update_house'),
     path("house/detail/<str:pk>", admin_panel.views.HouseDetail.as_view(), name='read_house'),
-
     path("house/delete/<str:pk>", admin_panel.views.DeleteHouseView.as_view(), name='delete_house'),
 
 
     path("mailbox", admin_panel.views.MailboxList.as_view(), name='mailboxes'),
     path("mailbox/add", admin_panel.views.CreateMailbox.as_view(), name='add_mailbox'),
     path("mailbox/detail/<str:pk>", admin_panel.views.MailboxDetail.as_view(), name='mailbox_detail'),
-
     path("mailbox/delete/<str:pk>", admin_panel.views.DeleteMailbox.as_view(),
          name='delete_mailbox'),
 
@@ -63,18 +74,19 @@ urlpatterns = [
     path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
          name='update_application'),
     path("application/detail/<str:pk>", admin_panel.views.ApplicationDetail.as_view(), name='read_application'),
-
     path("application/delete/<str:pk>", admin_panel.views.DeleteApplication.as_view(),
          name='delete_application'),
+
 
     path("counters", admin_panel.views.CounterList.as_view(), name='counters'),
     path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
     path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),
+    path("indication/add_to_flat/<str:flat>", admin_panel.views.CreateIndicationForFlat.as_view(), name='add_indication_to_flat'),
     path("indication/update/<str:pk>", admin_panel.views.UpdateIndication.as_view(), name='update_indication'),
     path("indication/detail/<str:pk>", admin_panel.views.IndicationDetail.as_view(), name='read_indication'),
     path("indication/delete/<str:pk>", admin_panel.views.DeleteIndication.as_view(), name='delete_indication'),
-
+    path("flat_indications/<str:flat>/", admin_panel.views.FlatIndicationsList.as_view(), name='flat_indications'),
 
     path("system_services", admin_panel.views.ServicesView.as_view(), name='system_services'),
     path("system_tariffs", admin_panel.views.TariffsListView.as_view(), name='system_tariffs'),
@@ -84,6 +96,7 @@ urlpatterns = [
     path("system_tariffs/update/<str:pk>", admin_panel.views.UpdateTariffView.as_view(), name='update_tariff'),
     path("system_tariffs/copy/<str:pk>", admin_panel.views.CopyTariffView.as_view(), name='copy_tariff'),
     path("system_payment_details", admin_panel.views.UpdatePaymentDetailView.as_view(), name='system_payment_details'),
+
 
     path("personals", admin_panel.views.PersonalListView.as_view(),
          name='personals'),
@@ -96,10 +109,12 @@ urlpatterns = [
     path("personals/delete/<str:pk>", admin_panel.views.DeletePersonalView.as_view(),
          name='delete_personal'),
 
+
     path("system_payment_articles", admin_panel.views.PaymentArticlesListView.as_view(), name='system_payment_articles'),
     path("system_payment_article/add", admin_panel.views.CreatePaymentArticleView.as_view(), name='add_payment_article'),
     path("system_payment_article/update/<str:pk>", admin_panel.views.UpdatePaymentArticleView.as_view(), name='update_payment_article'),
     path("system_payment_article/delete/<str:pk>", admin_panel.views.DeletePaymentArticleView.as_view(), name='delete_payment_article'),
+
 
     path("main_page", admin_panel.views.MainPageView.as_view(), name='main_page'),
     path("about_us", admin_panel.views.AboutUsView.as_view(), name='about_us'),
@@ -110,6 +125,7 @@ urlpatterns = [
 
     path("photo/delete/<str:pk>", admin_panel.views.DeletePhotoView.as_view(), name='delete_photo'),
     path("doc/delete/<str:pk>", admin_panel.views.DeleteDocView.as_view(), name='delete_doc'),
+
 
     path("get_measure/<str:pk>", admin_panel.views.GetMeasureView.as_view(), name='get_measure'),
     path("get_role/<str:pk>", admin_panel.views.GetRoleView.as_view(), name='get_role'),

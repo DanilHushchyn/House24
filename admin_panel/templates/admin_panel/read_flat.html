@@ -42,8 +42,8 @@
             <div class="card-header text-right">
                     <h3 class="card-title">Просмотр квартиры</h3>
                     <div class="">
-                        <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'update_flat' flat.id %}"><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
-                        <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'update_flat' flat.id %}"><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
+                        <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'flat_accept_payment' flat.id %}"><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
+                        <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'flat_accept_receipt' flat.id %}"><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
                         <a class="btn btn-primary mb-3 mb-sm-0" href="{% url 'update_flat' flat.id %}">Редактировать квартиру</a>
                     </div>
             </div>
@@ -60,7 +60,7 @@
                                         {% if flat.personal_account == '' or flat.personal_account is None  %}
                                             не указано
                                         {% else %}
-                                            <a href="#">{{ flat.personal_account }}</a>
+                                            <a href="{% url 'read_personal_account' flat.personal_account.id %}">{{ flat.personal_account }}</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -90,12 +90,22 @@
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Этаж</td>
-                                    <td>{{ flat.floor}}</td>
+                                    <td>
+                                        {% if flat.floor is None %}
+                                            не указано
+                                        {% else %}
+                                            {{ flat.floor }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Владелец</td>
                                     <td>
-                                        <a href="{% url 'read_client' flat.flat_owner.id %}">{{ flat.flat_owner.user.email }}</a>
+                                        {% if flat.flat_owner %}
+                                            <a href="{% url 'read_client' flat.flat_owner.id %}">{{ flat.flat_owner.user.email }}</a>
+                                        {% else %}
+                                            не указано
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
@@ -111,9 +121,9 @@
                             </tbody>
                         </table>
                         <div>
-                            <p><a href="#">Посмотреть показания счетчиков</a></p>
-                            <p><a href="#">Посмотреть приходы</a></p>
-                            <p><a href="#">Посмотреть квитанции</a></p>
+                            <p><a href="{% url 'flat_indications' flat.id %}">Посмотреть показания счетчиков</a></p>
+                            <p><a href="{% url 'flat_paybox' flat.id %}">Посмотреть приходы</a></p>
+                            <p><a href="{% url 'flat_receipts' flat.id %}">Посмотреть квитанции</a></p>
                         </div>
                     </div>
                 </div>

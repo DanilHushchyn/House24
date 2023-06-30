@@ -99,7 +99,8 @@ class FlatForm(forms.ModelForm):
                     pa.section = None
                     pa.house = None
                     pa.save()
-                pass
+                    instance.personal_account = None
+                    instance.save()
             else:
                 if hasattr(instance, 'personal_account'):
                     pa = instance.personal_account

@@ -69,7 +69,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
             'libraries': {
-                'check_relation': 'admin_panel.templatetags.check_relation'
+                'check_relation': 'admin_panel.templatetags.check_relation',
+                'check_personal_account': 'admin_panel.templatetags.check_personal_account',
             }
         },
     },

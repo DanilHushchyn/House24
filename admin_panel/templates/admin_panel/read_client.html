@@ -133,11 +133,27 @@
                                     <tr role="row">
                                         <td>{{ flat.id }}</td>
                                         <td>
-                                            <a href="{% url 'read_house' flat.house.id %}">{{ flat.house }}</a>
+                                            {% if flat.house is None %}
+                                                не указано
+                                            {% else %}
+                                                <a href="{% url 'read_house' flat.house.id %}">{{ flat.house }}</a>
+                                            {% endif %}
                                         </td>
-                                        <td>{{ flat.section }}</td>
-                                        <td><a href="#">{{ flat.number }}</a></td>
-                                        <td><a href="#">{{ flat.personal_account }}</a></td>
+                                        <td>
+                                            {% if flat.section is None %}
+                                                не указано
+                                            {% else %}
+                                                {{ flat.section }}
+                                            {% endif %}
+                                        </td>
+                                        <td><a href="{% url 'read_flat' flat.id %}">{{ flat.number }}</a></td>
+                                        <td>
+                                            {% if flat.personal_account is None or flat.personal_account == ''%}
+                                                не указано
+                                            {% else %}
+                                                <a href="{% url 'read_personal_account' flat.personal_account.id %}">{{ flat.personal_account }}</a>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

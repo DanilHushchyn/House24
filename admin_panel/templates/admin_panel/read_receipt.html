@@ -106,18 +106,33 @@
                             <tr>
                                 <td class="font-weight-bold">Владелец</td>
                                 <td>
-                                    <a href="/admin/clients/detail/{{receipt.flat.flat_owner.id}}">{{ receipt.flat.flat_owner }}</a>
+                                    {% if receipt.flat.flat_owner is None %}
+                                        не указано
+                                    {% else %}
+                                        <a href="/admin/clients/detail/{{receipt.flat.flat_owner.id}}">{{ receipt.flat.flat_owner }}</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Лицевой счет</td>
                                 <td>
-                                    <a href="{% url 'read_personal_account' receipt.flat.personal_account.id %}">{{ receipt.flat.personal_account }}</a>
+                                        {% if receipt.flat.personal_account is None or receipt.flat.personal_account == '' %}
+                                            не указано
+                                        {% else %}
+                                            <a href="{% url 'read_personal_account' receipt.flat.personal_account.id %}">{{ receipt.flat.personal_account }}</a>
+
+                                        {% endif %}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Телефон</td>
-                                <td>{{ receipt.flat.flat_owner.user.phone }}</td>
+                                <td>
+                                    {% if receipt.flat.flat_owner is None %}
+                                        не указано
+                                    {% else %}
+                                        {{ receipt.flat.flat_owner.user.phone }}
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Дом</td>
@@ -133,7 +148,13 @@
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Секция</td>
-                                <td>{{ receipt.flat.section }}</td>
+                                <td>
+                                    {% if receipt.flat.section is None or receipt.flat.section == '' %}
+                                        не указано
+                                    {% else %}
+                                        {{ receipt.flat.section }}
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold">Тариф</td>
@@ -159,18 +180,18 @@
                             <tfoot>
                                 <tr>
                                     <td colspan="5"></td>
-                                    <td colspan="2"><b>Итого: ???</b></td>
+                                    <td colspan="2"><b>Итого: <span id="price-total">???</span></b></td>
                                 </tr>
                             </tfoot>
-                            <tbody>
+                            <tbody id="form-receiptservice-rows">
                             {% for receipt_service in receipt_services %}
                                 <tr role="row">
                                     <td>{{forloop.counter}}</td>
                                     <td>{{ receipt_service.service.title }}</td>
-                                    <td>{{ receipt_service.consumption }}</td>
+                                    <td class="consumption" data-consumption="{{ receipt_service.consumption }}"></td>
                                     <td>{{ receipt_service.measure.title }}</td>
-                                    <td>{{ receipt_service.unit_price }}</td>
-                                    <td></td>
+                                    <td class="unit_price" data-unit_price="{{ receipt_service.unit_price }}"></td>
+                                    <td class="total_service_price"></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -188,5 +209,23 @@
 {% endblock %}
 
 {% block  script %}
+    <script>
+        let total_price = 0
+        $('#form-receiptservice-rows').children().each(function () {
+            let unit_price = $(this).find('.unit_price')
+            let consumption = $(this).find('.consumption')
 
+            consumption.data('consumption',consumption.data('consumption').replace(/,/g, "."));
+            unit_price.data('unit_price',unit_price.data('unit_price').replace(/,/g, "."));
+            consumption.text(consumption.data('consumption'))
+            unit_price.text(unit_price.data('unit_price'))
+            let total_service_price = $(this).find('.total_service_price')
+             if (Number(unit_price.text()) && Number(consumption.text())) {
+                 $(total_service_price).text(Number(Number(unit_price.text()).toFixed(2)*Number(consumption.text()).toFixed(2)).toFixed(2))
+                 total_price = total_price+Number($(total_service_price).text())
+                 $('#price-total').text(Number(total_price).toFixed(2))
+             }
+        })
+
+    </script>
 {% endblock %}

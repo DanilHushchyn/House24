@@ -101,7 +101,7 @@ class Paybox(models.Model):
     )
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
     comment = models.TextField(verbose_name="Комментарий", default='', blank=True)
-    date_published = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateField()
     total = models.DecimalField(verbose_name='Сумма', decimal_places=2, max_digits=20)
     flat_owner = models.ForeignKey('FlatOwner', on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey("Article", on_delete=models.SET_NULL, null=True)
@@ -117,15 +117,15 @@ class Paybox(models.Model):
 class Receipt(models.Model):
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
     is_complete = models.BooleanField(default=True, )
-    date_published = models.DateField()
+    date_published = models.DateField(default='2012-12-12')
     STATUS_CHOICE = (
         ('paid', 'Оплачена'),
         ('partially_paid', 'Частично оплачена'),
         ('unpaid', 'Не оплачена'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='unpaid', verbose_name='Статус')
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(default='2012-12-12')
+    end_date = models.DateField(default='2012-12-12')
     service = models.ManyToManyField('Service', blank=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE)
     tariff = models.ForeignKey('TariffSystem', on_delete=models.CASCADE, null=True, blank=True)

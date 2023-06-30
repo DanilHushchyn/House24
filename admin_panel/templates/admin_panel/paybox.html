@@ -8,7 +8,7 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% load check_relation %}
 {% block head_2a %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/paybox/paybox.css' %}">
@@ -24,7 +24,7 @@
 {% block action_list %}
     <li><a class="dropdown-item" href="{% url 'add_paybox' "plus" %}">Создать приход</a></li>
     <li><a class="dropdown-item" href="{% url 'add_paybox' "minus" %}">Создать расход</a></li>
-    <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
+    <li><a class="dropdown-item" href="#!">Выгрузить в excel</a></li>
 {% endblock %}
 
 {% block card_body %}
@@ -95,106 +95,63 @@
         </tr>
       </thead>
       <tbody>
+      {% for row in paybox %}
         <tr class="border-0">
-          <td>1.</td>
-          <td>65</td>
-          <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.number }}</td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.date_published|date:"d.m.Y" }}</td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+              {% if row.is_complete %}
+                  <span class="badge text-bg-success text-white">Проведен</span>
+                  {% else %}
+                  <span class="badge text-bg-danger text-white">Не проведен</span>
+              {% endif %}
           </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+               {% if  row.article is None %}
+                   (не задано)
+               {% else %}
+                   {{ row.article }}
+               {% endif %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+              {% if  row.flat_owner is None %}
+                   (не задано)
+              {% else %}
+                   {{ row.flat_owner }}
+              {% endif %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+               {% if  row.personal_account is None %}
+                   (не задано)
+               {% else %}
+                   {{ row.personal_account }}
+               {% endif %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+              {% if row.debit_credit == 'plus' %}
+                  <span class="badge text-bg-success text-white">Приход</span>
+                  {% elif row.debit_credit == 'minus' %}
+                  <span class="badge text-bg-danger text-white">Расход</span>
+              {% endif %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+              {% if row.debit_credit == 'plus' %}
+                  <span class="text-success">{{ row.total }}</span>
+                  {% elif row.debit_credit == 'minus' %}
+                  <span class="text-danger">{{ row.total }}</span>
+              {% endif %}
+          </td>
           <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
+              <form action="{% url 'delete_paybox' row.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="btn-group">
+                      <a class="btn btn-default" href="{% url 'update_paybox' row.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
+              </form>
           </td>
         </tr>
-        <tr class="border-0">
-          <td>1.</td>
-          <td>Update software</td>
-          <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
-          </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
-          </td>
-        </tr>
-        <tr class="border-0">
-          <td>2.</td>
-          <td>Update software</td>
-          <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
-          </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
-          </td>
-        </tr>
-        <tr class="border-0">
-          <td>3.</td>
-          <td>Update software</td>
-          <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
-          </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
-          </td>
-        </tr>
-        <tr class="border-0">
-          <td>4.</td>
-          <td>Update software</td>
-          <td>
-            <div class="progress progress-xs">
-              <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-            </div>
-          </td>
-          <td><span class="badge bg-danger">55%</span></td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td>Update software</td>
-          <td class="ps-1 pe-1">
-              <div class="btn-group">
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <a class="btn btn-default" href="#" role="button"><i class="fa-solid fa-trash-can"></i></a>
-              </div>
-          </td>
-        </tr>
+      {% endfor %}
       </tbody>
    </table>
 {% endblock %}
@@ -211,8 +168,20 @@
     </div>
     <hr style="border-top: 1px solid darkgrey;">
     <div>
-      <div class="d-flex flex-row flex-wrap"><span>Проведен приход:&nbsp;</span> <span class="text-bold">5 081 366.52 грн</span></div>
-      <div class="d-flex flex-row flex-wrap"><span>Проведен расход:&nbsp;</span>  <span class="text-bold">2 042 796.02 грн</span></div>
+      <div class="d-flex flex-row flex-wrap"><span>Проведен приход:&nbsp;</span> <span class="text-bold">
+          {% if total_plus %}
+              {{ total_plus|intspace }} грн
+          {% else %}
+              0.00 грн
+          {% endif %}
+      </span></div>
+      <div class="d-flex flex-row flex-wrap"><span>Проведен расход:&nbsp;</span>  <span class="text-bold">
+           {% if total_minus %}
+              {{ total_minus|intspace }} грн
+          {% else %}
+              0.00 грн
+          {% endif %}
+      </span></div>
     </div>
     </div>
 {% endblock %}
@@ -229,6 +198,18 @@
                 "bInfo" : false
 
 
+            });
+        });
+        $("form").on('submit', function() {
+            return confirm('Вы уверены, что хотите удалить этот элемент?');
+
+        });
+        document.addEventListener("DOMContentLoaded", function(event) {
+            const rows = document.querySelectorAll("td[data-href]");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
             });
         });
     </script>

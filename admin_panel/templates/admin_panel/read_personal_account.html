@@ -8,7 +8,8 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% load check_personal_account %}
+{% load check_relation %}
 {% block head %}
 {% endblock %}
 
@@ -56,9 +57,9 @@
       <!-- Default box -->
        <div class="card card-success card-outline">
             <div class="card-header text-right">
-                        <a class="btn btn-default mb-3 mb-sm-0" href="#"><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
-                        <a class="btn btn-default mb-3 mb-sm-0" href="#"><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
-                    <a class="btn btn-primary" href="{% url 'update_personal_account' personal_account.id %}">Редактировать счёт</a>
+                <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} href="{% url 'personal_account_accept_payment' personal_account.id %}" class="btn btn-default mb-3 mb-sm-0 accept_payment" {% endif %}><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
+                <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} class="btn btn-default mb-3 mb-sm-0 accept_payment" href="{% url 'personal_account_accept_receipt' personal_account.id %}" {% endif %}><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
+                <a class="btn btn-primary" href="{% url 'update_personal_account' personal_account.id %}">Редактировать счёт</a>
             </div>
 
             <!-- /.card-header -->
@@ -80,35 +81,63 @@
                                 <tr>
                                     <td class="font-weight-bold">Дом</td>
                                     <td>
-                                        <a href="{% url 'read_house' personal_account.house.id %}">{{ personal_account.house }}</a></td>
+                                        {% if personal_account.house is None %}
+                                            не указано
+                                        {% else %}
+                                            <a href="{% url 'read_house' personal_account.house.id %}">{{ personal_account.house }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Секция</td>
-                                    <td>{{ personal_account.section }}</td>
+                                    <td>
+                                        {% if personal_account.section is None %}
+                                            не указано
+                                        {% else %}
+                                            {{ personal_account.section }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Квартира</td>
                                     <td>
-                                        <a href="{% url 'read_flat' personal_account.flat.id %}">{{ personal_account.flat.number }}</a></td>
+                                        {% if personal_account.flat is None %}
+                                            не указано
+                                        {% else %}
+                                            <a href="{% url 'read_flat' personal_account.flat.id %}">{{ personal_account.flat.number }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Владелец</td>
                                     <td>
-                                        <a href="{% url 'read_client' personal_account.flat.flat_owner.id %}">{{ personal_account.flat.flat_owner }}</a>
+                                        {% if personal_account.flat is None or personal_account.flat.flat_owner is None %}
+                                            не указано
+                                        {% else %}
+                                            <a href="{% url 'read_client' personal_account.flat.flat_owner.id %}">{{ personal_account.flat.flat_owner }}</a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Остаток, грн.</td>
                                     <td>
-                                        <span class="text-default">0.00</span>
+                                        {% if personal_account.balance > 0 %}
+                                            <span class="text-success">{{ personal_account.balance|intspace }}</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ personal_account.balance|intspace }}</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <div>
-                            <p><a href="#">Посмотреть показания счетчиков</a></p>
-                            <p><a href="#">Посмотреть приходы</a></p>
-                            <p><a href="#">Посмотреть квитанции</a></p>
+                            {% if personal_account.flat or personal_account.status == 'disabled' %}
+                                <p><a href="{% url 'flat_indications' personal_account.flat.id %}">Посмотреть показания счетчиков</a></p>
+                            {% else %}
+                                <p><a class="accept_payment dsbld" href="#!">Посмотреть показания счетчиков</a></p>
+                            {% endif %}
+                            <p><a href="{% url 'personal_account_paybox' personal_account.id %}">Посмотреть приходы</a></p>
+                            <p><a href="{% url 'personal_account_receipts' personal_account.id %}">Посмотреть квитанции</a></p>
                         </div>
                     </div>
                 </div>
@@ -124,5 +153,6 @@
 {% endblock %}
 
 {% block  script %}
+    <script type="module" src="{% static 'admin_panel/personal_account/read_personal_account.js' %}"></script>
 
 {% endblock %}

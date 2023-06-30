@@ -62,15 +62,9 @@ $('body').on('click','.service__delete',function () {
 
 $('body').on('change','.consumption',function () {
     let unit_price = $(this).parents('.form-receiptservice-row').find('.unit_price')
-    let total_service_price = $(this).parents('.form-receiptservice-row').find('.total_service_price')
     if (Number($(this).val()) && Number(unit_price.val())){
-        // $(this).val(Number($(this).val()).toFixed(2))
-        // $(unit_price).val(Number($(unit_price).val()).toFixed(2))
-        // $(total_service_price).val(Number($(this).val()*$(unit_price).val()).toFixed(2))
-        // $('.total_price').val(Number($('.total_price').val())+Number($(total_service_price).val()))
-        // $('#price-total').text(Number($('.total_price').val()).toFixed(2))
         $('.total_price').val(0)
-        $('#form-receiptservice-rows').children().each(function () {
+        $('#form-receiptservice-rows').children().not('.d-none').each(function () {
             let unit_price = $(this).find('.unit_price')
             let consumption = $(this).find('.consumption')
             let total_service_price = $(this).find('.total_service_price')
@@ -85,15 +79,9 @@ $('body').on('change','.consumption',function () {
 })
 $('body').on('change','.unit_price',function () {
     let consumption = $(this).parents('.form-receiptservice-row').find('.consumption')
-    let total_service_price = $(this).parents('.form-receiptservice-row').find('.total_service_price')
     if (Number($(this).val()) && Number(consumption.val())){
-        // $(this).val(Number($(this).val()).toFixed(2))
-        // $(consumption).val(Number($(consumption).val()).toFixed(2))
-        // $(total_service_price).val(Number($(this).val()*$(consumption).val()).toFixed(2))
-        // $('.total_price').val(Number($('.total_price').val())+Number($(total_service_price).val()))
-        // $('#price-total').text(Number($('.total_price').val()).toFixed(2))
         $('.total_price').val(0)
-        $('#form-receiptservice-rows').children().each(function () {
+        $('#form-receiptservice-rows').children().not('.d-none').each(function () {
             let unit_price = $(this).find('.unit_price')
             let consumption = $(this).find('.consumption')
             let total_service_price = $(this).find('.total_service_price')
@@ -109,10 +97,13 @@ $('body').on('change','.unit_price',function () {
 
 $('.set-tariff-services').on('click',function () {
     if ($('.form-tariff-select option:selected').text()!=='Выберите...') {
-        $('#form-receiptservice-rows').empty()
+        // $('#form-receiptservice-rows').empty()
+        $('#form-receiptservice-rows').each(function () {
+            $(this).find('[name$=\'DELETE\'], [for$=\'DELETE\']').attr('checked','checked')
+            $(this).find('.form-receiptservice-row').addClass('d-none')
+        })
         $('.total_price').val(0)
         $('#price-total').text('0.00')
-        serviceTotal.val(0)
         let id = $('.form-tariff-select option:selected').val()
         $.ajax({
             url: `/admin/get_tariff-info/${id}`,         /* Куда отправить запрос */
@@ -193,7 +184,7 @@ $('.set-tariff-services').on('click',function () {
 $('.add-counters').on('click',function () {
     if ($('.form-flat-select').val()) {
         let flat_id = $('.form-flat-select').val()
-        let rows = $('#form-receiptservice-rows').children()
+        let rows = $('#form-receiptservice-rows').children().not('.d-none')
         rows.each(function () {
             let service_id = $(this).find('.form-service-select').val();
             let row = $(this)

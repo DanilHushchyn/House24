@@ -61,7 +61,7 @@
                                                     {% bootstrap_field service_form.measure %}
                                                 </div>
                                                 <div class="col-3 col-sm-1 ps-0">
-                                                    <button type="button" class="btn btn-default rounded-0 service__delete" style="margin-top: 32px;height: 38px;"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <button type="button" {% if  service_form.id.value|disablingService  %} style="margin-top: 32px;height: 38px;opacity: 0.5;cursor: not-allowed" class="btn btn-default rounded-0 service__delete dsbld-service"  {% endif %}   class="btn btn-default rounded-0 service__delete" style="margin-top: 32px;height: 38px;"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
@@ -93,7 +93,7 @@
                                                     {% bootstrap_field measure_form.title %}
                                                 </div>
                                                 <div class="col-3 col-sm-1 pe-0 ps-0">
-                                                    <button  {% if  measure_form.id.value|disabling  %} style="margin-top: 32px;height: 38px;opacity: 0.5;cursor: not-allowed" class="btn btn-default rounded-0 measure__delete dsbld" {% endif %}  type="button" class="btn btn-default rounded-0 measure__delete" style="margin-top: 32px;height: 38px;"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <button  {% if  measure_form.id.value|disablingMeasure  %} style="margin-top: 32px;height: 38px;opacity: 0.5;cursor: not-allowed" class="btn btn-default rounded-0 measure__delete dsbld" {% endif %}  type="button" class="btn btn-default rounded-0 measure__delete" style="margin-top: 32px;height: 38px;"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                 </div>
 
                                             </div>

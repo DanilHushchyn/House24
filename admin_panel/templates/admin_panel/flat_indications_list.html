@@ -11,7 +11,6 @@
 
 {% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
-    <link rel="stylesheet" href="{% static 'admin_panel/application/application.css' %}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 {% endblock %}
@@ -23,7 +22,7 @@
     <li class="breadcrumb-item active">Показания счетчиков, кв.{{ flat.number }}</li>
 {% endblock %}
 {% block action_list %}
-    <a class="btn btn-success" href="{% url 'add_new_indication' flat.id service.id %}">Добавить показание</a>
+    <a class="btn btn-success" href="{% url 'add_indication_to_flat' flat.id %}">Добавить показание</a>
 {% endblock %}
 
 {% block card_body %}

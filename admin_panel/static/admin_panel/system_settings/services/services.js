@@ -3,7 +3,7 @@ let measureTotal = $('#id_measure_formset-TOTAL_FORMS')
 
 $("[name$='DELETE'], [for$='DELETE']").hide()
 $('body').on('click','.service__delete',function () {
-    if($(this).hasClass('dsbld')){
+    if($(this).hasClass('dsbld-service')){
         alert('Эта услуга используется в квитанциях. Удаление невозможно.')
     }else {
          if (confirm('Удалить?')){

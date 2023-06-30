@@ -186,11 +186,11 @@ class ReceiptForm(forms.ModelForm):
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
                                    widget=forms.Select(attrs={'class': 'form-house-select'}))
-    flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира', required=False,
+    flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира',
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
     tariff = forms.ModelChoiceField(queryset=TariffSystem.objects.all(), label='Тариф',
                                     widget=forms.Select(attrs={'class': 'form-tariff-select'}))
-    personal_account = forms.CharField(label='Лицевой счет',
+    personal_account = forms.CharField(label='Лицевой счет', required=False,
                                        widget=forms.TextInput(attrs={'class': 'personal_account', 'placeholder': ''}))
     is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
                                      required=False,
@@ -251,7 +251,8 @@ class PayboxForm(forms.ModelForm):
                                      widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
     number = forms.CharField(label='',
                              widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
-    personal_account = forms.ModelChoiceField(label='Лицевой счет', queryset=PersonalAccount.objects.all(), required=False,
+    personal_account = forms.ModelChoiceField(label='Лицевой счет', queryset=PersonalAccount.objects.all(),
+                                              required=False,
                                               widget=forms.Select(
                                                   attrs={'class': 'personal_account-select select2',
                                                          'placeholder': ''}))
@@ -261,7 +262,7 @@ class PayboxForm(forms.ModelForm):
     user = PersonalChoiceField(label='Менеджер', required=False,
                                queryset=Personal.objects.filter(role__in=['director', 'accountant', 'manager']),
                                widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
-    article = forms.ModelChoiceField(label='Статья', queryset=Article.objects.all(),required=False,
+    article = forms.ModelChoiceField(label='Статья', queryset=Article.objects.all(), required=False,
                                      widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
     is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
                                      required=False,
@@ -275,7 +276,6 @@ class PayboxForm(forms.ModelForm):
         self.fields['personal_account'].empty_label = 'Выберите...'
         self.fields['flat_owner'].empty_label = 'Выберите...'
         self.fields['user'].empty_label = 'Выберите...'
-        self.fields['date_published'].initial = timezone.now().date()
 
     class Meta:
         model = Paybox
