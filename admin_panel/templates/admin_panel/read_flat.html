@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Квартира №{{ flat.number }}, {{ flat.house }}
+{% endblock %}
 {% block head %}
 {% endblock %}
 

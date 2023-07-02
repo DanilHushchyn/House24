@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Дом {{ house.title }}
+{% endblock %}
 {% block head %}
 {% endblock %}
 
@@ -51,11 +53,23 @@
                             <tbody>
                                 <tr>
                                     <td class="font-weight-bold">Название</td>
-                                    <td>{{ house.title }}</td>
+                                    <td>
+                                        {% if house.title == "" %}
+                                            (не указано)
+                                        {% else %}
+                                            {{ house.title }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Адрес</td>
-                                    <td>{{ house.address }}</td>
+                                    <td>
+                                        {% if house.address == "" %}
+                                            (не указано)
+                                        {% else %}
+                                            {{ house.address }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Секций</td>
@@ -68,12 +82,15 @@
                                 <tr>
                                     <td class="font-weight-bold">Пользователи</td>
                                     <td>
-                                        {% for user in users %}
-                                            <p class="no-margin"><strong>{{ user.user.get_role_display }}:</strong>
-                                                <a href="/admin/user-admin/14">{{ user.user }}</a>
-                                            </p>
-                                        {% endfor %}
-
+                                        {% if users %}
+                                            {% for user in users %}
+                                                <p class="no-margin"><strong>{{ user.user.get_role_display }}:</strong>
+                                                    <a href="/admin/user-admin/14">{{ user.user }}</a>
+                                                </p>
+                                            {% endfor %}
+                                        {% else %}
+                                            (не указаны)
+                                        {% endif %}
                                     </td>
                                 </tr>
                             </tbody>

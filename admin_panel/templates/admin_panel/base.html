@@ -12,7 +12,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Админка</title>
+    <link rel="icon" type="image/svg"   href="{% static 'admin_panel/imgs/logo.svg' %}">
+
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
 {#    <link href="{% static "node_modules/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet" >#}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
       <!-- Google Font: Source Sans Pro -->

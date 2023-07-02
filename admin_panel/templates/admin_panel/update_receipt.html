@@ -9,6 +9,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
+{% block title %}
+    Квитанция
+{% endblock %}
 {% block head %}
         <link rel="stylesheet" href="{% static 'node_modules/flatpickr/dist/flatpickr.min.css' %}">
         <link rel="stylesheet" href="{% static 'admin_panel/receipt/receipt_form.css' %}">
@@ -21,13 +24,14 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h4 class="mb-0">Новая квитанция</h4>
+            <h4 class="mb-0">Квитанция</h4>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
                 <li class="breadcrumb-item"><a href="{% url 'receipts' %}">Квитанции</a></li>
-                <li class="breadcrumb-item">Новая квитанция</li>
+                <li class="breadcrumb-item"><a href="{% url 'read_receipt' form.instance.id %}">Квитанция №{{ form.instance.number }}</a></li>
+                <li class="breadcrumb-item">Редактирование</li>
             </ol>
           </div>
         </div>

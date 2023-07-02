@@ -7,8 +7,11 @@
 {% bootstrap_javascript %}
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
+{% load check_relation %}
 {# Read the documentation for more information#}
-
+{% block title_2b %}
+     Владельцы квартир
+{% endblock %}
 {% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/client/client.css' %}">
@@ -98,10 +101,18 @@
           <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}" >
               {{ client.user.email }}
           </td>
-          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}" >ДОМА</td>
-          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}" >КВАРТИРЫ</td>
-          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}" >{{ client.user.date_joined }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}" >
+          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">
+              {% for flat in client.id|get_house_queryset %}
+                  <a href="{% url 'read_house' flat.house.id %}">{{ flat.house }}</a>,<br>
+              {% endfor %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">
+              {% for flat in client.id|get_flat_queryset %}
+                  <a href="{% url 'read_flat' flat.id %}">№{{ flat.number }} - {{ flat.house }}</a>,<br>
+              {% endfor %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">{{ client.user.date_joined }}</td>
+          <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">
               {% if client.user.get_status_display == 'Активен' %}
                   <span class="badge text-bg-success text-white">Активен</span>
                   {% elif client.user.get_status_display == 'Новый' %}

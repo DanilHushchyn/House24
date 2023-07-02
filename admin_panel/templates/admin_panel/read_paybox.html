@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Приходная ведомость
+{% endblock %}
 {% block head %}
 {% endblock %}
 
@@ -70,7 +72,7 @@
                             <a class="btn btn-default me-1 mb-1" href="{% url 'copy_paybox' paybox.id %}">Копировать</a>
                             <button class="btn btn-default delete-confirmation me-1 mb-1" type="submit" role="button">Удалить</button>
                             <a class="btn btn-primary me-1 mb-1" href="{% url 'update_paybox' paybox.id %}">Редактировать ведомость</a>
-                            <a class="btn btn-default me-1 mb-1" href="#!">Выгрузить в Excel</a>
+                            <a class="btn btn-default me-1 mb-1" href="{% get_media_prefix %}/paybox/info.xlsx" download="">Выгрузить в Excel</a>
                         </div>
                     </div>
                 </form>

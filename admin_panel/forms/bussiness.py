@@ -82,16 +82,17 @@ class ApplicationForm(forms.ModelForm):
                                      widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
     time_published = forms.TimeField(label='',
                                      widget=forms.TimeInput(attrs={'class': 'publishing-time', 'placeholder': ''}))
-    flat_owner = forms.ModelChoiceField(queryset=FlatOwner.objects.all(), label='Владелец квартиры ',
+    flat_owner = forms.ModelChoiceField(queryset=FlatOwner.objects.all(), label='Владелец квартиры ', required=False,
                                         widget=forms.Select(attrs={'class': 'form-flat_owner-select select2'}))
 
     flat = FlatChoiceField(queryset=Flat.objects.filter(house__isnull=False), label='Квартира',
                            widget=forms.Select(attrs={'class': 'form-flat-select select2'}))
 
-    user = PersonalChoiceField(queryset=Personal.objects.all(), label='Мастер',
+    user = PersonalChoiceField(queryset=Personal.objects.all(), label='Мастер', required=False,
                                widget=forms.Select(attrs={'class': 'form-master-select'}))
 
-    user_type = forms.ChoiceField(choices=ROLE_CHOICE, label='Тип мастера', )
+    user_type = forms.ChoiceField(choices=ROLE_CHOICE, label='Тип мастера', required=False, )
+    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': '', 'rows': 8}), label='Описание')
 
     def __init__(self, *args, **kwargs):
         super(ApplicationForm, self).__init__(*args, **kwargs)
@@ -104,7 +105,6 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields = '__all__'
         widgets = {
-            'description': forms.Textarea(attrs={'placeholder': '', 'rows': 8}),
             'comment': forms.Textarea(attrs={'placeholder': '', 'rows': 8, 'class': 'summernote'})
         }
 
@@ -214,6 +214,17 @@ class ReceiptForm(forms.ModelForm):
         model = Receipt
         fields = '__all__'
         exclude = ('service',)
+
+
+class ReceiptExcelDocForm(forms.ModelForm):
+    class Meta:
+        model = ReceiptExcelDoc
+        fields = '__all__'
+        exclude = ('by_default',)
+        widgets = {
+            'file': forms.FileInput(attrs={'class': 'excel_file  d-block'}),
+            'title': forms.TextInput(attrs={'placeholder': ''})
+        }
 
 
 class ReceiptServiceForm(forms.ModelForm):

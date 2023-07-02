@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title_2b %}
+    Дома
+{% endblock %}
 {% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/house/house.css' %}">
@@ -46,9 +48,19 @@
       {% for house in houses %}
         <tr class="border-0">
           <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >{{ house.id }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >{{ house.title }}</td>
           <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
-              {{ house.address }}
+                {% if house.title == "" %}
+                    (не указано)
+                {% else %}
+                    {{ house.title }}
+                {% endif %}
+          </td>
+          <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
+              {% if house.address == "" %}
+                    (не указано)
+              {% else %}
+                    {{ house.address }}
+              {% endif %}
           </td>
           <td class="ps-1 pe-1 text-center">
               <form action="{% url 'delete_house' house.id %}" method="post">

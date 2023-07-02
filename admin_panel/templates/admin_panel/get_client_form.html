@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Новый владелец
+{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'node_modules/flatpickr/dist/flatpickr.min.css' %}">
 

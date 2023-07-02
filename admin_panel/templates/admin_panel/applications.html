@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title_2b %}
+     Заявки вызова мастера
+{% endblock %}
 {% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/application/application.css' %}">
@@ -106,13 +108,25 @@
               {{ application.flat }}
           </td>
           <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.flat_owner }}
+              {% if application.flat.flat_owner is None %}
+                  (не указано)
+              {% else %}
+                  {{ application.flat.flat_owner }}
+              {% endif %}
           </td>
           <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.flat_owner.user.phone }}
+              {% if application.flat.flat_owner is None %}
+                  (не указано)
+              {% else %}
+                  {{ application.flat.flat_owner.user.phone }}
+              {% endif %}
           </td>
           <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.user }}
+              {% if application.user is None %}
+                  (не указано)
+              {% else %}
+                  {{ application.user }}
+              {% endif %}
           </td>
           <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
               {% if application.get_status_display == 'Новое' %}

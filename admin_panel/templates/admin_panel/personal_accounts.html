@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title_2a %}
+    Лицевые счета
+{% endblock %}
 {% block head_2a %}
     <link rel="stylesheet" href="{% static 'admin_panel/personal_account/personal_account.css' %}">
 {% endblock %}
@@ -104,18 +106,42 @@
               {% endif %}
           </td>
           <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {{ personal_account.flat.number }}
+              {% if personal_account.flat is None %}
+                  (не указано)
+              {% else %}
+                  {{ personal_account.flat.number }}
+              {% endif %}
           </td>
           <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {{ personal_account.house.title }}
+              {% if personal_account.house is None %}
+                  (не указано)
+              {% else %}
+                  {{ personal_account.house.title }}
+              {% endif %}
           </td>
           <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {{ personal_account.section.title }}
+              {% if personal_account.section is None %}
+                  (не указано)
+              {% else %}
+                  {{ personal_account.section.title }}
+              {% endif %}
           </td>
           <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {{ personal_account.flat.flat_owner }}
+              {% if personal_account.flat.flat_owner is None %}
+                  (не указано)
+              {% else %}
+                  {{ personal_account.flat.flat_owner }}
+              {% endif %}
           </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >остаток грн</td>
+          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+              {% if personal_account.balance > 0 %}
+                  <span class="text-success">{{ personal_account.balance }}</span>
+                  {% elif personal_account.balance < 0 %}
+                  <span class="text-danger">{{ personal_account.balance }}</span>
+                  {% else %}
+                  <span>{{ personal_account.balance }}</span>
+              {% endif %}
+          </td>
           <td class="ps-1 pe-1">
               <form action="{% url 'delete_personal_account' personal_account.id %}" method="post">
                   {% csrf_token %}

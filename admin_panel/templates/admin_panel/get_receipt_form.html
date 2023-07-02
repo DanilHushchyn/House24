@@ -4,7 +4,9 @@
 {% load django_bootstrap5 %}
 {# Load CSS and JavaScript#}
 {% bootstrap_css %}
-
+{% block title %}
+    Новая квитанция
+{% endblock %}
 {% bootstrap_javascript %}
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}

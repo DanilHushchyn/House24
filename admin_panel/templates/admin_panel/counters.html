@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title_2b %}
+    Счётчики
+{% endblock %}
 {% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/application/application.css' %}">

@@ -20,6 +20,11 @@ urlpatterns = [
     path("receipt/copy/<str:pk>", admin_panel.views.CopyReceipt.as_view(), name='copy_receipt'),
     path("receipt/detail/<str:pk>", admin_panel.views.ReceiptDetail.as_view(), name='read_receipt'),
     path("receipt/delete/<str:pk>", admin_panel.views.DeleteReceipt.as_view(), name='delete_receipt'),
+    path("receipt/print/<str:pk>", admin_panel.views.ReceiptPrint.as_view(), name='receipt_print'),
+    path("receipt/download_excel/<str:excel_id>/<str:receipt_id>", admin_panel.views.ReceiptDownloadExcel.as_view(), name='receipt_download'),
+    path("receipt/print_settings", admin_panel.views.ReceiptPrintingSettings.as_view(), name='receipt_print_settings'),
+    path("receipt/print_settings/delete/<str:pk>", admin_panel.views.ReceiptPrintingSettingsDelete.as_view(), name='receipt_print_settings_delete'),
+    path("receipt/print_settings/default/<str:pk>", admin_panel.views.ReceiptPrintingSettingsDefault.as_view(), name='receipt_print_settings_default'),
 
 
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
@@ -138,4 +143,10 @@ urlpatterns = [
     path("get_service-info/<str:pk>", admin_panel.views.GetServiceInfoView.as_view(), name='get_service-info'),
     path("get_indication-info/<str:flat_id>/<str:service_id>", admin_panel.views.GetIndicationInfoView.as_view(), name='get_indication-info'),
     path("get_indication-sorted-list/<str:flat_id>", admin_panel.views.GetIndicationsSortedList.as_view(), name='get_indication-sorted-list'),
+
+
+
+    # path("login", admin_panel.views.Login.as_view(), name='login'),
+
+
 ]

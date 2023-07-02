@@ -1,4 +1,5 @@
 import json
+from copy import copy
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -6,6 +7,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import *
+from openpyxl.reader.excel import load_workbook
+from openpyxl.styles import Alignment
+from openpyxl.utils import range_boundaries
 
 from admin_panel.forms import *
 from admin_panel.models import *
@@ -86,6 +90,9 @@ class CopyPaybox(CreatePaybox):
         return render(request, 'admin_panel/get_paybox_form.html', context=data)
 
 
+from urllib.parse import urlencode, quote
+
+
 class PayboxDetail(DetailView):
     model = Paybox
     template_name = 'admin_panel/read_paybox.html'
@@ -94,6 +101,49 @@ class PayboxDetail(DetailView):
         context = super().get_context_data(**kwargs)
         paybox = Paybox.objects.get(pk=self.kwargs['pk'])
         context['paybox'] = paybox
+
+        wb = Workbook()
+        ws = wb.active  # это лист в excel
+        ws.append(['Платёж', f'#{paybox.number}'])
+        ws.append(['Дата', f'{paybox.date_published}'])
+        if paybox.flat_owner:
+            ws.append(['Владелец квартиры',
+                       f'{paybox.flat_owner.user.last_name} {paybox.flat_owner.user.first_name} {paybox.flat_owner.patronymic}'])
+        else:
+            ws.append(['Владелец квартиры', f'не указан'])
+
+        if paybox.personal_account:
+            ws.append(['Лицевой счёт', paybox.personal_account.number])
+        else:
+            ws.append(['Лицевой счёт', f'не указан'])
+
+        ws.append(['Приход/Расход', paybox.get_debit_credit_display()])
+        ws.append(['Проведён', 'Проведён' if paybox.is_complete else 'Не проведён'])
+        if paybox.article:
+            ws.append(['Статья', paybox.article.title])
+        else:
+            ws.append(['Статья', f'не указана'])
+
+        ws.append(['Квитанция', ''])
+        ws.append(['Услуга', ''])
+        ws.append(['Сумма', f'{paybox.total}'])
+        ws.append(['Валюта', 'UAH'])
+        ws.append(['Комментарий', paybox.comment])
+        ws.append(['Приход/Расход', paybox.get_debit_credit_display()])
+        ws.append(['Проведён', 'Проведён' if paybox.is_complete else 'Не проведён'])
+        if paybox.user:
+            ws.append(['Менеджер', f'{paybox.user.user.last_name} {paybox.user.user.first_name}'])
+        else:
+            ws.append(['Менеджер', f'не указан'])
+        ws.title = "Выписка"  # это название листа в excel
+        ws.column_dimensions['A'].width = 20
+        ws.column_dimensions['B'].width = 40
+
+        wb.save('media/paybox/info.xlsx')
+
+        # Get full path to workbook
+        wb.close()
+
         return context
 
 
@@ -243,6 +293,124 @@ class UpdateReceipt(UpdateView):
                 'services': Service.objects.all(),
             }
             return render(request, 'admin_panel/update_receipt.html', context=data)
+
+
+class ReceiptPrint(View):
+    def get(self, request, pk, *args, **kwargs):
+        receipt = Receipt.objects.get(pk=pk)
+        rows = ReceiptExcelDoc.objects.all().order_by('id')
+
+        data = {
+            'rows': rows,
+            'receipt': receipt
+        }
+        return render(request, 'admin_panel/receipt_printing.html', context=data)
+
+
+class ReceiptDownloadExcel(View):
+    def post(self, request, excel_id, receipt_id, *args, **kwargs):
+        receipt = Receipt.objects.get(pk=receipt_id)
+        services = ReceiptService.objects.filter(receipt_id=receipt_id)
+
+        doc = ReceiptExcelDoc.objects.get(pk=excel_id)
+        wb = load_workbook(doc.file)
+        ws = wb.active  # это лист в excel
+        for row in ws.iter_rows(min_row=1, max_row=50, min_col=1, max_col=25):
+            for cell in row:
+                match cell.value:
+                    case 'personal_accountNumber':
+                        cell.value = receipt.flat.personal_account.number
+                        # cell.alignment = Alignment(horizontal='center', vertical='center') # выровнять по центру
+                    case 'personalManager':
+                        cell.value = str(receipt.flat.flat_owner)
+                        cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центру
+                    case 'receiptNumber':
+                        cell.value = receipt.number
+                    case 'receiptStartDate':
+                        cell.value = str(receipt.start_date)
+                    case 'totalPrice':
+                        cell.value = receipt.total_price
+                    case 'flatOwner':
+                        cell.value = str(receipt.flat.flat_owner)
+                    case 'personalAccountBalance':
+                        cell.value = receipt.flat.personal_account.balance
+                    case 'receiptDatePublished':
+                        cell.value = receipt.date_published
+                        cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центр
+                    case 'receiptMonthPublished':
+                        month_dict = {
+                            'January': 'Январь',
+                            'February': 'Февраль',
+                            'March': 'Март',
+                            'April': 'Апрель',
+                            'May': 'Май',
+                            'June': 'Июнь',
+                            'July': 'Июль',
+                            'August': 'Август',
+                            'September': 'Сентябрь',
+                            'October': 'Октябрь',
+                            'November': 'Ноябрь',
+                            'December': 'Декабрь'
+                        }
+                        cell.value = month_dict[str(receipt.date_published.strftime('%B'))]
+                        cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центр
+                    case 'total':
+                        cell.value = receipt.total_price
+                    case 'service':
+                        pass
+
+
+                    #     for i, obj in enumerate(services):
+                    #         ws.insert_rows(cell.row + i)
+                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.service.title))
+                    # case 'tariff':
+                    #     for i, obj in enumerate(services):
+                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.receipt.tariff.title))
+                    # case 'measure':
+                    #     for i, obj in enumerate(services):
+                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.measure.title))
+                    # case 'totalServicePrice':
+                    #     for i, obj in enumerate(services):
+                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(float(obj.consumption) * float(obj.unit_price)))
+        ws.title = "Квитанция"  # это название листа в excel
+        wb.save('media/receipt/result/report.xlsx')
+
+        data = {
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+class ReceiptPrintingSettings(View):
+    def get(self, request, *args, **kwargs):
+        rows = ReceiptExcelDoc.objects.all().order_by('id')
+        form = ReceiptExcelDocForm()
+        data = {
+            'rows': rows,
+            'form': form,
+        }
+        return render(request, 'admin_panel/receipt_printing_settings.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        form = ReceiptExcelDocForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        return redirect('receipt_print_settings')
+
+
+class ReceiptPrintingSettingsDefault(View):
+    def get(self, request, pk, *args, **kwargs):
+        for row in ReceiptExcelDoc.objects.all():
+            row.by_default = False
+            row.save()
+        row = ReceiptExcelDoc.objects.get(pk=pk)
+        row.by_default = True
+        row.save()
+        return redirect('receipt_print_settings')
+
+
+class ReceiptPrintingSettingsDelete(DeleteView):
+    success_url = reverse_lazy('receipt_print_settings')
+    queryset = ReceiptExcelDoc.objects.all()
 
 
 class CopyReceipt(FormView):
@@ -1155,3 +1323,17 @@ class UpdateIndication(UpdateView):
 class DeleteIndication(DeleteView):
     success_url = reverse_lazy('counters')
     queryset = Indication.objects.all()
+
+
+from openpyxl import Workbook
+
+# class DownloadExcel(View):
+#     def get(self, request, pk, *args, **kwargs):
+#         paybox = Paybox.objects.get(pk=pk)
+#         wb = Workbook()
+#         ws = wb.active  # это лист в excel
+#         ws.title = "Выписка1"# это название листа в excel
+#         wb.save('balances.xlsx')
+#         data = {
+#         }
+#         return redirect(request.path)

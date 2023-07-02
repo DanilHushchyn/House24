@@ -9,6 +9,9 @@
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
 {% load check_relation %}
+{% block title_2a %}
+    Касса
+{% endblock %}
 {% block head_2a %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/paybox/paybox.css' %}">
@@ -17,7 +20,7 @@
 {% endblock %}
 {% block name %}
     Касса
- {% endblock %}
+{% endblock %}
 {% block navigation %}
     <li class="breadcrumb-item active">Касса</li>
 {% endblock %}

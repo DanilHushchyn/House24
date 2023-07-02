@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Квитанция
+{% endblock %}
 {% block head %}
 {% endblock %}
 
@@ -65,7 +67,7 @@
                 <div class="d-flex justify-content-between flex-wrap">
                     <h5 class="me-1">Просмотр квитанции</h5>
                     <div class="text-right d-flex flex-wrap">
-                        <a class="btn btn-default me-1 mb-1" href="#!">Печать</a>
+                        <a class="btn btn-default me-1 mb-1" href="{% url 'receipt_print' receipt.id %}">Печать</a>
                         <a class="btn btn-default me-1 mb-1" href="#!">Отправить на e-mail</a>
                         <a class="btn btn-primary me-1 mb-1" href="{% url 'update_receipt' receipt.id %}">Редактировать квитанцию</a>
                     </div>

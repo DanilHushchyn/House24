@@ -8,8 +8,10 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
-{% block head_2a %}
+{% block title_2b %}
+    Пользователи
+{% endblock %}
+{% block head_2b %}
     <link rel="stylesheet" href="{% static 'admin_panel/system_settings/users/users.css' %}">
 {% endblock %}
 {% block name %}

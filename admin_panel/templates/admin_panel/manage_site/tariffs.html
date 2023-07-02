@@ -9,7 +9,9 @@
 {% bootstrap_messages %}
 {% load thumbnail %}
 {# Read the documentation for more information#}
-
+{% block title %}
+    Тарифы
+{% endblock %}
 {% block head %}
         <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 
@@ -63,9 +65,9 @@
                                     <div><i class="fa fa-trash text-red tariff__delete" style="cursor: pointer" aria-hidden="true"></i></div>
                                 </div>
                                 {% if info_photo_form.instance.img == '' %}
-                                    <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}"   alt="" class="img-fluid">
+                                    <img src="{% static 'admin_panel/imgs/placeholder.jpeg' %}"   alt="" class="img-fluid w-100" style="height: 200px;object-fit: cover">
                                 {% else %}
-                                    <img src="{% thumbnail info_photo_form.instance.img  'main' %}"   alt="" class="img-fluid">
+                                    <img src="{% thumbnail info_photo_form.instance.img  'main' %}"   alt="" class="img-fluid w-100" style="height: 200px;object-fit: cover">
                                 {% endif %}
 
                                 <div class="mb-3">
@@ -87,9 +89,9 @@
                     <hr class="pb-3" style="border-top: 1px solid darkgrey;">
                     {% bootstrap_form seo_form %}
                     <div class="text-center">
-                        {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default" %}
-                        {% bootstrap_button "Добавить тариф" button_type="button" button_class="btn-success add__tariff" %}
-                        {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success" %}
+                        {% bootstrap_button "Отменить" button_type="reset" button_class="btn-default mb-2" %}
+                        {% bootstrap_button "Добавить тариф" button_type="button" button_class="btn-success add__tariff mb-2" %}
+                        {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-success mb-2" %}
                     </div>
                 </form>
             </div>

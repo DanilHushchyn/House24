@@ -85,7 +85,7 @@ class PersonalAccount(models.Model):
     flat = models.OneToOneField('Flat', verbose_name="Квартира", on_delete=models.SET_NULL,
                                 related_name='personal_account',
                                 null=True, blank=True)
-    balance = models.DecimalField(default=0, decimal_places=2, max_digits=20,)
+    balance = models.DecimalField(default=0, decimal_places=2, max_digits=20, )
 
     def __str__(self):
         return self.number
@@ -135,6 +135,14 @@ class Receipt(models.Model):
         db_table = 'receipt'
 
 
+class ReceiptExcelDoc(models.Model):
+    title = models.CharField(verbose_name='Название', max_length=100, default='', blank=True)
+    file = models.FileField(upload_to="receipt", verbose_name="Загрузить пользовательский шаблон", )
+    by_default = models.BooleanField(default=False)
+    class Meta:
+        db_table = 'receipt_excel_doc'
+
+
 class ReceiptService(models.Model):
     unit_price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
     consumption = models.DecimalField(verbose_name='Цена', default=0, max_digits=15, decimal_places=2)
@@ -176,7 +184,7 @@ class Application(models.Model):
         ('in work', 'В работе'),
         ('complete', 'Выполнено'),
     )
-    status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='', verbose_name='Статус')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
     user = models.ForeignKey('Personal', on_delete=models.SET_NULL, null=True)
     ROLE_CHOICE = (
         ('', 'Любой специалист'),
@@ -188,7 +196,6 @@ class Application(models.Model):
     )
     user_type = models.CharField(choices=ROLE_CHOICE, max_length=100, default='')
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE, verbose_name='Квартира')
-    flat_owner = models.ForeignKey('FlatOwner', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'application'

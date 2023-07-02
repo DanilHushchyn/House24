@@ -26,3 +26,12 @@ def intspace(value):
         return new
     else:
         return intspace(new)
+
+
+@register.filter
+def get_house_queryset(value):
+    return FlatOwner.objects.get(id=value).flat_set.all().distinct('house')
+
+@register.filter
+def get_flat_queryset(value):
+    return FlatOwner.objects.get(id=value).flat_set.all()

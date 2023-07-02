@@ -8,9 +8,13 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
+{% block title %}
+    Квартира №{{ form.number.value }}, {{ form.instance.house.title }}
+{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
 {% endblock %}
+
 {% block content %}
     <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->

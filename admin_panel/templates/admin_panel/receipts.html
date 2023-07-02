@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts#}
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
-
+{% block title_2a %}
+    Квитанции на оплату
+{% endblock %}
 {% block head_2a %}
     <link rel="stylesheet" href="{% static 'node_modules/flatpickr/dist/flatpickr.min.css' %}">
     <link rel="stylesheet" href="{% static 'admin_panel/receipt/receipt.css' %}">
@@ -107,7 +109,13 @@
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.date_published }}</td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.date_published|date:"F Y" }}</td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.flat }}, {{ receipt.flat.house }}</td>
-              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.flat.flat_owner }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
+                  {% if receipt.flat.flat_owner is None %}
+                      (не указано)
+                  {% else %}
+                      {{ receipt.flat.flat_owner }}
+                  {% endif %}
+              </td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
                   {% if receipt.is_complete %}
                       Проведена

@@ -6,9 +6,9 @@ from ..models import *
 
 
 class HouseForm(forms.ModelForm):
-    title = forms.CharField(label='Название', max_length=100,
+    title = forms.CharField(label='Название', max_length=100,required=False,
                             widget=forms.TextInput(attrs={'placeholder': ''}))
-    address = forms.CharField(label='Адрес', max_length=100,
+    address = forms.CharField(label='Адрес', max_length=100,required=False,
                               widget=forms.TextInput(attrs={'placeholder': ''}))
 
     class Meta:

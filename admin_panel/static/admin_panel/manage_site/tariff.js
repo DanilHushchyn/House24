@@ -14,7 +14,7 @@ $('.add__tariff').on('click',function () {
                             <i class="fa fa-trash text-red " style="cursor: pointer" aria-hidden="true"></i>
                         </div>
                     </div>
-                    <img src="http://myhouse24.avada-media.ua/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=650&h=300&fit=crop"   alt="" class="img-fluid">
+                    <img src="http://myhouse24.avada-media.ua/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=650&h=300&fit=crop"    alt="" class="img-fluid w-100" style="height: 200px;object-fit: cover">
                     <div class="mb-3">
                         <label class="control-label mt-2 d-block" for="id_info_photo-${info_photoTotal.val()}-img">Рекомендуемый размер:
                             Файл</label>
