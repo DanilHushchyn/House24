@@ -307,23 +307,113 @@ class ReceiptPrint(View):
         return render(request, 'admin_panel/receipt_printing.html', context=data)
 
 
+def copy_row(ws, source_row_num, target_row_num):
+    # Get the source row
+    source_row = ws[source_row_num]
+
+    # Copy the source row to a new row number
+    for cell in source_row:
+        if cell.coordinate in ws.merged_cells:
+            for merged_cell in list(ws.merged_cells.ranges):
+                if cell.coordinate in merged_cell:
+                    merged_range = ws.cell(row=target_row_num,
+                                           column=merged_cell.min_col).coordinate + ":" + \
+                                   ws.cell(row=target_row_num,
+                                           column=merged_cell.max_col).coordinate
+                    ws.merge_cells(merged_range)
+                    ws.cell(row=target_row_num, column=merged_cell.min_col, value=cell.value)
+                    ws.cell(row=target_row_num, column=merged_cell.min_col).alignment = Alignment(horizontal='left',
+                                                                                                  vertical='center')  # выровнять по центр
+        else:
+            ws.cell(row=target_row_num, column=cell.col_idx, value=cell.value)
+
+    target_row = ws[target_row_num]  # Get the destination row
+
+    # Copy styles from source row to destination row
+    for source_cell, dest_cell in zip(source_row, target_row):
+        dest_cell.font = copy(source_cell.font)  # Copy font style
+        dest_cell.fill = copy(source_cell.fill)  # Copy fill style
+        dest_cell.border = copy(source_cell.border)  # Copy border style
+
+
 class ReceiptDownloadExcel(View):
     def post(self, request, excel_id, receipt_id, *args, **kwargs):
         receipt = Receipt.objects.get(pk=receipt_id)
         services = ReceiptService.objects.filter(receipt_id=receipt_id)
-
+        services_count = services.count()
         doc = ReceiptExcelDoc.objects.get(pk=excel_id)
+
         wb = load_workbook(doc.file)
         ws = wb.active  # это лист в excel
-        for row in ws.iter_rows(min_row=1, max_row=50, min_col=1, max_col=25):
+        if services_count > 0:
+            for row in ws.iter_rows(min_row=1, max_row=100, min_col=1, max_col=50):
+                for cell in row:
+                    if cell.value == 'total':
+                        final_row = ws[cell.row]
+                        ws.delete_rows(cell.row)
+
+            for row in ws.iter_rows(min_row=1, max_row=100, min_col=1, max_col=50):
+                for cell in row:
+                    match cell.value:
+                        case 'service':
+                            for i, obj in enumerate(services):
+                                ws.cell(row=cell.row + i, column=cell.column, value=str(obj.service.title))
+                                copy_row(ws, cell.row, cell.row + i)
+                                ws.cell(row=cell.row + i, column=cell.column, value=str(obj.service.title))
+                            else:
+                                for cell in final_row:
+                                    if cell.coordinate in ws.merged_cells:
+                                        for merged_cell in list(ws.merged_cells.ranges):
+                                            if cell.coordinate in merged_cell:
+                                                merged_range = ws.cell(row=cell.row + i,
+                                                                       column=merged_cell.min_col).coordinate + ":" + \
+                                                               ws.cell(row=cell.row + i,
+                                                                       column=merged_cell.max_col).coordinate
+                                                ws.merge_cells(merged_range)
+                                                ws.cell(row=cell.row + i, column=merged_cell.min_col, value=cell.value)
+                                                ws.cell(row=cell.row + i,
+                                                        column=merged_cell.min_col).alignment = Alignment(
+                                                    horizontal='right', vertical='center')  # выровнять по центр
+                                    else:
+                                        ws.cell(row=cell.row + i, column=cell.col_idx, value=cell.value)
+                                for source_cell, dest_cell in zip(final_row, ws[cell.row + i]):
+                                    dest_cell.font = copy(source_cell.font)  # Copy font style
+                                    dest_cell.fill = copy(source_cell.fill)  # Copy fill style
+                                    dest_cell.border = copy(source_cell.border)  # Copy border style
+                        case 'tariff':
+                            for i, obj in enumerate(services):
+                                ws.cell(row=cell.row + i, column=cell.column, value=str(obj.receipt.tariff.title))
+                        case 'measure':
+                            for i, obj in enumerate(services):
+                                ws.cell(row=cell.row + i, column=cell.column, value=str(obj.measure.title))
+                        case 'totalServicePrice':
+                            for i, obj in enumerate(services):
+                                ws.cell(row=cell.row + i, column=cell.column,
+                                        value=str(obj.unit_price * obj.consumption))
+        else:
+            for row in ws.iter_rows(min_row=1, max_row=100, min_col=1, max_col=50):
+                for cell in row:
+                    match cell.value:
+                        case 'service':
+                            ws.delete_rows(cell.row)
+
+        for row in ws.iter_rows(min_row=1, max_row=100, min_col=1, max_col=50):
             for cell in row:
                 match cell.value:
                     case 'personal_accountNumber':
-                        cell.value = receipt.flat.personal_account.number
-                        # cell.alignment = Alignment(horizontal='center', vertical='center') # выровнять по центру
+                        if hasattr(receipt.flat, 'personal_account'):
+                            if receipt.flat.personal_account is None or receipt.flat.personal_account == "":
+                                cell.value = ''
+                            else:
+                                cell.value = receipt.flat.personal_account.number
+                        else:
+                            cell.value = ''
                     case 'personalManager':
-                        cell.value = str(receipt.flat.flat_owner)
-                        cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центру
+                        if receipt.flat.flat_owner is None:
+                            cell.value = ''
+                        else:
+                            cell.value = str(receipt.flat.flat_owner)
+                            cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центру
                     case 'receiptNumber':
                         cell.value = receipt.number
                     case 'receiptStartDate':
@@ -331,9 +421,18 @@ class ReceiptDownloadExcel(View):
                     case 'totalPrice':
                         cell.value = receipt.total_price
                     case 'flatOwner':
-                        cell.value = str(receipt.flat.flat_owner)
+                        if receipt.flat.flat_owner is None:
+                            cell.value = ''
+                        else:
+                            cell.value = str(receipt.flat.flat_owner)
                     case 'personalAccountBalance':
-                        cell.value = receipt.flat.personal_account.balance
+                        if hasattr(receipt.flat, 'personal_account'):
+                            if receipt.flat.personal_account is None or receipt.flat.personal_account == "":
+                                cell.value = ''
+                            else:
+                                cell.value = receipt.flat.personal_account.balance
+                        else:
+                            cell.value = ''
                     case 'receiptDatePublished':
                         cell.value = receipt.date_published
                         cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центр
@@ -356,22 +455,6 @@ class ReceiptDownloadExcel(View):
                         cell.alignment = Alignment(horizontal='center', vertical='center')  # выровнять по центр
                     case 'total':
                         cell.value = receipt.total_price
-                    case 'service':
-                        pass
-
-
-                    #     for i, obj in enumerate(services):
-                    #         ws.insert_rows(cell.row + i)
-                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.service.title))
-                    # case 'tariff':
-                    #     for i, obj in enumerate(services):
-                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.receipt.tariff.title))
-                    # case 'measure':
-                    #     for i, obj in enumerate(services):
-                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(obj.measure.title))
-                    # case 'totalServicePrice':
-                    #     for i, obj in enumerate(services):
-                    #         ws.cell(row=cell.row + i, column=cell.column, value=str(float(obj.consumption) * float(obj.unit_price)))
         ws.title = "Квитанция"  # это название листа в excel
         wb.save('media/receipt/result/report.xlsx')
 

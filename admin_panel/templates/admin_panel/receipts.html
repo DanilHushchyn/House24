@@ -24,7 +24,7 @@
 {% endblock %}
 {% block action_list %}
     <li><a class="dropdown-item" href="{% url 'add_receipt' %}">Создать общую квитанцию</a></li>
-    <li><a class="dropdown-item" href="#">Удалить</a></li>
+    <li><a class="dropdown-item delete_checked_receipts" href="#!">Удалить</a></li>
 {% endblock %}
 
 {% block card_body %}
@@ -32,7 +32,7 @@
       <thead>
         <tr>
           <th class="ps-0 pe-0 text-center">
-              <input type="checkbox" value="1" name="selection_all">
+              <input type="checkbox" name="selection_all">
           </th>
           <th>№ квитанции</th>
           <th>Статус</th>
@@ -94,7 +94,7 @@
           {% for receipt in receipts %}
             <tr class="border-0">
               <td class="ps-0 pe-0 text-center">
-                  <input type="checkbox" value="" name="selection[]">
+                  <input type="checkbox" value="{{receipt.id}}" name="deletion_filter">
               </td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.number }}</td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
@@ -125,7 +125,7 @@
               </td>
               <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.total_price }}</td>
               <td class="ps-1 pe-1  text-center">
-                  <form action="{% url 'delete_receipt' receipt.id %}" method="post">
+                  <form id="receipt-delete" action="{% url 'delete_receipt' receipt.id %}" method="post">
                       {% csrf_token %}
                       <div class="btn-group">
                           <a class="btn btn-default" href="{% url 'copy_receipt' receipt.id %}" role="button"><i class="fa-solid fa-clone fa-rotate-90"></i></a>
@@ -154,6 +154,10 @@
     <div>
       <div class="d-flex flex-row flex-wrap"><span>Проведен приход:&nbsp;</span> <span class="text-bold">5 081 366.52 грн</span></div>
       <div class="d-flex flex-row flex-wrap"><span>Проведен расход:&nbsp;</span>  <span class="text-bold">2 042 796.02 грн</span></div>
+      <form  action="{% url 'receipts' %}" method="get" class="d-none">
+        {% csrf_token %}
+        <button type="Submit" class="d-none" id="reloader_tool">Refresh</button>
+      </form>
     </div>
     </div>
 {% endblock %}
@@ -163,6 +167,7 @@
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/flatpickr.js' %}"></script>
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/plugins/monthSelect/index.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script type="application/javascript">
         $(".month-picker").flatpickr({
             locale: "ru", // locale for this instance only
@@ -185,7 +190,7 @@
 
             });
         });
-        $("form").on('submit', function() {
+        $("#receipt-delete").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
         });
          document.addEventListener("DOMContentLoaded", function(event) {
@@ -196,6 +201,30 @@
                 });
             });
         });
+        $('input[name="selection_all"]').on('change',function () {
+            if ($(this).is(':checked')){
+                $('input[name="deletion_filter"]').attr('checked',true)
+            }else{
+                $('input[name="deletion_filter"]').attr('checked',false)
+            }
+        })
+        $('.delete_checked_receipts').on('click',function () {
+            if (confirm('Вы уверены, что хотите удалить ?')) {
+                $('input[name="deletion_filter"]:checked').each(function () {
+                    $.ajax({
+                        headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                        url: `/admin/receipt/delete/${$(this).val()}`,
+                        method: 'post',             /* Метод запроса (post или get) */
+                        dataType: 'json',
+                        success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                        }
+                    });
+                })
+                $('#reloader_tool').click()
+            }
+
+        })
+
     </script>
     <script type="module" src="{% static 'admin_panel/receipt/receipt.js' %}"></script>
 {% endblock %}

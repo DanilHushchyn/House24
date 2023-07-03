@@ -93,7 +93,11 @@
                 method: 'post',             /* Метод запроса (post или get) */
                 dataType: 'json',
                 success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
-                  $('.download').after(  $(`<a href="{% get_media_prefix %}/receipt/result/report.xlsx" download="">Hello World</a>`))
+                  {#$('.download').after(  $(`<a href="{% get_media_prefix %}/receipt/result/report.xlsx" download="">Hello World</a>`))#}
+                var link = document.createElement("a");
+                link.download = name;
+                link.href = "{% get_media_prefix %}/receipt/result/report.xlsx";
+                link.click();
                 }
             });
         })
