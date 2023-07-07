@@ -97,10 +97,67 @@ class PayboxList(ListView):
         context = super().get_context_data(**kwargs)
         total_plus = sum(Paybox.objects.filter(debit_credit='plus', is_complete=True).values_list('total', flat=True))
         total_minus = sum(Paybox.objects.filter(debit_credit='minus', is_complete=True).values_list('total', flat=True))
+        context['filter_form'] = PayboxFilterForm()
 
         context['total_plus'] = total_plus
         context['total_minus'] = total_minus
         return context
+
+
+class PayboxFilteredList(ListView):
+    template_name = 'admin_panel/paybox.html'
+    context_object_name = 'paybox'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PayboxFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        paybox = Paybox.objects.all()
+        form_filter = PayboxFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number__icontains=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['personal_account']:
+                qs.append(Q(personal_account__number__icontains=form_filter.cleaned_data['personal_account']))
+            if form_filter.cleaned_data['daterange']:
+                print(form_filter.cleaned_data['daterange'])
+                date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
+                date_start = date_start.split('/')
+                date_end = date_end.split('/')
+                date_start.reverse()
+                date_end.reverse()
+                date_start = "-".join(date_start)
+                date_end = "-".join(date_end)
+                qs.append(Q(
+                    Q(date_published__gte=date_start) &
+                    Q(date_published__lte=date_end)
+                ))
+
+            if form_filter.cleaned_data['article']:
+                qs.append(Q(article_id=form_filter.cleaned_data['article'].id))
+            if form_filter.cleaned_data['flat_owner']:
+                full_name = str(form_filter.cleaned_data['flat_owner']).split(' ')
+                qs.append(Q(
+                    Q(flat_owner__user__last_name__icontains=full_name[0]) &
+                    Q(flat_owner__patronymic__icontains=full_name[2]) &
+                    Q(flat_owner__user__first_name__icontains=full_name[1])
+                ))
+
+            if form_filter.cleaned_data['status']:
+                if form_filter.cleaned_data['status'] == 'complete':
+                    qs.append(Q(is_complete=True))
+                if form_filter.cleaned_data['status'] == 'no complete':
+                    qs.append(Q(is_complete=False))
+            if form_filter.cleaned_data['debit_credit']:
+                qs.append(Q(debit_credit=form_filter.cleaned_data['debit_credit']))
+            q = Q()
+            for item in qs:
+                q = q & item
+            paybox = Paybox.objects.filter(q)
+        return paybox
 
 
 class CreatePaybox(FormView):
@@ -275,6 +332,11 @@ class ReceiptList(ListView):
     context_object_name = 'receipts'
     queryset = Receipt.objects.all()
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ReceiptFilterForm()
+        return context
+
 
 class CreateReceipt(CreateView):
     model = Receipt
@@ -318,6 +380,64 @@ class GetIndicationsSortedList(View):
             "indications": indications,
         }
         return render(request, 'admin_panel/ajax_indication_table.html', context=data)
+
+
+class ReceiptsFilteredList(ListView):
+    template_name = 'admin_panel/receipts.html'
+    context_object_name = 'receipts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ReceiptFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        receipts = Receipt.objects.all()
+        form_filter = ReceiptFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number__icontains=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(status=form_filter.cleaned_data['status']))
+            if form_filter.cleaned_data['daterange']:
+                print(form_filter.cleaned_data['daterange'])
+                date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
+                date_start = date_start.split('/')
+                date_end = date_end.split('/')
+                date_start.reverse()
+                date_end.reverse()
+                date_start = "-".join(date_start)
+                date_end = "-".join(date_end)
+                qs.append(Q(
+                    Q(date_published__gte=date_start) &
+                    Q(date_published__lte=date_end)
+                ))
+            if form_filter.cleaned_data['month']:
+                date_list = form_filter.cleaned_data['month'].split('-')
+                date_list.reverse()
+                result = "-".join(date_list)
+                qs.append(Q(date_published__month=date_list[1]))
+            if form_filter.cleaned_data['flat']:
+                qs.append(Q(flat__number__icontains=form_filter.cleaned_data['flat']))
+            if form_filter.cleaned_data['flat_owner']:
+                full_name = str(form_filter.cleaned_data['flat_owner']).split(' ')
+                qs.append(Q(
+                    Q(flat__flat_owner__user__last_name__icontains=full_name[0]) &
+                    Q(flat__flat_owner__patronymic__icontains=full_name[2]) &
+                    Q(flat__flat_owner__user__first_name__icontains=full_name[1])
+                ))
+
+            if form_filter.cleaned_data['complete']:
+                if form_filter.cleaned_data['complete'] == 'complete':
+                    qs.append(Q(is_complete=True))
+                if form_filter.cleaned_data['complete'] == 'no complete':
+                    qs.append(Q(is_complete=False))
+            q = Q()
+            for item in qs:
+                q = q & item
+            receipts = Receipt.objects.filter(q)
+        return receipts
 
 
 class UpdateReceipt(UpdateView):
@@ -1538,25 +1658,47 @@ class ApplicationFilteredList(ListView):
         qs = []
         if form_filter.is_valid():
             if form_filter.cleaned_data['number']:
-                qs.append(Q(number=form_filter.cleaned_data['number']))
-            if form_filter.cleaned_data['house']:
-                qs.append(Q(house_id=form_filter.cleaned_data['house'].id))
-            if form_filter.cleaned_data['section']:
-                qs.append(Q(section_id=form_filter.cleaned_data['section'].id))
-            if form_filter.cleaned_data['floor']:
-                qs.append(Q(floor_id=form_filter.cleaned_data['floor'].id))
+                qs.append(Q(pk__icontains=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['daterange']:
+                print(form_filter.cleaned_data['daterange'])
+                date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
+                date_start = date_start.split('/')
+                date_end = date_end.split('/')
+                date_start.reverse()
+                date_end.reverse()
+                date_start = "-".join(date_start)
+                date_end = "-".join(date_end)
+                qs.append(Q(
+                    Q(date_published__gte=date_start) &
+                    Q(date_published__lte=date_end)
+                ))
+
+            if form_filter.cleaned_data['master_type']:
+                if form_filter.cleaned_data['master_type'] == 'any_master':
+                    qs.append(Q(user_type=''))
+                else:
+                    qs.append(Q(user_type=form_filter.cleaned_data['master_type']))
+            if form_filter.cleaned_data['description']:
+                qs.append(Q(description__icontains=form_filter.cleaned_data['description']))
+            if form_filter.cleaned_data['flat']:
+                qs.append(Q(flat__number__icontains=form_filter.cleaned_data['flat']))
             if form_filter.cleaned_data['flat_owner']:
                 full_name = str(form_filter.cleaned_data['flat_owner']).split(' ')
                 qs.append(Q(
-                    Q(flat_owner__patronymic__icontains=full_name[0]) |
-                    Q(flat_owner__user__first_name__icontains=full_name[1]) |
-                    Q(flat_owner__user__last_name__icontains=full_name[2])
+                    Q(flat__flat_owner__user__last_name__icontains=full_name[0]) &
+                    Q(flat__flat_owner__patronymic__icontains=full_name[2]) &
+                    Q(flat__flat_owner__user__first_name__icontains=full_name[1])
                 ))
-            if form_filter.cleaned_data['have_debts']:
-                if form_filter.cleaned_data['have_debts'] == 'no':
-                    qs.append(Q(personal_account__balance__gte=0))
-                elif form_filter.cleaned_data['have_debts'] == 'yes':
-                    qs.append(Q(personal_account__balance__lt=0))
+            if form_filter.cleaned_data['phone']:
+                qs.append(Q(flat__flat_owner__user__phone__icontains=form_filter.cleaned_data['phone']))
+            if form_filter.cleaned_data['master']:
+                full_name = str(form_filter.cleaned_data['master']).split()
+                qs.append(Q(
+                    Q(user__user__first_name__icontains=full_name[1]) &
+                    Q(user__user__last_name__icontains=full_name[0])
+                ))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(status=form_filter.cleaned_data['status']))
             q = Q()
             for item in qs:
                 q = q & item
@@ -1598,6 +1740,45 @@ class CounterList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CountersFilterForm()
+        return context
+
+class CountersFilteredList(ListView):
+    template_name = 'admin_panel/counters.html'
+    context_object_name = 'indications'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CountersFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        indications = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
+        form_filter = CountersFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['flat']:
+                print(form_filter.cleaned_data['flat'])
+                qs.append(Q(flat__number=form_filter.cleaned_data['flat']))
+            if form_filter.cleaned_data['house']:
+                print(form_filter.cleaned_data['house'])
+
+                qs.append(Q(flat__house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['section']:
+                print(form_filter.cleaned_data['section'])
+
+                qs.append(Q(flat__section_id=form_filter.cleaned_data['section'].id))
+            if form_filter.cleaned_data['service']:
+                print(form_filter.cleaned_data['service'])
+
+                qs.append(Q(service_id=form_filter.cleaned_data['service'].id))
+            q = Q()
+            for item in qs:
+                q = q & item
+            indications = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service').filter(q)
+        return indications
 
 
 class CounterIndicationsList(ListView):

@@ -31,132 +31,113 @@
 {% endblock %}
 
 {% block card_body %}
-   <table id="paybox" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Дата</th>
-          <th>Статус</th>
-          <th>Тип платежа</th>
-          <th>Владелец</th>
-          <th>Лицевой счёт</th>
-          <th>Приход/Расход</th>
-          <th>Сумма (грн)</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px">
-               <input type="text" class="daterange" name="daterange" value="" />
-           </td>
-           <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Проведён</option>
-                        <option>Не проведён</option>
-                    </select>
-               </div>
-          </td>
-          <td style="min-width: 200px">
-               <div class="form-group mb-0">
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Тип платежа 1</option>
-                        <option>Тип платежа 2</option>
-                    </select>
-               </div>
-          </td>
-          <td  style="min-width: 200px">
-              <div class="form-group mb-0">
-                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                    <option></option>
-                    <option>Alaska... Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
-                  </select>
-              </div>
-          </td>
-          <td  style="min-width: 145px">
-              <input type="text" style="width: 100%" class="form-control rounded-0">
-          </td>
-          <td  style="min-width: 150px">
-               <div class="form-group mb-0">
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Приход</option>
-                        <option>Расход</option>
-                    </select>
-               </div>
-          </td>
-          <td style="min-width: 120px"></td>
-          <td>
-          </td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for row in paybox %}
-        <tr class="border-0">
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.number }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.date_published|date:"d.m.Y" }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-              {% if row.is_complete %}
-                  <span class="badge text-bg-success text-white">Проведен</span>
+    <form action="{% url 'filtered_paybox' %}" method="get" id="filter">
+       <table id="paybox" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Дата</th>
+              <th>Статус</th>
+              <th>Тип платежа</th>
+              <th>Владелец</th>
+              <th>Лицевой счёт</th>
+              <th>Приход/Расход</th>
+              <th>Сумма (грн)</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+               <td style="min-width: 150px">
+                     {% bootstrap_field filter_form.number wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.daterange wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+
+                   {% bootstrap_field filter_form.status wrapper_class='' %}
+              </td>
+              <td style="min-width: 200px">
+
+                  {% bootstrap_field filter_form.article wrapper_class='' %}
+              </td>
+              <td  style="min-width: 200px">
+
+                  {% bootstrap_field filter_form.flat_owner wrapper_class='' %}
+
+              </td>
+              <td  style="min-width: 145px">
+                  {% bootstrap_field filter_form.personal_account wrapper_class='' %}
+              </td>
+              <td  style="min-width: 150px">
+
+                  {% bootstrap_field filter_form.debit_credit wrapper_class='' %}
+              </td>
+              <td style="min-width: 120px"></td>
+              <td>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+          {% for row in paybox %}
+            <tr class="border-0">
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.number }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >{{ row.date_published|date:"d.m.Y" }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                  {% if row.is_complete %}
+                      <span class="badge text-bg-success text-white">Проведен</span>
+                      {% else %}
+                      <span class="badge text-bg-danger text-white">Не проведен</span>
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                   {% if  row.article is None %}
+                       (не задано)
+                   {% else %}
+                       {{ row.article }}
+                   {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                  {% if  row.flat_owner is None %}
+                       (не задано)
                   {% else %}
-                  <span class="badge text-bg-danger text-white">Не проведен</span>
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-               {% if  row.article is None %}
-                   (не задано)
-               {% else %}
-                   {{ row.article }}
-               {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-              {% if  row.flat_owner is None %}
-                   (не задано)
-              {% else %}
-                   {{ row.flat_owner }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-               {% if  row.personal_account is None %}
-                   (не задано)
-               {% else %}
-                   {{ row.personal_account }}
-               {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-              {% if row.debit_credit == 'plus' %}
-                  <span class="badge text-bg-success text-white">Приход</span>
-                  {% elif row.debit_credit == 'minus' %}
-                  <span class="badge text-bg-danger text-white">Расход</span>
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
-              {% if row.debit_credit == 'plus' %}
-                  <span class="text-success">{{ row.total }}</span>
-                  {% elif row.debit_credit == 'minus' %}
-                  <span class="text-danger">{{ row.total }}</span>
-              {% endif %}
-          </td>
-          <td class="ps-1 pe-1">
-              <form action="{% url 'delete_paybox' row.id %}" method="post">
-                  {% csrf_token %}
-                  <div class="btn-group">
-                      <a class="btn btn-default" href="{% url 'update_paybox' row.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                  </div>
-              </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-   </table>
+                       {{ row.flat_owner }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                   {% if  row.personal_account is None %}
+                       (не задано)
+                   {% else %}
+                       {{ row.personal_account }}
+                   {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                  {% if row.debit_credit == 'plus' %}
+                      <span class="badge text-bg-success text-white">Приход</span>
+                      {% elif row.debit_credit == 'minus' %}
+                      <span class="badge text-bg-danger text-white">Расход</span>
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_paybox' row.id %}" >
+                  {% if row.debit_credit == 'plus' %}
+                      <span class="text-success">{{ row.total }}</span>
+                      {% elif row.debit_credit == 'minus' %}
+                      <span class="text-danger">{{ row.total }}</span>
+                  {% endif %}
+              </td>
+              <td class="ps-1 pe-1">
+                  <form action="{% url 'delete_paybox' row.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="btn-group">
+                          <a class="btn btn-default" href="{% url 'update_paybox' row.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                      </div>
+                  </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}
@@ -203,7 +184,7 @@
 
             });
         });
-        $("form").on('submit', function() {
+        $(".delete-confirmation").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -214,6 +195,15 @@
                     window.location.href = row.dataset.href;
                 });
             });
+        });
+        $('#filter').on('change',function () {
+             $(this).trigger('submit')
+        });
+         $('#filter').on('cancel.daterangepicker',function () {
+            $(this).trigger('submit')
+        });
+         $('#filter').on('apply.daterangepicker',function () {
+             $(this).trigger('submit')
         });
     </script>
     <script type="module" src="{% static 'admin_panel/paybox/paybox.js' %}"></script>

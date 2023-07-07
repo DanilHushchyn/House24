@@ -67,7 +67,7 @@
                     <div class="card-body p-2">
                             <div class="row">
                                 <div class="col-12 col-sm-6 pe-4 ps-0">
-                                    <a class="user_link" href="{% url 'update_client' form.instance.flat_owner.user.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
+                                    <a class="user_link" href="{% url 'update_client' form.instance.flat.flat_owner.user.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
                                     {% bootstrap_field form.flat_owner %}
                                     <p><b>Телефон:</b> <a href="tel:{{ form.instance.flat_owner.user.phone }}">{{ form.instance.flat_owner.user.phone }}</a></p>
                                 </div>

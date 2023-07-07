@@ -45,67 +45,28 @@
               <th></th>
             </tr>
             <tr class="border-0" >
-               <td style="min-width: 150px">
-{#                   <input type="text" class="form-control rounded-0">#}
-                   {% bootstrap_field filter_form.number %}
+               <td style="min-width: 150px">{% bootstrap_field filter_form.number wrapper_class=''%}
                </td>
                <td style="min-width: 150px">
-{#                   <input type="text" class="daterange" name="daterange" value="" />#}
-                     {% bootstrap_field filter_form.period %}
+                   {% bootstrap_field filter_form.daterange wrapper_class=''%}
                </td>
-                <td style="min-width: 150px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>Мастер 1</option>#}
-{#                        </select>#}
-{#                   </div>#}
-                    {% bootstrap_field filter_form.master_type %}
-
+                <td style="min-width: 180px">
+                    {% bootstrap_field filter_form.master_type wrapper_class=''%}
                 </td>
-               <td style="min-width: 150px">
-{#                   <input type="text" class="form-control rounded-0">#}
-                   {% bootstrap_field filter_form.description %}
+               <td style="min-width: 150px">{% bootstrap_field filter_form.description wrapper_class=''%}
                </td>
-               <td style="min-width: 150px">
-{#                   <input type="text" class="form-control rounded-0">#}
-                   {% bootstrap_field filter_form.flat %}
+               <td style="min-width: 150px">{% bootstrap_field filter_form.flat wrapper_class=''%}
                </td>
                <td  style="min-width: 200px">
-{#                  <div class="form-group mb-0">#}
-{#                      <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                        <option></option>#}
-{#                        <option>Alaska... Alaska</option>#}
-{#                        <option>California</option>#}
-{#                        <option>Delaware</option>#}
-{#                        <option>Tennessee</option>#}
-{#                        <option>Texas</option>#}
-{#                        <option>Washington</option>#}
-{#                      </select>#}
-{#                  </div>#}
-                   {% bootstrap_field filter_form.number %}
-
+                   {% bootstrap_field filter_form.flat_owner wrapper_class=''%}
                </td>
-               <td style="min-width: 150px">
-{#                   <input type="text" class="form-control rounded-0">#}
+               <td style="min-width: 150px">{% bootstrap_field filter_form.phone wrapper_class=''%}
                </td>
                <td style="min-width: 200px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>Сантехник - Виктор</option>#}
-{#                        </select>#}
-{#                   </div>#}
+                   {% bootstrap_field filter_form.master wrapper_class=''%}
                 </td>
                 <td style="min-width: 150px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>Новое</option>#}
-{#                            <option>В работе</option>#}
-{#                            <option>Выполнено</option>#}
-{#                        </select>#}
-{#                   </div>#}
+                    {% bootstrap_field filter_form.status wrapper_class=''%}
                 </td>
                <td></td>
             </tr>
@@ -242,7 +203,7 @@
               $(this).val('');
           });
         });
-        $("form").on('submit', function() {
+        $(".delete-confirmation").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -253,6 +214,15 @@
                     window.location.href = row.dataset.href;
                 });
             });
+        });
+        $('#filter').on('change',function () {
+             $(this).trigger('submit')
+        });
+         $('#filter').on('cancel.daterangepicker',function () {
+            $(this).trigger('submit')
+        });
+         $('#filter').on('apply.daterangepicker',function () {
+             $(this).trigger('submit')
         });
     </script>
     <script type="module" src="{% static 'admin_panel/application/application.js' %}"></script>

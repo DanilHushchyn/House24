@@ -7,6 +7,8 @@ urlpatterns = [
 
 
     path("paybox", admin_panel.views.PayboxList.as_view(), name='paybox'),
+    path("filtered_paybox", admin_panel.views.PayboxFilteredList.as_view(),
+         name='filtered_paybox'),
     path("paybox/add/<str:income>", admin_panel.views.CreatePaybox.as_view(), name='add_paybox'),
     path("paybox/update/<str:pk>", admin_panel.views.UpdatePaybox.as_view(), name='update_paybox'),
     path("paybox/copy/<str:pk>", admin_panel.views.CopyPaybox.as_view(), name='copy_paybox'),
@@ -15,6 +17,8 @@ urlpatterns = [
 
 
     path("receipts", admin_panel.views.ReceiptList.as_view(), name='receipts'),
+    path("filtered_receipts", admin_panel.views.ReceiptsFilteredList.as_view(),
+         name='filtered_receipts'),
     path("receipt/add", admin_panel.views.CreateReceipt.as_view(), name='add_receipt'),
     path("receipt/update/<str:pk>", admin_panel.views.UpdateReceipt.as_view(), name='update_receipt'),
     path("receipt/copy/<str:pk>", admin_panel.views.CopyReceipt.as_view(), name='copy_receipt'),
@@ -92,6 +96,8 @@ urlpatterns = [
 
 
     path("counters", admin_panel.views.CounterList.as_view(), name='counters'),
+    path("filtered_counters", admin_panel.views.CountersFilteredList.as_view(),
+         name='filtered_counters'),
     path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
     path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),

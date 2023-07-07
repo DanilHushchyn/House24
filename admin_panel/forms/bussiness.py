@@ -354,7 +354,8 @@ class HouseFilterForm(forms.Form):
 
 class ApplicationsFilterForm(forms.Form):
     ROLE_CHOICE = (
-        ('', 'Любой специалист'),
+        ('', ''),
+        ('any_master', 'Любой специалист'),
         ('director', 'Директор'),
         ('manager', 'Управляющий'),
         ('accountant', 'Бухгалтер'),
@@ -364,25 +365,93 @@ class ApplicationsFilterForm(forms.Form):
     )
     STATUS_CHOICE = (
         ('', ''),
-        ('active', 'Активен'),
-        ('new', 'Новый'),
-        ('disabled', 'Отключен'),
+        ('new', 'Новое'),
+        ('in work', 'В работе'),
+        ('complete', 'Выполнено'),
     )
     number = forms.CharField(label="", max_length=100, required=False,
                              widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
-    period = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
-        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    daterange = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'placeholder': '', 'class': 'daterange', 'value': ''}))
     master_type = forms.ChoiceField(label="", required=False, choices=ROLE_CHOICE, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
     description = forms.CharField(label="", max_length=100, required=False,
-                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+                                  widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     flat = forms.CharField(label="", max_length=100, required=False,
                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control  rounded-0'}))
     flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
     phone = forms.CharField(label="", max_length=100, required=False,
-                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
-    email = forms.CharField(label="", max_length=100, required=False,
                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    master = PersonalChoiceField(label="", required=False, queryset=Personal.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
     status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class PayboxFilterForm(forms.Form):
+    PLUS_MINUS = (
+        ('', ''),
+        ('plus', 'Приход'),
+        ('minus', 'Расход'),
+    )
+    STATUS_CHOICE = (
+        ('', ''),
+        ('complete', 'Проведен'),
+        ('no complete', 'Не проведен'),
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    daterange = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'placeholder': '', 'class': 'daterange', 'value': ''}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    article = forms.ModelChoiceField(label='', queryset=Article.objects.all(), required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
+    personal_account = forms.CharField(label="", max_length=100, required=False,
+                                       widget=forms.TextInput(
+                                           attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    debit_credit = forms.ChoiceField(label="", choices=PLUS_MINUS, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class ReceiptFilterForm(forms.Form):
+    COMPLETE = (
+        ('', ''),
+        ('complete', 'Проведена'),
+        ('no complete', 'Не проведена'),
+    )
+    STATUS_CHOICE = (
+        ('', ''),
+        ('paid', 'Оплачена'),
+        ('partially_paid', 'Частично оплачена'),
+        ('unpaid', 'Не оплачена'),
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    daterange = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'placeholder': '', 'class': 'daterange', 'value': ''}))
+    month = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'placeholder': '', 'class': 'month-picker', 'value': '', 'style': 'background:white'}))
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
+    complete = forms.ChoiceField(label="", choices=COMPLETE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class CountersFilterForm(forms.Form):
+    house = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    section = forms.ModelChoiceField(label="", required=False, queryset=Section.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-section select2-success rounded-0 form-section-select'}))
+
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    service = forms.ModelChoiceField(label="", required=False, queryset=Service.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple select2-success rounded-0 form-service-select'}))
