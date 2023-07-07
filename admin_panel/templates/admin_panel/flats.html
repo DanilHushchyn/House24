@@ -29,123 +29,95 @@
 {% endblock %}
 
 {% block card_body %}
-   <table id="flat" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>№ квартиры</th>
-          <th>Дом</th>
-          <th>Секция</th>
-          <th>Этаж</th>
-          <th>Владелец</th>
-          <th>Остаток (грн)	</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Дом 1</option>
-                        <option>Дом 2</option>
-                    </select>
-               </div>
-          </td>
-          <td style="min-width: 180px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-section select2-success rounded-0"   data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Секция 1</option>
-                    </select>
-               </div>
-          </td>
-          <td style="min-width: 190px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-floor select2-success rounded-0"   data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Этаж 1</option>
-                    </select>
-               </div>
-          </td>
-          <td  style="min-width: 200px">
-              <div class="form-group mb-0">
-                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                    <option></option>
-                    <option>Alaska... Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
-                  </select>
-              </div>
-          </td>
-          <td  style="min-width: 150px">
-               <div class="form-group mb-0">
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Есть долг</option>
-                        <option>Нет долга</option>
-                    </select>
-               </div>
-          </td>
-          <td></td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for flat in flats %}
-        <tr class="border-0">
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >{{ flat.number }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >{{ flat.house.title }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
-              {% if flat.section is None %}
-                  (не указано)
-              {% else %}
-                  {{ flat.section.title }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
-              {% if flat.floor is None %}
-                  (не указано)
-              {% else %}
-                  {{ flat.floor.title }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
-              {% if flat.flat_owner is None %}
-                  (не указано)
-              {% else %}
-                  {{ flat.flat_owner }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
-              {% if flat.personal_account is None or flat.personal_account == "" %}
-                  (нет счёта)
-              {% else %}
-                  {% if flat.personal_account.balance > 0 %}
-                      <span class="text-success">{{ flat.personal_account.balance }}</span>
-                      {% elif flat.personal_account.balance < 0 %}
-                      <span class="text-danger">{{ flat.personal_account.balance }}</span>
-                      {% else %}
-                      <span>{{ flat.personal_account.balance }}</span>
+    <form action="{% url 'filtered_flats' %}" method="get" id="filter">
+       <table id="flat" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>№ квартиры</th>
+              <th>Дом</th>
+              <th>Секция</th>
+              <th>Этаж</th>
+              <th>Владелец</th>
+              <th>Остаток (грн)	</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.number wrapper_class='' %}
+               </td>
+               <td style="min-width: 200px">
+                   {% bootstrap_field filter_form.house wrapper_class='' %}
+              </td>
+              <td style="min-width: 200px">
+                  {% bootstrap_field filter_form.section wrapper_class='' %}
+              </td>
+              <td style="min-width: 200px">
+                  {% bootstrap_field filter_form.floor wrapper_class='' %}
+              </td>
+              <td  style="min-width: 200px">
+                  {% bootstrap_field filter_form.flat_owner wrapper_class='' %}
+              </td>
+              <td  style="min-width: 150px">
+                  {% bootstrap_field filter_form.have_debts wrapper_class='' %}
+              </td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+          {% for flat in flats %}
+            <tr class="border-0">
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >{{ flat.number }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >{{ flat.house.title }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
+                  {% if flat.section is None %}
+                      (не указано)
+                  {% else %}
+                      {{ flat.section.title }}
                   {% endif %}
-              {% endif %}
-          </td>
-          <td class="ps-1 pe-1">
-              <form action="{% url 'delete_flat' flat.id %}" method="post">
-                  {% csrf_token %}
-                  <div class="btn-group">
-                      <a class="btn btn-default" href="{% url 'update_flat' flat.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                  </div>
-              </form>
-          </td>
-        </tr>
-      {% endfor %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
+                  {% if flat.floor is None %}
+                      (не указано)
+                  {% else %}
+                      {{ flat.floor.title }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
+                  {% if flat.flat_owner is None %}
+                      (не указано)
+                  {% else %}
+                      {{ flat.flat_owner }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_flat' flat.id %}" >
+                  {% if flat.personal_account is None or flat.personal_account == "" %}
+                      (нет счёта)
+                  {% else %}
+                      {% if flat.personal_account.balance > 0 %}
+                          <span class="text-success">{{ flat.personal_account.balance }}</span>
+                          {% elif flat.personal_account.balance < 0 %}
+                          <span class="text-danger">{{ flat.personal_account.balance }}</span>
+                          {% else %}
+                          <span>{{ flat.personal_account.balance }}</span>
+                      {% endif %}
+                  {% endif %}
+              </td>
+              <td class="ps-1 pe-1">
+                  <form action="{% url 'delete_flat' flat.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="btn-group">
+                          <a class="btn btn-default" href="{% url 'update_flat' flat.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation delete-flat" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                      </div>
+                  </form>
+              </td>
+            </tr>
+          {% endfor %}
 
-      </tbody>
+          </tbody>
 
-   </table>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}
@@ -179,17 +151,33 @@
 
             });
         });
-        $('.select2-section').select2({
+        if($('.form-house-select').val()==='') {
+            $('.select2-simple-section').select2({
+              placeholder: 'Выберите дом',
+              minimumResultsForSearch: -1
+
+            })
+            $('.select2-simple-floor').select2({
               placeholder: 'Выберите дом',
               minimumResultsForSearch: -1
 
         })
-        $('.select2-floor').select2({
-              placeholder: 'Выберите этаж',
+        }else{
+            $('.select2-simple-section').select2({
+              placeholder: '',
+              minimumResultsForSearch: -1
+            })
+            $('.select2-simple-floor').select2({
+              placeholder: '',
               minimumResultsForSearch: -1
 
-        })
-        $("form").on('submit', function() {
+            })
+        }
+
+
+
+
+        $(".delete-flat").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -202,5 +190,5 @@
             });
         });
     </script>
-{#    <script type="module" src="{% static 'admin_panel/flat/flat.js' %}"></script>#}
+    <script type="module" src="{% static 'admin_panel/flat/flat_list.js' %}"></script>
 {% endblock %}

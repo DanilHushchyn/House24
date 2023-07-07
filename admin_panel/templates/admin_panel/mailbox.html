@@ -63,10 +63,11 @@
             <div class="card-body p-0">
               <div class="mailbox-controls">
                 <!-- Check all button -->
-                <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="far fa-square"></i>
+                <button type="button" class="btn btn-default btn-sm checkbox-toggle">
+                    <i class="far fa-square"></i>
                 </button>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-default btn-sm">
+                  <button type="button" class="btn btn-default btn-sm delete_checked_messages">
                     <i class="far fa-trash-alt"></i>
                   </button>
                 </div>
@@ -91,8 +92,8 @@
                               <tr style="cursor: pointer">
                                     <td>
                                       <div class="icheck-primary">
-                                        <input type="checkbox" value="" id="check2">
-                                        <label for="check2"></label>
+                                          <input type="checkbox" value="{{mailbox.id}}" name="deletion_filter">
+                                          <label for="check2"></label>
                                       </div>
                                     </td>
                                     <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-name">
@@ -137,11 +138,15 @@
                   <i class="far fa-square"></i>
                 </button>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-default btn-sm">
+                  <button type="button" class="btn btn-default btn-sm delete_checked_messages">
                     <i class="far fa-trash-alt"></i>
                   </button>
                 </div>
               </div>
+                <form  action="{% url 'mailboxes' %}" method="get" class="d-none">
+                        {% csrf_token %}
+                        <button type="Submit" class="d-none" id="reloader_tool">Refresh</button>
+                </form>
             </div>
        </div>
     </section>
@@ -151,6 +156,8 @@
 {% endblock %}
 
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/plugins/monthSelect/index.js' %}"></script>
     <script type="application/javascript">
         $('.checkbox-toggle').click(function () {
           var clicks = $(this).data('clicks')
@@ -173,5 +180,22 @@
                 });
             });
         });
+        $('.delete_checked_messages').on('click',function () {
+            if (confirm('Вы уверены, что хотите удалить ?')) {
+                $('input[name="deletion_filter"]:checked').each(function () {
+                    $.ajax({
+                        headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                        url: `/admin/mailbox/delete/${$(this).val()}`,
+                        method: 'post',             /* Метод запроса (post или get) */
+                        dataType: 'html',
+                        success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                            $('#reloader_tool').click()
+
+                        }
+                    });
+                })
+            }
+
+        })
     </script>
 {% endblock %}

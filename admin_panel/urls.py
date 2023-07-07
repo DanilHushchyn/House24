@@ -28,6 +28,7 @@ urlpatterns = [
 
 
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
+    path("filtered_personal_accounts", admin_panel.views.PersonalAccountFilteredList.as_view(), name='filtered_personal_accounts'),
     path("personal_accounts/add", admin_panel.views.CreatePersonalAccount.as_view(), name='add_personal_account'),
     path("personal_accounts/update/<str:pk>", admin_panel.views.UpdatePersonalAccount.as_view(), name='update_personal_account'),
     path("personal_accounts/detail/<str:pk>", admin_panel.views.PersonalAccountDetail.as_view(), name='read_personal_account'),
@@ -39,6 +40,8 @@ urlpatterns = [
 
 
     path("flats", admin_panel.views.FlatListView.as_view(), name='flats'),
+    path("filtered_flats", admin_panel.views.FlatFilteredList.as_view(),
+         name='filtered_flats'),
     path("flats/add", admin_panel.views.CreateFlatView.as_view(), name='add_flat'),
     path("flats/update/<str:pk>", admin_panel.views.UpdateFlatView.as_view(), name='update_flat'),
     path("flats/detail/<str:pk>", admin_panel.views.FlatDetail.as_view(), name='read_flat'),
@@ -54,6 +57,7 @@ urlpatterns = [
 
 
     path("clients", admin_panel.views.ClientListView.as_view(), name='clients'),
+    path("filtered_clients", admin_panel.views.ClientFilteredListView.as_view(), name='filtered_clients'),
     path("clients/add", admin_panel.views.ClientSignUpView.as_view(), name='add_client'),
     path("clients/update/<str:pk>", admin_panel.views.UpdateClientView.as_view(), name='update_client'),
     path("clients/detail/<str:pk>", admin_panel.views.ClientDetail.as_view(), name='read_client'),
@@ -61,6 +65,8 @@ urlpatterns = [
 
 
     path("houses", admin_panel.views.HouseListView.as_view(), name='houses'),
+    path("filtered_houses", admin_panel.views.HouseFilteredList.as_view(),
+         name='filtered_houses'),
     path("houses/add", admin_panel.views.CreateHouseView.as_view(), name='add_house'),
     path("house/update/<str:pk>", admin_panel.views.UpdateHouseView.as_view(), name='update_house'),
     path("house/detail/<str:pk>", admin_panel.views.HouseDetail.as_view(), name='read_house'),
@@ -75,6 +81,8 @@ urlpatterns = [
 
 
     path("applications", admin_panel.views.ApplicationList.as_view(), name='applications'),
+    path("filtered_applications", admin_panel.views.ApplicationFilteredList.as_view(),
+         name='filtered_applications'),
     path("application/add", admin_panel.views.CreateApplication.as_view(), name='add_application'),
     path("application/update/<str:pk>", admin_panel.views.UpdateApplication.as_view(),
          name='update_application'),

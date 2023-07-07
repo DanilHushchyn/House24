@@ -1,5 +1,6 @@
 import json
 from copy import copy
+from functools import reduce
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import *
 from openpyxl.reader.excel import load_workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 from openpyxl.utils import range_boundaries
 
 from admin_panel.forms import *
@@ -22,7 +23,75 @@ def statistic(request):
 class PayboxList(ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
-    queryset = Paybox.objects.all()
+
+    def get_queryset(self):
+        paybox = Paybox.objects.all()
+        wb = Workbook()
+        ws = wb.active  # это лист в excel
+        ws.append(
+            [
+                '#',
+                'Дата',
+                'Приход/расход',
+                'Статус',
+                'Статья',
+                'Квитанция',
+                'Услуга',
+                'Сумма',
+                'Валюта',
+                'Владелец квартиры',
+                'Лицевой счет',
+            ]
+        )
+        # Define a font style that is bold
+        bold_font = Font(bold=True)
+        # Apply the bold font style to the cells in the row
+        for cell in ws[1]:
+            cell.font = bold_font
+
+        for obj in paybox:
+            if obj.flat_owner is not None:
+                flat_owner = f'{obj.flat_owner}'
+            else:
+                flat_owner = f''
+
+            if obj.personal_account is not None:
+                personal_account = f'{obj.personal_account}'
+            else:
+                personal_account = f''
+            ws.append([
+                f'{obj.number}',
+                f'{obj.date_published}',
+                f'{obj.get_debit_credit_display()}',
+                f'{"Проведен" if obj.is_complete else "Не проведен"}',
+                f'{obj.article.title}',
+                f'',
+                f'',
+                f'{obj.total}',
+                f'UAH',
+                f'{flat_owner}',
+                f'{personal_account}',
+            ])
+
+        ws.title = "Выписка"  # это название листа в excel
+        ws.column_dimensions['A'].width = 40
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 25
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 25
+        ws.column_dimensions['F'].width = 30
+        ws.column_dimensions['G'].width = 20
+        ws.column_dimensions['H'].width = 20
+        ws.column_dimensions['I'].width = 20
+        ws.column_dimensions['J'].width = 40
+        ws.column_dimensions['K'].width = 20
+
+        wb.save('media/paybox/all_info.xlsx')
+
+        # Get full path to workbook
+        wb.close()
+
+        return paybox
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -556,6 +625,52 @@ class FlatListView(ListView):
     context_object_name = 'flats'
     queryset = Flat.objects.all()
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = FlatsFilterForm()
+        return context
+
+
+class FlatFilteredList(ListView):
+    template_name = 'admin_panel/flats.html'
+    context_object_name = 'flats'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = FlatsFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        flats = Flat.objects.all()
+        form_filter = FlatsFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['house']:
+                qs.append(Q(house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['section']:
+                qs.append(Q(section_id=form_filter.cleaned_data['section'].id))
+            if form_filter.cleaned_data['floor']:
+                qs.append(Q(floor_id=form_filter.cleaned_data['floor'].id))
+            if form_filter.cleaned_data['flat_owner']:
+                full_name = str(form_filter.cleaned_data['flat_owner']).split(' ')
+                qs.append(Q(
+                    Q(flat_owner__patronymic__icontains=full_name[0]) |
+                    Q(flat_owner__user__first_name__icontains=full_name[1]) |
+                    Q(flat_owner__user__last_name__icontains=full_name[2])
+                ))
+            if form_filter.cleaned_data['have_debts']:
+                if form_filter.cleaned_data['have_debts'] == 'no':
+                    qs.append(Q(personal_account__balance__gte=0))
+                elif form_filter.cleaned_data['have_debts'] == 'yes':
+                    qs.append(Q(personal_account__balance__lt=0))
+            q = Q()
+            for item in qs:
+                q = q & item
+            flats = Flat.objects.filter(q)
+        return flats
+
 
 class CreateFlatView(CreateView):
     model = Flat
@@ -691,7 +806,125 @@ class FlatPayboxList(ListView):
 class PersonalAccountListView(ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
-    queryset = PersonalAccount.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PersonalAccountsFilterForm()
+        return context
+
+    def get_queryset(self):
+        personal_accounts = PersonalAccount.objects.all()
+
+        wb = Workbook()
+        ws = wb.active  # это лист в excel
+        ws.append(
+            [
+                'Лицевой счет',
+                'Cтатус',
+                'Дом',
+                'Секция',
+                'Квартира',
+                'Владелец',
+                'Остаток',
+            ]
+        )
+        # Define a font style that is bold
+        bold_font = Font(bold=True)
+        # Apply the bold font style to the cells in the row
+        for cell in ws[1]:
+            cell.font = bold_font
+
+        for obj in personal_accounts:
+            if obj.house is None:
+                house = f''
+            else:
+                house = f'{obj.house}'
+
+            if obj.section is None:
+                section = f''
+            else:
+                section = f'{obj.section}'
+
+            if obj.flat is None:
+                flat = f''
+            else:
+                flat = f'{obj.flat}'
+
+            if obj.flat is not None:
+                if obj.flat.flat_owner is not None:
+                    flat_owner = f'{obj.flat.flat_owner}'
+                else:
+                    flat_owner = f''
+            else:
+                flat_owner = f''
+            ws.append([
+                f'{obj.number}',
+                f'{obj.get_status_display()}',
+                f'{house}',
+                f'{section}',
+                f'{flat}',
+                f'{flat_owner}',
+                f'{obj.balance}',
+            ])
+
+        ws.title = "Выписка"  # это название листа в excel
+        ws.column_dimensions['A'].width = 40
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 25
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 15
+        ws.column_dimensions['F'].width = 30
+        ws.column_dimensions['G'].width = 20
+
+        wb.save('media/personal_account/info.xlsx')
+
+        # Get full path to workbook
+        wb.close()
+
+        return personal_accounts
+
+
+class PersonalAccountFilteredList(ListView):
+    template_name = 'admin_panel/personal_accounts.html'
+    context_object_name = 'personal_accounts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PersonalAccountsFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        personal_accounts = PersonalAccount.objects.all()
+        form_filter = PersonalAccountsFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number__icontains=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(status=form_filter.cleaned_data['status']))
+            if form_filter.cleaned_data['flat']:
+                qs.append(Q(flat__number=form_filter.cleaned_data['flat']))
+            if form_filter.cleaned_data['house']:
+                qs.append(Q(house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['section']:
+                qs.append(Q(section_id=form_filter.cleaned_data['section'].id))
+            if form_filter.cleaned_data['flat_owner']:
+                full_name = str(form_filter.cleaned_data['flat_owner']).split()
+                qs.append(Q(
+                    Q(flat__flat_owner__patronymic=full_name[2]) &
+                    Q(flat__flat_owner__user__first_name=full_name[1]) &
+                    Q(flat__flat_owner__user__last_name=full_name[0])
+                ))
+            if form_filter.cleaned_data['have_debts']:
+                if form_filter.cleaned_data['have_debts'] == 'no':
+                    qs.append(Q(balance__gte=0))
+                elif form_filter.cleaned_data['have_debts'] == 'yes':
+                    qs.append(Q(balance__lt=0))
+            q = Q()
+            for item in qs:
+                q = q & item
+            personal_accounts = PersonalAccount.objects.filter(q)
+        return personal_accounts
 
 
 class PersonalAccountDetail(DetailView):
@@ -823,7 +1056,66 @@ class PersonalAccountPayboxList(ListView):
 class ClientListView(ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
-    queryset = FlatOwner.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ClientsFilterForm()
+        return context
+
+    def get_queryset(self):
+        clients = FlatOwner.objects.all()
+        return clients
+
+
+class ClientFilteredListView(ListView):
+    template_name = 'admin_panel/clients.html'
+    context_object_name = 'clients'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ClientsFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        clients = FlatOwner.objects.all()
+        form_filter = ClientsFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+
+            if form_filter.cleaned_data['ID']:
+                qs.append(Q(ID__icontains=form_filter.cleaned_data['ID']))
+            if form_filter.cleaned_data['full_name']:
+                full_name = form_filter.cleaned_data['full_name'].split(' ')
+                qs.append(Q(
+                    Q(patronymic__icontains=form_filter.cleaned_data['full_name']) |
+                    Q(patronymic__in=full_name) |
+                    Q(user__first_name__in=full_name) |
+                    Q(user__last_name__in=full_name) |
+                    Q(user__first_name__icontains=form_filter.cleaned_data['full_name']) |
+                    Q(user__last_name__icontains=form_filter.cleaned_data['full_name'])
+                ))
+
+            if form_filter.cleaned_data['phone']:
+                qs.append(Q(user__phone__icontains=form_filter.cleaned_data['phone']))
+            if form_filter.cleaned_data['email']:
+                qs.append(Q(user__email=form_filter.cleaned_data['email']))
+            if form_filter.cleaned_data['house']:
+                qs.append(Q(flat__house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['flat']:
+                qs.append(Q(flat__number=form_filter.cleaned_data['flat']))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(user__status=form_filter.cleaned_data['status']))
+            if form_filter.cleaned_data['date_added']:
+                date_str = form_filter.cleaned_data['date_added'].split('/')
+                date_str.reverse()
+                result = "-".join(date_str)
+                qs.append(Q(user__date_joined=result))
+
+            q = Q()
+            for item in qs:
+                q = q & item
+            clients = FlatOwner.objects.filter(q)
+        return clients
 
 
 class ClientDetail(DetailView):
@@ -882,6 +1174,38 @@ class HouseListView(ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
     queryset = House.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = HouseFilterForm()
+        return context
+
+
+class HouseFilteredList(ListView):
+    template_name = 'admin_panel/houses.html'
+    context_object_name = 'houses'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = HouseFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        houses = House.objects.all()
+        form_filter = HouseFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            print(form_filter.cleaned_data['title'])
+            if form_filter.cleaned_data['title']:
+                print(form_filter.cleaned_data['title'])
+                qs.append(Q(title__icontains=form_filter.cleaned_data['title']))
+            if form_filter.cleaned_data['address']:
+                qs.append(Q(address__icontains=form_filter.cleaned_data['address']))
+            q = Q()
+            for item in qs:
+                q = q & item
+            houses = House.objects.filter(q)
+        return houses
 
 
 class HouseDetail(DetailView):
@@ -1192,6 +1516,52 @@ class ApplicationList(ListView):
     template_name = 'admin_panel/applications.html'
     context_object_name = 'applications'
     queryset = Application.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ApplicationsFilterForm()
+        return context
+
+
+class ApplicationFilteredList(ListView):
+    template_name = 'admin_panel/applications.html'
+    context_object_name = 'applications'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ApplicationsFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        applications = Application.objects.all()
+        form_filter = ApplicationsFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['house']:
+                qs.append(Q(house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['section']:
+                qs.append(Q(section_id=form_filter.cleaned_data['section'].id))
+            if form_filter.cleaned_data['floor']:
+                qs.append(Q(floor_id=form_filter.cleaned_data['floor'].id))
+            if form_filter.cleaned_data['flat_owner']:
+                full_name = str(form_filter.cleaned_data['flat_owner']).split(' ')
+                qs.append(Q(
+                    Q(flat_owner__patronymic__icontains=full_name[0]) |
+                    Q(flat_owner__user__first_name__icontains=full_name[1]) |
+                    Q(flat_owner__user__last_name__icontains=full_name[2])
+                ))
+            if form_filter.cleaned_data['have_debts']:
+                if form_filter.cleaned_data['have_debts'] == 'no':
+                    qs.append(Q(personal_account__balance__gte=0))
+                elif form_filter.cleaned_data['have_debts'] == 'yes':
+                    qs.append(Q(personal_account__balance__lt=0))
+            q = Q()
+            for item in qs:
+                q = q & item
+            applications = Application.objects.filter(q)
+        return applications
 
 
 class ApplicationDetail(DetailView):

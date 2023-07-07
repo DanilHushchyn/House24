@@ -74,7 +74,13 @@
       {% for indication in indications %}
         <tr class="border-0">
           <td>{{ indication.flat.house }}</td>
-          <td>{{ indication.flat.section }}</td>
+          <td>
+              {% if indication.flat.section is None %}
+                  (не указано)
+              {% else %}
+                  {{ indication.flat.section }}
+              {% endif %}
+          </td>
           <td>
               {{ indication.flat.number }}
           </td>

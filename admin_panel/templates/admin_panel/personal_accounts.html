@@ -22,139 +22,113 @@
 {% endblock %}
 {% block action_list %}
     <li><a class="dropdown-item" href="{% url 'add_personal_account' %}">Добавить лицевой счёт</a></li>
-    <li><a class="dropdown-item" href="#">Выгрузить в excel</a></li>
+    <li><a class="dropdown-item" href="{% get_media_prefix %}/personal_account/info.xlsx" download="">Выгрузить в excel</a></li>
 {% endblock %}
 
 {% block card_body %}
-   <table id="personal_account" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Статус</th>
-          <th>Квартира</th>
-          <th>Дом</th>
-          <th>Секция</th>
-          <th>Владелец</th>
-          <th>Остаток (грн)</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 190px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Активен</option>
-                        <option>Не активен</option>
-                    </select>
-               </div>
-          </td>
-          <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-          <td  style="min-width: 145px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Дом 1</option>
-                        <option>Дом 2</option>
-                        <option>Дом 3</option>
-                    </select>
-               </div>
-          </td>
-          <td  style="min-width: 145px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Секция 1</option>
-                        <option>Секция 2</option>
-                        <option>Секция 3</option>
-                    </select>
-               </div>
-          </td>
-          <td  style="min-width: 200px">
-              <div class="form-group mb-0">
-                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                    <option></option>
-                    <option>Владелец 1</option>
-                    <option>Владелец 2</option>
-                    <option>Владелец 3</option>
-                    <option>Владелец 4</option>
-                    <option>Владелец 5</option>
-                  </select>
-              </div>
-          </td>
-          <td  style="min-width: 145px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Есть долг</option>
-                        <option>Нет долга</option>
-                    </select>
-               </div>
-          </td>
-          <td></td>
-        </tr>
-      </thead>
-      <tbody>
-        {% for personal_account in personal_accounts %}
-        <tr class="border-0">
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >{{ personal_account.number }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.get_status_display == 'Активен' %}
-                  <span class="badge text-bg-success text-white">Активен</span>
-                  {% elif personal_account.get_status_display == 'Не активен' %}
-                  <span class="badge text-bg-danger text-white">Не Активен</span>
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.flat is None %}
-                  (не указано)
-              {% else %}
-                  {{ personal_account.flat.number }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.house is None %}
-                  (не указано)
-              {% else %}
-                  {{ personal_account.house.title }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.section is None %}
-                  (не указано)
-              {% else %}
-                  {{ personal_account.section.title }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.flat.flat_owner is None %}
-                  (не указано)
-              {% else %}
-                  {{ personal_account.flat.flat_owner }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
-              {% if personal_account.balance > 0 %}
-                  <span class="text-success">{{ personal_account.balance }}</span>
-                  {% elif personal_account.balance < 0 %}
-                  <span class="text-danger">{{ personal_account.balance }}</span>
+    <form action="{% url 'filtered_personal_accounts' %}" method="get" id="filter">
+       <table id="personal_account" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Статус</th>
+              <th>Квартира</th>
+              <th>Дом</th>
+              <th>Секция</th>
+              <th>Владелец</th>
+              <th>Остаток (грн)</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+               <td style="min-width: 150px">{% bootstrap_field filter_form.number wrapper_class='' %}
+               </td>
+               <td style="min-width: 160px">
+                   <div class="form-group mb-0">
+                       {% bootstrap_field filter_form.status wrapper_class='' %}
+                   </div>
+              </td>
+              <td style="min-width: 150px">{% bootstrap_field filter_form.flat wrapper_class='' %}
+
+              </td>
+              <td  style="min-width: 200px">
+                  {% bootstrap_field filter_form.house wrapper_class='' %}
+              </td>
+              <td  style="min-width: 200px">
+                  {% bootstrap_field filter_form.section wrapper_class='' %}
+
+              </td>
+              <td  style="min-width: 250px">
+                  {% bootstrap_field filter_form.flat_owner wrapper_class='' %}
+
+              </td>
+              <td  style="min-width: 150px">
+                  {% bootstrap_field filter_form.have_debts wrapper_class='' %}
+              </td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for personal_account in personal_accounts %}
+            <tr class="border-0">
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >{{ personal_account.number }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.get_status_display == 'Активен' %}
+                      <span class="badge text-bg-success text-white">Активен</span>
+                      {% elif personal_account.get_status_display == 'Не активен' %}
+                      <span class="badge text-bg-danger text-white">Не Активен</span>
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.flat is None %}
+                      (не указано)
                   {% else %}
-                  <span>{{ personal_account.balance }}</span>
-              {% endif %}
-          </td>
-          <td class="ps-1 pe-1">
-              <form action="{% url 'delete_personal_account' personal_account.id %}" method="post">
-                  {% csrf_token %}
-                  <div class="btn-group">
-                      <a class="btn btn-default" href="{% url 'update_personal_account' personal_account.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                  </div>
-              </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-   </table>
+                      {{ personal_account.flat.number }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.house is None %}
+                      (не указано)
+                  {% else %}
+                      {{ personal_account.house.title }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.section is None %}
+                      (не указано)
+                  {% else %}
+                      {{ personal_account.section.title }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.flat.flat_owner is None %}
+                      (не указано)
+                  {% else %}
+                      {{ personal_account.flat.flat_owner }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_personal_account' personal_account.id %}" >
+                  {% if personal_account.balance > 0 %}
+                      <span class="text-success">{{ personal_account.balance }}</span>
+                      {% elif personal_account.balance < 0 %}
+                      <span class="text-danger">{{ personal_account.balance }}</span>
+                      {% else %}
+                      <span>{{ personal_account.balance }}</span>
+                  {% endif %}
+              </td>
+              <td class="ps-1 pe-1">
+                  <form class="delete_personal_account" action="{% url 'delete_personal_account' personal_account.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="btn-group">
+                          <a class="btn btn-default" href="{% url 'update_personal_account' personal_account.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                      </div>
+                  </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}
@@ -181,7 +155,7 @@
 
             });
         });
-         $("form").on('submit', function() {
+         $(".delete_personal_account").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -193,6 +167,20 @@
                 });
             });
         });
+        if($('.form-house-select').val()==='') {
+            $('.select2-simple-section').select2({
+              placeholder: 'Выберите дом',
+              minimumResultsForSearch: -1
+
+            })
+        }else{
+            $('.select2-simple-section').select2({
+              placeholder: '',
+              minimumResultsForSearch: -1
+
+            })
+        }
+
     </script>
-    <script type="module" src="{% static 'admin_panel/personal_account/personal_account.js' %}"></script>
+    <script type="module" src="{% static 'admin_panel/personal_account/personal_accounts_list.js' %}"></script>
 {% endblock %}

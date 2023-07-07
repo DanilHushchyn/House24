@@ -27,7 +27,7 @@
 {% block action_list %}
     <li><a class="dropdown-item" href="{% url 'add_paybox' "plus" %}">Создать приход</a></li>
     <li><a class="dropdown-item" href="{% url 'add_paybox' "minus" %}">Создать расход</a></li>
-    <li><a class="dropdown-item" href="#!">Выгрузить в excel</a></li>
+    <li><a class="dropdown-item" href="{% get_media_prefix %}/paybox/all_info.xlsx" download="">Выгрузить в excel</a></li>
 {% endblock %}
 
 {% block card_body %}

@@ -29,129 +29,147 @@
 {% endblock %}
 
 {% block card_body %}
-   <table id="application" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>№ заявки</th>
-          <th>Удобное время</th>
-          <th>Тип мастера</th>
-          <th>Описание</th>
-          <th>Квартира</th>
-          <th>Владелец</th>
-          <th>Телефон</th>
-          <th>Мастер</th>
-          <th>Статус</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px">
-               <input type="text" class="daterange" name="daterange" value="" />
-           </td>
-            <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Мастер 1</option>
-                    </select>
-               </div>
-            </td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td  style="min-width: 200px">
-              <div class="form-group mb-0">
-                  <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                    <option></option>
-                    <option>Alaska... Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
-                  </select>
-              </div>
-           </td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 200px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Сантехник - Виктор</option>
-                    </select>
-               </div>
-            </td>
-            <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Новое</option>
-                        <option>В работе</option>
-                        <option>Выполнено</option>
-                    </select>
-               </div>
-            </td>
-           <td></td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for application in applications %}
-        <tr class="border-0">
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">{{ application.id }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">{{ application.date_published|date:"d.m.Y"}} - {{ application.time_published }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.get_user_type_display }}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.description }}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {{ application.flat }}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {% if application.flat.flat_owner is None %}
-                  (не указано)
-              {% else %}
-                  {{ application.flat.flat_owner }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {% if application.flat.flat_owner is None %}
-                  (не указано)
-              {% else %}
-                  {{ application.flat.flat_owner.user.phone }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {% if application.user is None %}
-                  (не указано)
-              {% else %}
-                  {{ application.user }}
-              {% endif %}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
-              {% if application.get_status_display == 'Новое' %}
-                  <span class="badge text-bg-primary text-white">Новое</span>
-                  {% elif application.get_status_display == 'Выполнено' %}
-                  <span class="badge text-bg-success text-white">Выполнено</span>
-                  {% elif application.get_status_display == 'В работе' %}
-                  <span class="badge text-bg-warning text-white">В работе</span>
+    <form action="{% url 'filtered_applications' %}" method="get" id="filter">
+       <table id="application" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>№ заявки</th>
+              <th>Удобное время</th>
+              <th>Тип мастера</th>
+              <th>Описание</th>
+              <th>Квартира</th>
+              <th>Владелец</th>
+              <th>Телефон</th>
+              <th>Мастер</th>
+              <th>Статус</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+               <td style="min-width: 150px">
+{#                   <input type="text" class="form-control rounded-0">#}
+                   {% bootstrap_field filter_form.number %}
+               </td>
+               <td style="min-width: 150px">
+{#                   <input type="text" class="daterange" name="daterange" value="" />#}
+                     {% bootstrap_field filter_form.period %}
+               </td>
+                <td style="min-width: 150px">
+{#                   <div class="form-group mb-0" >#}
+{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
+{#                            <option></option>#}
+{#                            <option>Мастер 1</option>#}
+{#                        </select>#}
+{#                   </div>#}
+                    {% bootstrap_field filter_form.master_type %}
+
+                </td>
+               <td style="min-width: 150px">
+{#                   <input type="text" class="form-control rounded-0">#}
+                   {% bootstrap_field filter_form.description %}
+               </td>
+               <td style="min-width: 150px">
+{#                   <input type="text" class="form-control rounded-0">#}
+                   {% bootstrap_field filter_form.flat %}
+               </td>
+               <td  style="min-width: 200px">
+{#                  <div class="form-group mb-0">#}
+{#                      <select class="form-control select2 select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
+{#                        <option></option>#}
+{#                        <option>Alaska... Alaska</option>#}
+{#                        <option>California</option>#}
+{#                        <option>Delaware</option>#}
+{#                        <option>Tennessee</option>#}
+{#                        <option>Texas</option>#}
+{#                        <option>Washington</option>#}
+{#                      </select>#}
+{#                  </div>#}
+                   {% bootstrap_field filter_form.number %}
+
+               </td>
+               <td style="min-width: 150px">
+{#                   <input type="text" class="form-control rounded-0">#}
+               </td>
+               <td style="min-width: 200px">
+{#                   <div class="form-group mb-0" >#}
+{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
+{#                            <option></option>#}
+{#                            <option>Сантехник - Виктор</option>#}
+{#                        </select>#}
+{#                   </div>#}
+                </td>
+                <td style="min-width: 150px">
+{#                   <div class="form-group mb-0" >#}
+{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
+{#                            <option></option>#}
+{#                            <option>Новое</option>#}
+{#                            <option>В работе</option>#}
+{#                            <option>Выполнено</option>#}
+{#                        </select>#}
+{#                   </div>#}
+                </td>
+               <td></td>
+            </tr>
+          </thead>
+          <tbody>
+          {% for application in applications %}
+            <tr class="border-0">
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">{{ application.id }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">{{ application.date_published|date:"d.m.Y"}} - {{ application.time_published }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {{ application.get_user_type_display }}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {{ application.description }}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {{ application.flat }}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {% if application.flat.flat_owner is None %}
+                      (не указано)
                   {% else %}
-                  {{ application.get_status_display }}
-              {% endif %}
-          </td>
-          <td class="ps-1 pe-1 text-center">
-              <form action="{% url 'delete_application' application.id %}" method="post">
-                  {% csrf_token %}
-                  <div class="btn-group">
-                      <a class="btn btn-default" href="{% url 'update_application' application.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                  </div>
-              </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-   </table>
+                      {{ application.flat.flat_owner }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {% if application.flat.flat_owner is None %}
+                      (не указано)
+                  {% else %}
+                      {{ application.flat.flat_owner.user.phone }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {% if application.user is None %}
+                      (не указано)
+                  {% else %}
+                      {{ application.user }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_application' application.id %}">
+                  {% if application.get_status_display == 'Новое' %}
+                      <span class="badge text-bg-primary text-white">Новое</span>
+                      {% elif application.get_status_display == 'Выполнено' %}
+                      <span class="badge text-bg-success text-white">Выполнено</span>
+                      {% elif application.get_status_display == 'В работе' %}
+                      <span class="badge text-bg-warning text-white">В работе</span>
+                      {% else %}
+                      {{ application.get_status_display }}
+                  {% endif %}
+              </td>
+              <td class="ps-1 pe-1 text-center">
+                  <form action="{% url 'delete_application' application.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="btn-group">
+                          <a class="btn btn-default" href="{% url 'update_application' application.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                      </div>
+                  </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}

@@ -26,6 +26,7 @@ class CustomUser(AbstractUser):
         ('disabled', 'Отключен'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
+    date_joined = models.DateField()
 
     def __str__(self):
         return self.last_name + " " + self.first_name
@@ -35,7 +36,6 @@ class CustomUser(AbstractUser):
 
 
 class Personal(models.Model):
-
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     ROLE_CHOICE = (
         ('director', 'Директор'),
@@ -43,6 +43,7 @@ class Personal(models.Model):
         ('accountant', 'Бухгалтер'),
         ('electrician', 'Электрик'),
         ('plumber', 'Сантехник'),
+        ('locksmith', 'Слесарь'),
     )
 
     def __str__(self):

@@ -85,7 +85,7 @@
                                         {% if users %}
                                             {% for user in users %}
                                                 <p class="no-margin"><strong>{{ user.user.get_role_display }}:</strong>
-                                                    <a href="/admin/user-admin/14">{{ user.user }}</a>
+                                                    <a href="{% url 'read_personal' user.user.id %}">{{ user.user }}</a>
                                                 </p>
                                             {% endfor %}
                                         {% else %}

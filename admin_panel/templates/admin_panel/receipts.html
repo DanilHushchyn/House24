@@ -190,7 +190,7 @@
 
             });
         });
-        $("#receipt-delete").on('submit', function() {
+        $(".delete-confirmation").on('click', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
         });
          document.addEventListener("DOMContentLoaded", function(event) {
@@ -215,12 +215,12 @@
                         headers: {"X-CSRFToken": $.cookie("csrftoken")},
                         url: `/admin/receipt/delete/${$(this).val()}`,
                         method: 'post',             /* Метод запроса (post или get) */
-                        dataType: 'json',
+                        dataType: 'html',
                         success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                            $('#reloader_tool').click()
                         }
                     });
                 })
-                $('#reloader_tool').click()
             }
 
         })

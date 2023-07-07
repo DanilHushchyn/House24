@@ -144,8 +144,8 @@ class ReceiptExcelDoc(models.Model):
 
 
 class ReceiptService(models.Model):
-    unit_price = models.DecimalField(verbose_name='Цена', default=0, max_digits=10, decimal_places=2)
-    consumption = models.DecimalField(verbose_name='Цена', default=0, max_digits=15, decimal_places=2)
+    unit_price = models.DecimalField(verbose_name='Цена', default=0.0, max_digits=10, decimal_places=2)
+    consumption = models.DecimalField(verbose_name='Цена', default=0.0 ,max_digits=15, decimal_places=2)
     receipt = models.ForeignKey('Receipt', on_delete=models.CASCADE, null=True, blank=True)
     service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
     measure = models.ForeignKey('Measure', verbose_name='Ед. изм.', on_delete=models.SET_NULL, null=True, blank=True)
@@ -156,7 +156,7 @@ class ReceiptService(models.Model):
 
 class Indication(models.Model):
     number = models.CharField(verbose_name='', max_length=100, default='', blank=True)
-    indication_val = models.DecimalField(max_digits=6, decimal_places=1, verbose_name='Показания', null=True,
+    indication_val = models.DecimalField(max_digits=6, decimal_places=1, verbose_name='Показания', default=0.0,
                                          blank=True)
     date_published = models.DateField()
     STATUS_CHOICE = (

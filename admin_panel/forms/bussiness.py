@@ -36,7 +36,6 @@ class IndicationForm(forms.ModelForm):
     house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
                                    widget=forms.Select(attrs={'class': 'form-house-select'}))
     service = forms.ModelChoiceField(queryset=Service.objects.filter(show_in_indication=True), label='Счётчик',
-                                     required=False,
                                      widget=forms.Select(attrs={'class': 'form-service-select'}))
     flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира',
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
@@ -295,3 +294,95 @@ class PayboxForm(forms.ModelForm):
         widgets = {
             'comment': forms.Textarea(attrs={'placeholder': '', 'rows': 5, })
         }
+
+
+class PersonalAccountsFilterForm(forms.Form):
+    STATUS_CHOICE = (
+        ('', ''),
+        ('active', 'Активен'),
+        ('not active', 'Не активен'),
+    )
+    DEBTS_CHOICE = (
+        ('', ''),
+        ('yes', 'Есть долг'),
+        ('no', 'Нет долга'),
+
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    house = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    section = forms.ModelChoiceField(label="", required=False, queryset=Section.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-section select2-success rounded-0 form-section-select'}))
+    flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
+    have_debts = forms.ChoiceField(label="", required=False, choices=DEBTS_CHOICE, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class FlatsFilterForm(forms.Form):
+    DEBTS_CHOICE = (
+        ('', ''),
+        ('yes', 'Есть долг'),
+        ('no', 'Нет долга'),
+
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    house = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    section = forms.ModelChoiceField(label="", required=False, queryset=Section.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-section select2-success rounded-0 form-section-select'}))
+    floor = forms.ModelChoiceField(label="", required=False, queryset=Floor.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-floor select2-success rounded-0 form-floor-select'}))
+    flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
+    have_debts = forms.ChoiceField(label="", required=False, choices=DEBTS_CHOICE, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class HouseFilterForm(forms.Form):
+    title = forms.CharField(label="", max_length=100, required=False,
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    address = forms.CharField(label="", max_length=100, required=False,
+                              widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+
+
+class ApplicationsFilterForm(forms.Form):
+    ROLE_CHOICE = (
+        ('', 'Любой специалист'),
+        ('director', 'Директор'),
+        ('manager', 'Управляющий'),
+        ('accountant', 'Бухгалтер'),
+        ('electrician', 'Электрик'),
+        ('plumber', 'Сантехник'),
+        ('locksmith', 'Слесарь'),
+    )
+    STATUS_CHOICE = (
+        ('', ''),
+        ('active', 'Активен'),
+        ('new', 'Новый'),
+        ('disabled', 'Отключен'),
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    period = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    master_type = forms.ChoiceField(label="", required=False, choices=ROLE_CHOICE, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    description = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control  rounded-0'}))
+    flat_owner = forms.ModelChoiceField(label="", required=False, queryset=FlatOwner.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2 select2-success rounded-0'}))
+    phone = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    email = forms.CharField(label="", max_length=100, required=False,
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))

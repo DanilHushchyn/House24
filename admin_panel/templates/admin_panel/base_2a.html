@@ -99,7 +99,7 @@
       <!-- Default box -->
        <div class="card card-success card-outline">
           <div class="card-header text-right p-2 pe-3">
-            <button type="button" class="btn btn-default">Очистить</button>
+            <button type="button" class="btn btn-default clear_button">Очистить</button>
           </div>
           <!-- /.card-header -->
           <div class="card-body p-0">
@@ -128,13 +128,13 @@
        //Initialize Select2 Elements
         $('.select2').select2({
               placeholder: '',
-
         })
         $('.select2-simple').select2({
               placeholder: '',
               minimumResultsForSearch: -1
 
         })
+
        $(function() {
           $('input[name="daterange"]').daterangepicker({
             opens: 'center',
@@ -182,6 +182,19 @@
               $(this).val('');
           });
         });
+        $('.clear_button').on('click',function () {
+            $('input').each(function () {
+                $(this).val('')
+            })
+            $(".select2-simple").val('').trigger('change')
+            $(".select2-simple-section").val('').trigger('change')
+            $(".select2-simple-floor").val('').trigger('change')
+            $(".select2").val('').trigger('change')
+
+             $("#filter").trigger('submit')
+
+        })
+
 
     </script>
     {% block  script_2a %}

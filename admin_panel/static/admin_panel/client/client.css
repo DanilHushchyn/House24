@@ -5,4 +5,8 @@
   cursor: pointer;
 }
 
+#client_filter {
+  display: none;
+}
+
 /*# sourceMappingURL=client.css.map */

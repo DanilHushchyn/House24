@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.db import transaction
 
+from House24 import settings
 from ..models import *
 
 User = get_user_model()
@@ -171,3 +172,36 @@ class ClientUpdateForm(UserChangeForm):
         obj.ID = self.cleaned_data.get('ID')
         obj.save()
         return user
+
+
+class ClientsFilterForm(forms.Form):
+    STATUS_CHOICE = (
+        ('', ''),
+        ('new', 'Новый'),
+        ('active', 'Активен'),
+        ('disabled', 'Отключен'),
+    )
+    DEBTS_CHOICE = (
+        ('', ''),
+        ('yes', 'Да'),
+        ('no', 'Нет'),
+
+    )
+    ID = forms.CharField(label="", max_length=100, required=False,
+                         widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    full_name = forms.CharField(label="", max_length=100, required=False,
+                                widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    phone = forms.CharField(label="", max_length=11, required=False,
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    email = forms.CharField(label="", max_length=100, required=False,
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    house = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    date_added = forms.CharField(label="", max_length=100, required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': '', 'class': 'singledatepicker',}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    have_debts = forms.ChoiceField(label="", required=False, choices=DEBTS_CHOICE, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))

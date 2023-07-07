@@ -29,50 +29,56 @@
 {% endblock %}
 
 {% block card_body %}
-   <table id="house" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Название</th>
-          <th>Адрес</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-           <td class="ps-2 pe-2"></td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td></td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for house in houses %}
-        <tr class="border-0">
-          <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >{{ house.id }}</td>
-          <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
-                {% if house.title == "" %}
-                    (не указано)
-                {% else %}
-                    {{ house.title }}
-                {% endif %}
-          </td>
-          <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
-              {% if house.address == "" %}
-                    (не указано)
-              {% else %}
-                    {{ house.address }}
-              {% endif %}
-          </td>
-          <td class="ps-1 pe-1 text-center">
-              <form action="{% url 'delete_house' house.id %}" method="post">
-                  {% csrf_token %}
-                  <a class="btn btn-default" href="{% url 'update_house' house.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                  <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-              </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-   </table>
+    <form action="{% url 'filtered_houses' %}" method="get" id="filter">
+       <table id="house" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Название</th>
+              <th>Адрес</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+               <td class="ps-2 pe-2"></td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.title wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.address wrapper_class='' %}
+               </td>
+               <td></td>
+            </tr>
+          </thead>
+          <tbody>
+          {% for house in houses %}
+            <tr class="border-0">
+              <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >{{ house.id }}</td>
+              <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
+                    {% if house.title == "" %}
+                        (не указано)
+                    {% else %}
+                        {{ house.title }}
+                    {% endif %}
+              </td>
+              <td style="cursor: pointer" data-href="{% url 'read_house' house.id %}" >
+                  {% if house.address == "" %}
+                        (не указано)
+                  {% else %}
+                        {{ house.address }}
+                  {% endif %}
+              </td>
+              <td class="ps-1 pe-1 text-center">
+                  <form action="{% url 'delete_house' house.id %}" method="post">
+                      {% csrf_token %}
+                      <a class="btn btn-default" href="{% url 'update_house' house.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}
@@ -103,7 +109,7 @@
                 "bInfo" : false
             });
         });
-          $("form").on('submit', function() {
+          $(".delete-confirmation").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -116,5 +122,5 @@
             });
         });
     </script>
-    <script type="module" src="{% static 'admin_panel/house/house.js' %}"></script>
+    <script type="module" src="{% static 'admin_panel/house/house_list.js' %}"></script>
 {% endblock %}

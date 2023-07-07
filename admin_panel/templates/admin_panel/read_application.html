@@ -108,7 +108,7 @@
                         <tr>
                             <td>Квартира</td>
                             <td>
-                                <a href="/admin/flat/341">
+                                <a href="{% url 'read_flat' application.flat.id  %}">
                                     {{ application.flat.number }}, {{ application.flat.house }}
                                 </a>
                             </td>
