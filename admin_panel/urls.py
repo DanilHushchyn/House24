@@ -78,6 +78,8 @@ urlpatterns = [
 
 
     path("mailbox", admin_panel.views.MailboxList.as_view(), name='mailboxes'),
+    path("filtered_messages", admin_panel.views.MailboxFilteredList.as_view(),
+         name='filtered_messages'),
     path("mailbox/add", admin_panel.views.CreateMailbox.as_view(), name='add_mailbox'),
     path("mailbox/detail/<str:pk>", admin_panel.views.MailboxDetail.as_view(), name='mailbox_detail'),
     path("mailbox/delete/<str:pk>", admin_panel.views.DeleteMailbox.as_view(),
@@ -99,6 +101,8 @@ urlpatterns = [
     path("filtered_counters", admin_panel.views.CountersFilteredList.as_view(),
          name='filtered_counters'),
     path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),
+    path("filtered_counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsFilteredList.as_view(),
+         name='filtered_counter_indications'),
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
     path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),
     path("indication/add_to_flat/<str:flat>", admin_panel.views.CreateIndicationForFlat.as_view(), name='add_indication_to_flat'),

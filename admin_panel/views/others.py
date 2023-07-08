@@ -1609,6 +1609,35 @@ class MailboxList(ListView):
     context_object_name = 'mailboxes'
     queryset = MailBox.objects.all()
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = SearchMessageFilterForm()
+        return context
+
+
+class MailboxFilteredList(ListView):
+    template_name = 'admin_panel/mailbox.html'
+    context_object_name = 'mailboxes'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = SearchMessageFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        search_filter = SearchMessageFilterForm(self.request.GET)
+        mailboxes = MailBox.objects.all()
+        qs = []
+        if search_filter.is_valid():
+            if search_filter.cleaned_data['search_row']:
+                qs.append(Q(description__icontains=search_filter.cleaned_data['search_row']))
+                qs.append(Q(title__icontains=search_filter.cleaned_data['search_row']))
+            q = Q()
+            for item in qs:
+                q = q | item
+            mailboxes = MailBox.objects.filter(q)
+        return mailboxes
+
 
 class CreateMailbox(CreateView):
     model = MailBox
@@ -1740,10 +1769,12 @@ class CounterList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = CountersFilterForm()
         return context
+
 
 class CountersFilteredList(ListView):
     template_name = 'admin_panel/counters.html'
@@ -1777,7 +1808,58 @@ class CountersFilteredList(ListView):
             q = Q()
             for item in qs:
                 q = q & item
-            indications = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service').filter(q)
+            indications = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat',
+                                                                                                     'service').filter(
+                q)
+        return indications
+
+
+class CounterIndicationsFilteredList(ListView):
+    template_name = 'admin_panel/counter_indications_list.html'
+    context_object_name = 'indications'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
+        context['service'] = Service.objects.get(pk=self.kwargs['service'])
+        context['filter_form'] = CounterIndicationsFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        indications = Indication.objects.filter(flat_id=self.kwargs['flat'])
+        form_filter = CounterIndicationsFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['house']:
+                print(form_filter.cleaned_data['house'])
+                qs.append(Q(flat__house_id=form_filter.cleaned_data['house'].id))
+            if form_filter.cleaned_data['section']:
+                print(form_filter.cleaned_data['section'])
+                qs.append(Q(flat__section_id=form_filter.cleaned_data['section'].id))
+            if form_filter.cleaned_data['service']:
+                print(form_filter.cleaned_data['service'])
+                qs.append(Q(service_id=form_filter.cleaned_data['service'].id))
+            if form_filter.cleaned_data['number']:
+                qs.append(Q(number__icontains=form_filter.cleaned_data['number']))
+            if form_filter.cleaned_data['daterange']:
+                print(form_filter.cleaned_data['daterange'])
+                date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
+                date_start = date_start.split('/')
+                date_end = date_end.split('/')
+                date_start.reverse()
+                date_end.reverse()
+                date_start = "-".join(date_start)
+                date_end = "-".join(date_end)
+                qs.append(Q(
+                    Q(date_published__gte=date_start) &
+                    Q(date_published__lte=date_end)
+                ))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(status=form_filter.cleaned_data['status']))
+            q = Q()
+            for item in qs:
+                q = q & item
+            indications = Indication.objects.filter(flat_id=self.kwargs['flat']).filter(q)
         return indications
 
 
@@ -1789,6 +1871,8 @@ class CounterIndicationsList(ListView):
         context = super().get_context_data(**kwargs)
         context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
         context['service'] = Service.objects.get(pk=self.kwargs['service'])
+        context['filter_form'] = CounterIndicationsFilterForm(initial={'service': self.kwargs['service']})
+
         return context
 
     def get_queryset(self):

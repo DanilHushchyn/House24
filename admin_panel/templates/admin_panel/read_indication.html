@@ -79,23 +79,29 @@
                         <tr>
                             <td>Дом</td>
                             <td>
-                                <a href="/admin/house/206">{{ indication.flat.house}}</a>
+                                <a href="{% url 'read_house' indication.flat.house.id %}">{{ indication.flat.house}}</a>
                             </td>
                         </tr>
                         <tr>
                             <td>Секция</td>
-                            <td>{{ indication.flat.section}}</td>
+                            <td>
+                                {% if indication.flat.section %}
+                                    {{ indication.flat.section}}
+                                {% else %}
+                                    не указано
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td>Квартира</td>
                             <td>
-                                <a href="/admin/flat/341">{{ indication.flat}}</a>
+                                <a href="{% url 'read_flat' indication.flat.id %}">{{ indication.flat}}</a>
                             </td>
                         </tr>
                         <tr>
                             <td>Пользователь</td>
                             <td>
-                                <a href="/admin/user/2">{{ indication.flat.flat_owner}}</a>
+                                <a href="{% url 'read_client' indication.flat.flat_owner.user.id %}">{{ indication.flat.flat_owner}}</a>
                             </td>
                         </tr>
                         <tr>

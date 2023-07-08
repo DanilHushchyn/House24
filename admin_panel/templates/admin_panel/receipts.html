@@ -166,10 +166,31 @@
         $(document).ready(function () {
              $('#receipt').DataTable({
                  searching: false,
-                 ordering:  false,
+                 {#ordering:  false,#}
                 paging: false,
                 select: true,
-                "bInfo" : false
+                "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 0, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 2, // First column
+                        "orderable": false
+                    },
+                     {
+                        "targets": 7, // First column
+                        "orderable": false
+                    },
+                     {
+                        "targets": 9, // First column
+                        "orderable": false
+                    },
+
+                 ]
 
             });
         });

@@ -53,62 +53,34 @@
               <th></th>
             </tr>
             <tr class="border-0">
-                       <td style="min-width: 150px">
-        {#                 <input type="text" class="form-control rounded-0">#}
-                           {% bootstrap_field filter_form.ID wrapper_class='' %}
-                       </td>
-                       <td style="min-width: 150px">
-        {#                 <input type="text" class="form-control rounded-0">#}
-                           {% bootstrap_field filter_form.full_name wrapper_class='' %}
-                       </td>
-                       <td style="min-width: 150px">
-        {#                 <input type="text" class="form-control rounded-0">#}
-                           {% bootstrap_field filter_form.phone wrapper_class='' %}
-                       </td>
-                       <td style="min-width: 150px">
-        {#                 <input type="text" class="form-control rounded-0">#}
-                           {% bootstrap_field filter_form.email wrapper_class='' %}
-                       </td>
-                       <td style="min-width: 200px">
-        {#                   <div class="form-group mb-0" >#}
-        {#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-        {#                            <option></option>#}
-        {#                            <option>Дом 1</option>#}
-        {#                            <option>Дом 2</option>#}
-        {#                        </select>#}
-                             {% bootstrap_field filter_form.house wrapper_class='' %}
-        {#                   </div>#}
-                      </td>
-                      <td style="min-width: 150px">
-        {#                <input type="text" class="form-control rounded-0">#}
-                          {% bootstrap_field filter_form.flat wrapper_class='' %}
-                      </td>
-                      <td style="min-width: 150px">
-    {#                    <input type="text" class="singledatepicker" name="singledatepicker" value="" />#}
-                          {% bootstrap_field filter_form.date_added wrapper_class='' %}
-                      </td>
-                      <td style="min-width: 150px">
-        {#                 <div class="form-group mb-0" >#}
-        {#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-        {#                            <option></option>#}
-        {#                            <option>Активен</option>#}
-        {#                            <option>Новый</option>#}
-        {#                            <option>Отключен</option>#}
-        {#                        </select>#}
-        {#                 </div>#}
-                          {% bootstrap_field filter_form.status wrapper_class='' %}
-                      </td>
-                      <td style="min-width: 150px">
-        {#                <div class="form-group mb-0" >#}
-        {#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-        {#                            <option></option>#}
-        {#                            <option>Да</option>#}
-        {#                            <option>Нет</option>#}
-        {#                        </select>#}
-        {#                </div>#}
-                          {% bootstrap_field filter_form.have_debts wrapper_class='' %}
-                      </td>
-                      <td></td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.ID wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.full_name wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.phone wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.email wrapper_class='' %}
+               </td>
+               <td style="min-width: 200px">
+                   {% bootstrap_field filter_form.house wrapper_class='' %}
+              </td>
+              <td style="min-width: 150px">
+                  {% bootstrap_field filter_form.flat wrapper_class='' %}
+              </td>
+              <td style="min-width: 150px">
+                  {% bootstrap_field filter_form.date_added wrapper_class='' %}
+              </td>
+              <td style="min-width: 150px">
+                  {% bootstrap_field filter_form.status wrapper_class='' %}
+              </td>
+              <td style="min-width: 150px">
+                  {% bootstrap_field filter_form.have_debts wrapper_class='' %}
+              </td>
+              <td></td>
             </tr>
           </thead>
           <tbody class="clients">
@@ -182,15 +154,28 @@
 {% block  script_2b %}
     <script src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
     <script type="application/javascript">
-
-
         $(document).ready(function () {
              $('#client').DataTable({
                  searching: false,
-                 ordering:  false,
                  paging: false,
                  select: true,
                  "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 7, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 8, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 9, // First column
+                        "orderable": false
+                    },
+                 ]
             });
         });
 

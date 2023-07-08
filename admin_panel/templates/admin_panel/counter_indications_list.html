@@ -28,114 +28,105 @@
     <a class="btn btn-success" href="{% url 'add_new_indication' flat.id service.id %}">Добавить показание</a>
 {% endblock %}
 
-{% block card_body %}
-   <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Статус</th>
-          <th>Дата</th>
-          <th>Месяц</th>
-          <th>Дом</th>
-          <th>Секция</th>
-          <th>№ квартиры</th>
-          <th>Счетчик</th>
-          <th>Показания</th>
-          <th>Ед. изм.</th>
-          <th></th>
-        </tr>
-        <tr class="border-0" >
-        <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-         <td style="min-width: 190px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Новое</option>
-                        <option>Учтено</option>
-                        <option>Учтено и оплачено</option>
-                        <option>Нулевое</option>
-                    </select>
-               </div>
-          </td>
-        <td style="min-width: 150px">
-           <input type="text" class="daterange" name="daterange" value="" />
-          </td>
-        <td style="min-width: 120px"></td>
-           <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Секция 1</option>
-                    </select>
-               </div>
-           </td>
-            <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>Секция 1</option>
-                    </select>
-               </div>
-            </td>
-           <td style="min-width: 150px"><input type="text" class="form-control rounded-0"></td>
-           <td style="min-width: 150px">
-               <div class="form-group mb-0" >
-                    <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >
-                        <option></option>
-                        <option>счётчик 1</option>
-                    </select>
-               </div>
-           </td>
-           <td style="min-width: 170px"></td>
-           <td style="min-width: 100px"></td>
-           <td></td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for indication in indications %}
-        <tr class="border-0">
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.number }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
-              {% if indication.get_status_display == 'Новое' %}
-                  <span class="badge text-bg-warning text-white">Новое</span>
-                  {% elif indication.get_status_display == 'Учтено' %}
-                  <span class="badge text-bg-success text-white">Учтено</span>
-                  {% elif indication.get_status_display == 'Учтено и оплачено' %}
-                  <span class="badge text-bg-success text-white">Учтено и оплачено</span>
-                  {% else %}
-                  <span class="badge text-bg-primary text-white">Нулевое</span>
-              {% endif %}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published|date:"F Y" }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.flat.house }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.flat.section }}</td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
-              {{ indication.flat.number }}
-          </td>
-          <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
-              {{ indication.service.title }}
-          </td>
-          <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
-             {{ indication.indication_val }}
-          </td>
-          <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
-              {{ indication.service.measure }}
-          </td>
-          <td class="ps-1 pe-1 text-center">
-               <form action="{% url 'delete_indication' indication.id %}" method="post">
-                  {% csrf_token %}
-                   <div class="btn-group">
 
-                      <a class="btn btn-default" href="{% url 'update_indication' indication.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                      <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                   </div>
-               </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-   </table>
+{% block card_body %}
+    <form action="{% url 'filtered_counter_indications' flat.id service.id %}" method="get" id="filter">
+       <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Статус</th>
+              <th>Дата</th>
+              <th>Месяц</th>
+              <th>Дом</th>
+              <th>Секция</th>
+              <th>№ квартиры</th>
+              <th>Счетчик</th>
+              <th>Показания</th>
+              <th>Ед. изм.</th>
+              <th></th>
+            </tr>
+            <tr class="border-0" >
+            <td style="min-width: 150px">
+                {% bootstrap_field filter_form.number wrapper_class='' %}
+            </td>
+             <td style="min-width: 190px">
+                 {% bootstrap_field filter_form.status wrapper_class='' %}
+              </td>
+            <td style="min-width: 150px">
+                {% bootstrap_field filter_form.daterange wrapper_class='' %}
+            </td>
+            <td style="min-width: 120px"></td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.house wrapper_class='' %}
+               </td>
+                <td style="min-width: 150px">
+                    {% bootstrap_field filter_form.section wrapper_class='' %}
+                </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.flat wrapper_class='' %}
+               </td>
+               <td style="min-width: 150px">
+                   {% bootstrap_field filter_form.service wrapper_class='' %}
+               </td>
+               <td style="min-width: 170px"></td>
+               <td style="min-width: 100px"></td>
+               <td></td>
+            </tr>
+          </thead>
+          <tbody>
+          {% for indication in indications %}
+            <tr class="border-0">
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.number }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                  {% if indication.get_status_display == 'Новое' %}
+                      <span class="badge text-bg-warning text-white">Новое</span>
+                      {% elif indication.get_status_display == 'Учтено' %}
+                      <span class="badge text-bg-success text-white">Учтено</span>
+                      {% elif indication.get_status_display == 'Учтено и оплачено' %}
+                      <span class="badge text-bg-success text-white">Учтено и оплачено</span>
+                      {% else %}
+                      <span class="badge text-bg-primary text-white">Нулевое</span>
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.date_published|date:"F Y" }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">{{ indication.flat.house }}</td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                  {% if indication.flat.section is None %}
+                      (не указано)
+                  {% else %}
+                      {{ indication.flat.section }}
+                  {% endif %}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                  {{ indication.flat.number }}
+              </td>
+              <td style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                  {{ indication.service.title }}
+
+              </td>
+              <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                 {{ indication.indication_val }}
+              </td>
+              <td style="background: #F0FBF0" style="cursor: pointer;" data-href="{% url 'read_indication' indication.id %}">
+                  {{ indication.service.measure }}
+              </td>
+              <td class="ps-1 pe-1 text-center">
+                   <form action="{% url 'delete_indication' indication.id %}" method="post">
+                      {% csrf_token %}
+                       <div class="btn-group">
+
+                          <a class="btn btn-default" href="{% url 'update_indication' indication.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                          <button class="btn btn-default delete-confirmation" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                       </div>
+                   </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+       </table>
+    </form>
 {% endblock %}
 
 {% block card_footer %}
@@ -156,10 +147,31 @@
         $(document).ready(function () {
              $('#indication').DataTable({
                  searching: false,
-                 ordering:  false,
-                paging: false,
-                select: true,
-                "bInfo" : false
+                 {#ordering:  false,#}
+                 paging: false,
+                 select: true,
+                 "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 1, // First column
+                        "orderable": false
+                    },
+                     {
+                        "targets": 8, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 9, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 10, // First column
+                        "orderable": false
+                    },
+
+                 ]
             });
         });
         $(function() {
@@ -209,7 +221,7 @@
               $(this).val('');
           });
         });
-           $("form").on('submit', function() {
+           $(".delete-confirmation").on('submit', function() {
             return confirm('Вы уверены, что хотите удалить этот элемент?');
 
         });
@@ -222,5 +234,29 @@
                 });
             });
         });
+        if($('.form-house-select').val()==='') {
+            $('.select2-simple-section').select2({
+              placeholder: 'Выберите дом',
+              minimumResultsForSearch: -1
+
+            })
+        }else{
+            $('.select2-simple-section').select2({
+              placeholder: '',
+              minimumResultsForSearch: -1
+
+            })
+        }
+        $('.select2-simple-service').select2({
+              placeholder: '',
+              minimumResultsForSearch: -1
+
+        })
+         $('#filter').on('change',function () {
+             $(this).trigger('submit')
+         });
+
+
     </script>
+    <script type="module" src="{% static 'admin_panel/indication/counter_indications_list.js' %}"></script>
 {% endblock %}

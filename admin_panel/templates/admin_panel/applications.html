@@ -151,9 +151,21 @@
              $('#application').DataTable({
                  searching: false,
                  ordering:  false,
-                paging: false,
-                select: true,
-                "bInfo" : false
+                 paging: false,
+                 select: true,
+                 "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 8, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 9, // First column
+                        "orderable": false
+                    },
+                 ]
             });
         });
         $(function() {

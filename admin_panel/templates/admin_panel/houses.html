@@ -103,10 +103,18 @@
         $(document).ready(function () {
              $('#house').DataTable({
                  searching: false,
-                 ordering:  false,
+                 {#ordering:  false,#}
                 paging: false,
                 select: true,
-                "bInfo" : false
+                "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 3, // First column
+                        "orderable": false
+                    },
+                 ]
             });
         });
           $(".delete-confirmation").on('submit', function() {

@@ -42,35 +42,15 @@
             </tr>
             <tr class="border-0" >
                <td style="min-width: 150px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>Секция 1</option>#}
-{#                        </select>#}
-{#                   </div>#}
                     {% bootstrap_field filter_form.house wrapper_class=''%}
                </td>
                 <td style="min-width: 150px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>Секция 1</option>#}
-{#                        </select>#}
-{#                   </div>#}
                     {% bootstrap_field filter_form.section wrapper_class=''%}
                 </td>
                <td style="min-width: 50px">
-{#                   <input type="text" class="form-control rounded-0">#}
-{#               </td>#}
                    {% bootstrap_field filter_form.flat wrapper_class=''%}
                <td style="min-width: 150px">
-{#                   <div class="form-group mb-0" >#}
-{#                        <select class="form-control select2-simple select2-success rounded-0"  data-dropdown-css-class="select2-success"  tabindex="-1" aria-hidden="true" >#}
-{#                            <option></option>#}
-{#                            <option>счётчик 1</option>#}
-{#                        </select>#}
-{#                   </div>#}
-                {% bootstrap_field filter_form.service wrapper_class=''%}
+                   {% bootstrap_field filter_form.service wrapper_class=''%}
                </td>
                <td style="min-width: 170px"></td>
                <td style="min-width: 100px"></td>
@@ -129,11 +109,28 @@
     <script type="application/javascript">
         $(document).ready(function () {
              $('#indication').DataTable({
-                 searching: false,
-                 ordering:  false,
+                searching: false,
+                {#ordering: false,#}
                 paging: false,
                 select: true,
-                "bInfo" : false
+                "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
+                    {
+                        "targets": 4, // First column
+                        "orderable": false
+                    },
+                     {
+                        "targets": 5, // First column
+                        "orderable": false
+                    },
+                    {
+                        "targets": 6, // First column
+                        "orderable": false
+                    },
+
+                 ]
             });
         });
         if($('.form-house-select').val()==='') {

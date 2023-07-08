@@ -455,3 +455,32 @@ class CountersFilterForm(forms.Form):
                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     service = forms.ModelChoiceField(label="", required=False, queryset=Service.objects.all(), widget=forms.Select(
         attrs={'class': 'form-control select2-simple select2-success rounded-0 form-service-select'}))
+
+
+class CounterIndicationsFilterForm(forms.Form):
+    STATUS_CHOICE = (
+        ('', ''),
+        ('new', 'Новое'),
+        ('considered', 'Учтено'),
+        ('considered and paid', 'Учтено и оплачено'),
+        ('null', 'Нулевое'),
+    )
+    number = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    daterange = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'placeholder': '', 'class': 'daterange', 'value': ''}))
+    house = forms.ModelChoiceField(label="", required=False, queryset=House.objects.all(), widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0 form-house-select'}))
+    section = forms.ModelChoiceField(label="", required=False, queryset=Section.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-section select2-success rounded-0 form-section-select'}))
+    flat = forms.CharField(label="", max_length=100, required=False,
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    service = forms.ModelChoiceField(label="", required=False, queryset=Service.objects.all(), widget=forms.Select(
+        attrs={'class': 'form-control select2-simple-service select2-success rounded-0 form-service-select'}))
+
+
+class SearchMessageFilterForm(forms.Form):
+    search_row = forms.CharField(label="", max_length=100, required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0 '}))

@@ -143,12 +143,20 @@
         $(document).ready(function () {
              $('#flat').DataTable({
                  searching: false,
-                 ordering:  false,
+                 {#ordering:  false,#}
                 paging: false,
                 select: true,
-                "bInfo" : false
+                "bInfo" : false,
+                 orderCellsTop: true,
+                 "order": [],
+                 "columnDefs": [
 
+                    {
+                        "targets": 6, // First column
+                        "orderable": false
+                    },
 
+                 ]
             });
         });
         if($('.form-house-select').val()==='') {
