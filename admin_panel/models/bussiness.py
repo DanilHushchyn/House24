@@ -16,6 +16,7 @@ class TariffSystem(models.Model):
 
     class Meta:
         db_table = 'tariff_system'
+        ordering = ['-date_edited']
 
 
 class TariffService(models.Model):
@@ -92,6 +93,7 @@ class PersonalAccount(models.Model):
 
     class Meta:
         db_table = 'personal_account'
+        ordering = ['-id']
 
 
 class Paybox(models.Model):
@@ -112,6 +114,7 @@ class Paybox(models.Model):
 
     class Meta:
         db_table = 'paybox'
+        ordering = ['-date_published']
 
 
 class Receipt(models.Model):
@@ -133,7 +136,7 @@ class Receipt(models.Model):
 
     class Meta:
         db_table = 'receipt'
-
+        ordering = ['-date_published']
 
 class ReceiptExcelDoc(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100, default='', blank=True)
@@ -166,11 +169,12 @@ class Indication(models.Model):
         ('null', 'Нулевое'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
-    service = models.ForeignKey('Service', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Счётчик')
+    service = models.ForeignKey('Service', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Счётчик')
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE, verbose_name='Квартира')
 
     class Meta:
         db_table = 'indication'
+        ordering = ['-date_published']
 
 
 class Application(models.Model):
@@ -199,6 +203,7 @@ class Application(models.Model):
 
     class Meta:
         db_table = 'application'
+        ordering = ['-date_published']
 
 
 class MailBox(models.Model):

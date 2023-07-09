@@ -94,14 +94,8 @@
 {% endblock %}
 
 {% block card_footer %}
-    <div>
-        <ul class="pagination pagination-sm m-0 float-right">
-          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-        </ul>
+    <div class="d-inline-flex justify-content-end">
+        {% bootstrap_pagination page_obj size='sm' %}
     </div>
 {% endblock %}
 

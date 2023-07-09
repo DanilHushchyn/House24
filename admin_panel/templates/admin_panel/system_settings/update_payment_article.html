@@ -36,7 +36,7 @@
             <div class="card-header p-0 border-bottom-0">
             </div>
             <div class="card-body p-2">
-                <form method="post">
+                <form method="post" id="article-form">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-sm-6 col-12">
@@ -56,6 +56,24 @@
   </div>
 
 {% endblock %}
-
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $("#article-form").validate({
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore : '.ignore',
+            rules : {
+                'title': {
+                    required: true
+                },
+            },
+            messages : {
+                'title':{
+                    required : "Обязательно укажите заголовок"
+                },
+            }
+
+        });
+    </script>
 {% endblock %}

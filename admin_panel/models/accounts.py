@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
         ('disabled', 'Отключен'),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICE, default='new', verbose_name='Статус')
-    date_joined = models.DateField()
+    date_joined = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.last_name + " " + self.first_name
@@ -56,19 +56,21 @@ class Personal(models.Model):
 
     class Meta:
         db_table = 'personal'
+        ordering = ['-id']
 
 
 class FlatOwner(models.Model):
-    ID = models.CharField(max_length=11, unique=True, null=True)
+    ID = models.CharField(max_length=11, unique=True,null=True)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     patronymic = models.CharField(verbose_name='Отчество', max_length=100, default='', blank=True)
     viber = models.CharField(verbose_name='Viber', max_length=100, default='', blank=True)
     telegram = models.CharField(verbose_name='Telegram', max_length=100, default='', blank=True)
     bio = models.TextField(verbose_name='О владельце (заметки)', default='', blank=True)
-    birthday = models.DateField(verbose_name='Дата рождения', default='', blank=True)
+    birthday = models.DateField(verbose_name='Дата рождения',blank=True,null=True)
 
     def __str__(self):
         return f"{self.user.last_name} {self.user.first_name} {self.patronymic}"
 
     class Meta:
         db_table = 'flat_owner'
+        ordering = ['-id']

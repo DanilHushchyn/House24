@@ -30,7 +30,7 @@ class PersonalAccountForm(forms.ModelForm):
 
 class IndicationForm(forms.ModelForm):
     number = forms.CharField(label='',
-                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+                             widget=forms.TextInput(attrs={'class': 'number ignore', 'placeholder': ''}))
     section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция', required=False,
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
@@ -40,7 +40,7 @@ class IndicationForm(forms.ModelForm):
     flat = forms.ModelChoiceField(queryset=Flat.objects.all(), label='Квартира',
                                   widget=forms.Select(attrs={'class': 'form-flat-select'}))
     date_published = forms.DateField(label='',
-                                     widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
+                                     widget=forms.DateInput(attrs={'class': 'publishing-date ignore', 'placeholder': ''}))
 
     def __init__(self, *args, **kwargs):
         super(IndicationForm, self).__init__(*args, **kwargs)
@@ -174,13 +174,13 @@ class MailBoxForm(forms.ModelForm):
 
 class ReceiptForm(forms.ModelForm):
     date_published = forms.DateField(label='',
-                                     widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
+                                     widget=forms.DateInput(attrs={'class': 'publishing-date ignore', 'placeholder': ''}))
     start_date = forms.DateField(label='Период с',
-                                 widget=forms.DateInput(attrs={'class': 'start-date', 'placeholder': ''}))
+                                 widget=forms.DateInput(attrs={'class': 'start-date ignore', 'placeholder': ''}))
     end_date = forms.DateField(label='Период по',
-                               widget=forms.DateInput(attrs={'class': 'end-date', 'placeholder': ''}))
+                               widget=forms.DateInput(attrs={'class': 'end-date ignore', 'placeholder': ''}))
     number = forms.CharField(label='',
-                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+                             widget=forms.TextInput(attrs={'class': 'number ignore', 'placeholder': ''}))
     section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция', required=False,
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     house = forms.ModelChoiceField(queryset=House.objects.all(), label='Дом', required=False,
@@ -228,17 +228,15 @@ class ReceiptExcelDocForm(forms.ModelForm):
 
 class ReceiptServiceForm(forms.ModelForm):
     consumption = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'consumption'}),
-                                     required=False, label='')
+                                      label='')
     unit_price = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'unit_price'}),
-                                    required=False, label='')
+                                     label='')
     total_service_price = forms.DecimalField(
         widget=forms.TextInput(attrs={'placeholder': '', 'class': 'total_service_price'}),
         required=False, label='')
     service = forms.ModelChoiceField(queryset=Service.objects.all(), label='',
-                                     required=False,
                                      widget=forms.Select(attrs={'class': 'form-service-select'}))
     measure = forms.ModelChoiceField(queryset=Measure.objects.all(), label='',
-                                     required=False,
                                      widget=forms.Select(attrs={'class': 'form-measure-select'}))
 
     def __init__(self, *args, **kwargs):
@@ -258,9 +256,9 @@ ReceiptServiceFormset = forms.modelformset_factory(model=ReceiptService, form=Re
 
 class PayboxForm(forms.ModelForm):
     date_published = forms.DateField(label='',
-                                     widget=forms.DateInput(attrs={'class': 'publishing-date', 'placeholder': ''}))
+                                     widget=forms.DateInput(attrs={'class': 'publishing-date ignore', 'placeholder': ''}))
     number = forms.CharField(label='',
-                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+                             widget=forms.TextInput(attrs={'class': 'number ignore', 'placeholder': ''}))
     personal_account = forms.ModelChoiceField(label='Лицевой счет', queryset=PersonalAccount.objects.all(),
                                               required=False,
                                               widget=forms.Select(
@@ -272,7 +270,7 @@ class PayboxForm(forms.ModelForm):
     user = PersonalChoiceField(label='Менеджер', required=False,
                                queryset=Personal.objects.filter(role__in=['director', 'accountant', 'manager']),
                                widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
-    article = forms.ModelChoiceField(label='Статья', queryset=Article.objects.all(), required=False,
+    article = forms.ModelChoiceField(label='Статья', queryset=Article.objects.all(),
                                      widget=forms.Select(attrs={'class': 'personal_account', 'placeholder': ''}))
     is_complete = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0'}),
                                      required=False,

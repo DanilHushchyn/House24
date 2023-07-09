@@ -234,6 +234,8 @@ $('.form-flat-select').on('change',function () {
                   let tariff_obj = jQuery.parseJSON(data['tariff'])[0];
                   $('.form-tariff-select option:selected').removeAttr('selected')
                   $(`.form-tariff-select option[value="${tariff_obj['pk']}"]`).attr('selected',true)
+                    $("#receipt-form").validate().element("#id_tariff");
+
                 } catch (e) {
                   // Error occurred during parse, consider it undefined
                   console.log('JSON parse undefined:', e);

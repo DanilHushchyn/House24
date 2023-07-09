@@ -42,7 +42,7 @@
             <div class="card-header p-0 border-bottom-0">
             </div>
             <div class="card-body p-2">
-                <form method="post" action="{% url 'add_flat' %}" enctype="multipart/form-data">
+                <form id="flat-form" method="post" action="{% url 'add_flat' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-12 col-md-6">
@@ -72,6 +72,26 @@
   </div>
 {% endblock %}
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
     <script type="module" src="{% static 'admin_panel/flat/flat.js' %}"></script>
+    <script>
+        $("#flat-form").validate({
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore : '.ignore',
+            rules : {
+
+            },
+            messages : {
+                'number':{
+                    required : "Обязательно укажите номер квартиры"
+                },
+                'house':{
+                    required : "Обязательно укажите дом"
+                },
+            }
+
+        });
+    </script>
 {% endblock %}

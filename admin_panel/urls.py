@@ -123,6 +123,8 @@ urlpatterns = [
 
     path("personals", admin_panel.views.PersonalListView.as_view(),
          name='personals'),
+    path("personals_filtered", admin_panel.views.PersonalFilteredList.as_view(),
+         name='personals_filtered'),
     path("personals/add", admin_panel.views.PersonalSignUpView.as_view(),
          name='add_personal'),
     path("personals/update/<str:pk>", admin_panel.views.UpdatePersonalView.as_view(),

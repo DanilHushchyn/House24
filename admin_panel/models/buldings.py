@@ -15,6 +15,7 @@ class House(models.Model):
     class Meta:
         db_table = 'house'
         app_label = 'admin_panel'
+        ordering = ['-id']
 
 
 class HouseUser(models.Model):
@@ -26,10 +27,10 @@ class HouseUser(models.Model):
 
 
 class Flat(models.Model):
-    number = models.CharField(verbose_name='Номер квартиры', max_length=100, default='', blank=True)
+    number = models.CharField(verbose_name='Номер квартиры', max_length=100, )
     square = models.DecimalField(verbose_name='Площадь (кв.м.)', max_digits=5, decimal_places=2, default=0.00,
-                                 blank=True)
-    house = models.ForeignKey("House", verbose_name='Дом', on_delete=models.SET_NULL,null=True)
+                                 blank=True, null=True)
+    house = models.ForeignKey("House", verbose_name='Дом', on_delete=models.CASCADE, null=True)
     tariff = models.ForeignKey('TariffSystem', verbose_name='Тариф', on_delete=models.SET_NULL, null=True,
                                blank=True)
     section = models.ForeignKey('Section', verbose_name='Секция', on_delete=models.SET_NULL, null=True)
@@ -39,7 +40,6 @@ class Flat(models.Model):
 
     def application_label(self):
         return f"{self.number}, {self.house.title}"
-
 
     def __str__(self):
         return f"{self.number}"

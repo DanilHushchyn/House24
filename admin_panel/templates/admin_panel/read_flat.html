@@ -72,7 +72,11 @@
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Площадь</td>
-                                    <td>{{ flat.square }} м<sup>2</sup></td>
+                                    {% if flat.square is None %}
+                                        <td>не указано</td>
+                                    {% else %}
+                                        <td>{{ flat.square }} м<sup>2</sup></td>
+                                    {% endif %}
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Дом</td>

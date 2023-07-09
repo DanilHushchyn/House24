@@ -197,6 +197,46 @@ class PersonalListView(ListView):
     template_name = 'admin_panel/system_settings/personals.html'
     context_object_name = 'personals'
     queryset = Personal.objects.all()
+    paginate_by = 20
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PersonalFilterForm()
+        return context
+
+
+class PersonalFilteredList(ListView):
+    template_name = 'admin_panel/system_settings/personals.html'
+    context_object_name = 'personals'
+    paginate_by = 20
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = PersonalFilterForm(initial=self.request.GET)
+        return context
+
+    def get_queryset(self):
+        personals = Personal.objects.all()
+        form_filter = PersonalFilterForm(self.request.GET)
+        qs = []
+        if form_filter.is_valid():
+            if form_filter.cleaned_data['user']:
+                result = form_filter.cleaned_data['user'].split(' ')
+                qs.append(Q(Q(user__last_name__in=result) | Q(user__first_name__in=result)))
+
+            if form_filter.cleaned_data['phone']:
+                qs.append(Q(user__phone__icontains=form_filter.cleaned_data['phone']))
+            if form_filter.cleaned_data['email']:
+                qs.append(Q(user__phone__icontains=form_filter.cleaned_data['phone']))
+            if form_filter.cleaned_data['role']:
+                qs.append(Q(role=form_filter.cleaned_data['role']))
+            if form_filter.cleaned_data['status']:
+                qs.append(Q(user__status=form_filter.cleaned_data['status']))
+            q = Q()
+            for item in qs:
+                q = q & item
+            personals = Personal.objects.filter(q)
+        return personals
 
 
 class PersonalDetail(DetailView):

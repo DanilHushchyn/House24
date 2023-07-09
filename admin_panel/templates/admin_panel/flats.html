@@ -103,13 +103,10 @@
                   {% endif %}
               </td>
               <td class="ps-1 pe-1">
-                  <form action="{% url 'delete_flat' flat.id %}" method="post">
-                      {% csrf_token %}
-                      <div class="btn-group">
-                          <a class="btn btn-default" href="{% url 'update_flat' flat.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
-                          <button class="btn btn-default delete-confirmation delete-flat" type="submit" role="button"><i class="fa-solid fa-trash-can"></i></button>
-                      </div>
-                  </form>
+                  <div class="btn-group">
+                      <a class="btn btn-default" href="{% url 'update_flat' flat.id %}" role="button"><i class="fa-solid fa-pencil"></i></a>
+                      <button class="btn btn-default delete-confirmation delete-flat" data-target="{{ flat.id }}" role="button"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
               </td>
             </tr>
           {% endfor %}
@@ -121,14 +118,8 @@
 {% endblock %}
 
 {% block card_footer %}
-    <div>
-        <ul class="pagination pagination-sm m-0 float-right">
-          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-        </ul>
+    <div class="d-inline-flex justify-content-end">
+        {% bootstrap_pagination page_obj size='sm' %}
     </div>
     <hr style="border-top: 1px solid darkgrey;">
     <div>
@@ -139,6 +130,7 @@
 
 
 {% block  script_2b %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script type="application/javascript">
         $(document).ready(function () {
              $('#flat').DataTable({
@@ -150,7 +142,6 @@
                  orderCellsTop: true,
                  "order": [],
                  "columnDefs": [
-
                     {
                         "targets": 6, // First column
                         "orderable": false
@@ -181,13 +172,18 @@
 
             })
         }
-
-
-
-
-        $(".delete-flat").on('submit', function() {
-            return confirm('Вы уверены, что хотите удалить этот элемент?');
-
+        $(".delete-confirmation").on('click', function() {
+            if ( confirm('Вы уверены, что хотите удалить этот элемент?')){
+                $.ajax({
+                    headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                    url: `/admin/flats/delete/${$(this).data('target')}`,         /* Куда отправить запрос */
+                    method: 'post',             /* Метод запроса (post или get) */
+                    dataType: 'html',
+                    context: 'html',
+                    success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                    }
+                });
+            }
         });
         document.addEventListener("DOMContentLoaded", function(event) {
             const rows = document.querySelectorAll("td[data-href]");

@@ -23,6 +23,7 @@ def statistic(request):
 class PayboxList(ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
+    paginate_by = 20
 
     def get_queryset(self):
         paybox = Paybox.objects.all()
@@ -107,6 +108,7 @@ class PayboxList(ListView):
 class PayboxFilteredList(ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -331,6 +333,7 @@ class ReceiptList(ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
     queryset = Receipt.objects.all()
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -385,6 +388,7 @@ class GetIndicationsSortedList(View):
 class ReceiptsFilteredList(ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -744,6 +748,8 @@ class FlatListView(ListView):
     template_name = 'admin_panel/flats.html'
     context_object_name = 'flats'
     queryset = Flat.objects.all()
+    paginate_by = 20
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -754,6 +760,7 @@ class FlatListView(ListView):
 class FlatFilteredList(ListView):
     template_name = 'admin_panel/flats.html'
     context_object_name = 'flats'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -890,6 +897,7 @@ class FlatAcceptReceipt(FormView):
 class FlatReceiptList(ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
+    paginate_by = 20
 
     def get_queryset(self):
         flat = Flat.objects.get(pk=self.kwargs['pk'])
@@ -900,6 +908,7 @@ class FlatReceiptList(ListView):
 class FlatPayboxList(ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -926,10 +935,12 @@ class FlatPayboxList(ListView):
 class PersonalAccountListView(ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
+    paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = PersonalAccountsFilterForm()
+        context['personal_accounts_count'] = PersonalAccount.objects.all().count()
         return context
 
     def get_queryset(self):
@@ -1007,6 +1018,7 @@ class PersonalAccountListView(ListView):
 class PersonalAccountFilteredList(ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
+    paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1144,6 +1156,7 @@ class PersonalAccountAcceptReceipt(FormView):
 class PersonalAccountReceiptList(ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
+    paginate_by = 20
 
     def get_queryset(self):
         personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
@@ -1157,6 +1170,7 @@ class PersonalAccountReceiptList(ListView):
 class PersonalAccountPayboxList(ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1176,6 +1190,7 @@ class PersonalAccountPayboxList(ListView):
 class ClientListView(ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1190,6 +1205,7 @@ class ClientListView(ListView):
 class ClientFilteredListView(ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1294,6 +1310,7 @@ class HouseListView(ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
     queryset = House.objects.all()
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1304,6 +1321,7 @@ class HouseListView(ListView):
 class HouseFilteredList(ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1608,6 +1626,7 @@ class MailboxList(ListView):
     template_name = 'admin_panel/mailbox.html'
     context_object_name = 'mailboxes'
     queryset = MailBox.objects.all()
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1618,6 +1637,7 @@ class MailboxList(ListView):
 class MailboxFilteredList(ListView):
     template_name = 'admin_panel/mailbox.html'
     context_object_name = 'mailboxes'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1665,6 +1685,7 @@ class ApplicationList(ListView):
     template_name = 'admin_panel/applications.html'
     context_object_name = 'applications'
     queryset = Application.objects.all()
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1675,6 +1696,7 @@ class ApplicationList(ListView):
 class ApplicationFilteredList(ListView):
     template_name = 'admin_panel/applications.html'
     context_object_name = 'applications'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1769,6 +1791,7 @@ class CounterList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1779,6 +1802,7 @@ class CounterList(ListView):
 class CountersFilteredList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1817,6 +1841,7 @@ class CountersFilteredList(ListView):
 class CounterIndicationsFilteredList(ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
+    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1866,6 +1891,7 @@ class CounterIndicationsFilteredList(ListView):
 class CounterIndicationsList(ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1883,6 +1909,7 @@ class CounterIndicationsList(ListView):
 class FlatIndicationsList(ListView):
     template_name = 'admin_panel/flat_indications_list.html'
     context_object_name = 'indications'
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

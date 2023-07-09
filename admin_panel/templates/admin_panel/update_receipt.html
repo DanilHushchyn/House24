@@ -40,7 +40,7 @@
     </section>
             <!-- Main content -->
             <section class="content">
-                <form method="post" action="{% url 'update_receipt' form.instance.id %}" enctype="multipart/form-data">
+                <form method="post" id="receipt-form" action="{% url 'update_receipt' form.instance.id %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row ps-2">
                         <div class="col-12">
@@ -285,7 +285,7 @@
 {% endblock %}
 {% block  script %}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
      <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/flatpickr.js' %}"></script>
      <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
     <script type="application/javascript">
@@ -295,7 +295,20 @@
         });
 
         $('.publishing-date, .start-date, .end-date').addClass('bg-white')
+        $("#receipt-form").validate({
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore : '.ignore',
+            rules : {
 
+            },
+            messages : {
+                'flat':{
+                    required : "Обязательно укажите квартиру"
+                },
+            }
+
+        });
     </script>
     <script type="module" src="{% static 'admin_panel/receipt/update_receipt_form.js' %}"></script>
     <script type="module" src="{% static 'admin_panel/receipt/receipt-service-formset.js' %}"></script>

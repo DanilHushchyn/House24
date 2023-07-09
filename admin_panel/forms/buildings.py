@@ -53,7 +53,9 @@ FloorFormset = forms.modelformset_factory(model=Floor, form=FloorForm, can_delet
 
 
 class FlatForm(forms.ModelForm):
-    square = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Площадь')
+    number = forms.CharField(label='Номер квартиры',
+                             widget=forms.TextInput(attrs={'class': 'number', 'placeholder': ''}))
+    square = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': ''}),required=False,label='Площадь')
     section = forms.ModelChoiceField(queryset=Section.objects.all(), label='Секция', required=False,
                                      widget=forms.Select(attrs={'class': 'form-section-select'}))
     floor = forms.ModelChoiceField(queryset=Floor.objects.all(), label='Этаж', required=False,

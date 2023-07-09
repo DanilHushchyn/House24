@@ -30,6 +30,6 @@ function generatePassword() {
 
 $("#generatePass").click(function() {
     var password = generatePassword();
-    $(".password1").val(password);
-    $(".password2").val(password);
+    $(".password1").val(password).trigger('change');
+    $(".password2").val(password).trigger('change');
 });

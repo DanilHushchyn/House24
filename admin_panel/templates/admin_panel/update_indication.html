@@ -41,7 +41,7 @@
     </section>
             <!-- Main content -->
             <section class="content">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" id="indication-form" enctype="multipart/form-data">
                     {% csrf_token %}
                 <div class="row ps-2">
                     <div class="col-12">
@@ -97,6 +97,7 @@
   </div>
 {% endblock %}
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/flatpickr.js' %}"></script>
     <script type="application/javascript" src="{% static 'node_modules/flatpickr/dist/l10n/ru.js' %}"></script>
     <script type="application/javascript">
@@ -105,6 +106,35 @@
                 locale: "ru", // locale for this instance only
         });
         $('.publishing-date').addClass('bg-white')
+                $.validator.addMethod("positiveNumber", function(value, element) {
+            if(value) {
+                return parseFloat(value) >= 0;
+            }
+            return true;
+        }, "Укажите положительное значение");
+        $("#indication-form").validate({
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore : '.ignore',
+            rules : {
+                'indication_val': {
+                    positiveNumber: true
+                },
+            },
+            messages : {
+                'service':{
+                    required : "Обязательно укажите счётчик"
+                },
+                'flat':{
+                    required : "Обязательно укажите квартиру"
+                },
+                'indication_val':{
+                    required : "Обязательно укажите расход"
+
+                },
+            }
+
+        });
     </script>
     <script type="module" src="{% static 'admin_panel/indication/update_indication.js' %}"></script>
 {% endblock %}

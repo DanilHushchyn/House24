@@ -42,7 +42,7 @@
     </section>
             <!-- Main content -->
             <section class="content">
-                <form method="post" action="{% url 'update_paybox' form.instance.id %}" enctype="multipart/form-data">
+                <form id="paybox-form" method="post" action="{% url 'update_paybox' form.instance.id %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row ps-2">
                         <div class="col-12">
@@ -102,6 +102,7 @@
   </div>
 {% endblock %}
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
@@ -119,7 +120,33 @@
                 locale: "ru", // locale for this instance only
         });
         $('.publishing-date').addClass('bg-white')
+        $.validator.addMethod("positiveNumber", function(value, element) {
+            if(value) {
+                return parseFloat(value) > 0;
+            }
+            return true;
+        }, "Укажите положительное значение");
 
+        $("#paybox-form").validate({
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore : '.ignore',
+            rules : {
+                'total': {
+                    positiveNumber: true
+                },
+            },
+            messages : {
+                'article':{
+                    required : "Обязательно укажите статью"
+                },
+                'total':{
+                    required : "Обязательно укажите сумму"
+
+                },
+            }
+
+        });
 
     </script>
     <script type="module" src="{% static 'admin_panel/paybox/get_paybox_form.js' %}"></script>

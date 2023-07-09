@@ -38,7 +38,7 @@
     </section>
             <!-- Main content -->
             <section class="content">
-                <form method="post" enctype="multipart/form-data">
+                <form id="application-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
                 <div class="row ps-2">
@@ -67,7 +67,10 @@
                     <div class="card-body p-2">
                             <div class="row">
                                 <div class="col-12 col-sm-6 pe-4 ps-0">
-                                    <a class="user_link" href="{% url 'update_client' form.instance.flat.flat_owner.user.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
+                                    {% if form.instance.flat.flat_owner is None %}
+                                    {% else %}
+                                        <a class="user_link" href="{% url 'update_client' form.instance.flat.flat_owner.user.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
+                                    {% endif %}
                                     {% bootstrap_field form.flat_owner %}
                                     <p><b>Телефон:</b> <a href="tel:{{ form.instance.flat_owner.user.phone }}">{{ form.instance.flat_owner.user.phone }}</a></p>
                                 </div>
@@ -107,6 +110,7 @@
   </div>
 {% endblock %}
 {% block  script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
@@ -138,7 +142,62 @@
         });
         $('.publishing-date').addClass('bg-white')
          $(".publishing-time").addClass('bg-white')
+        $("#application-form").validate({
 
+            errorClass: "error fail-alert",
+            validClass: "valid success-alert",
+            ignore: [],
+            rules : {
+                'description':{
+                    required : true
+                },
+                'flat':{
+                    required : true
+                }
+            },
+            messages : {
+                'description':{
+                    required : "Обязательно укажите описание"
+                },
+                'flat':{
+                    required : "Обязательно укажите квартиру"
+                },
+            },
+            highlight: function (element, errorClass, validClass) {
+               var elem = $(element);
+               if (elem.hasClass("select2-hidden-accessible")) {
+                   $("#select2-" + elem.attr("id") + "-container").parent().addClass(errorClass);
+               } else {
+                   elem.addClass(errorClass);
+               }
+            },
+             unhighlight: function (element, errorClass, validClass) {
+                 var elem = $(element);
+                 if (elem.hasClass("select2-hidden-accessible")) {
+                      $("#select2-" + elem.attr("id") + "-container").parent().removeClass(errorClass);
+                 } else {
+                     elem.removeClass(errorClass);
+                 }
+             },
+             errorPlacement: function(error, element) {
+               var elem = $(element);
+               if (elem.hasClass("select2-hidden-accessible")) {
+                   element = $("#select2-" + elem.attr("id") + "-container").parent();
+                   error.insertAfter(element);
+               } else {
+                   error.insertAfter(element);
+               }
+             }
+        });
+        $('#application-form').on("change", function (e) {
+          $(this).valid()
+        });
+        $('.select2').select2({
+            placeholder: 'Выберите...',
+            allowClear: true,
+        }).on("change", function (e) {
+          $(this).valid()
+        });
     </script>
     <script type="module" src="{% static 'admin_panel/application/application.js' %}"></script>
 {% endblock %}

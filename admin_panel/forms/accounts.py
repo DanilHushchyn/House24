@@ -86,7 +86,7 @@ class ClientSignUpForm(UserCreationForm):
                                 label='Повторить Пароль')
     ID = forms.CharField(max_length=11, label='ID', widget=forms.TextInput(attrs={'placeholder': ''}))
 
-    phone = forms.CharField(max_length=19, label='Номер телефона',
+    phone = forms.CharField(max_length=19, label='Номер телефона', required=False,
                             validators=[
                                 validators.MaxLengthValidator(19),
                                 validators.MinLengthValidator(19),
@@ -99,13 +99,15 @@ class ClientSignUpForm(UserCreationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Имя')
     patronymic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Отчество')
     last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Фамилия')
-    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber')
-    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram')
+    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber', required=False, )
+    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram', required=False)
 
-    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)')
+    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)',
+                          required=False)
     birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': '', 'class': 'birthday'}),
-                               label='Дата рождения')
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение')
+                               label='Дата рождения', required=False)
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение',
+                              required=False)
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -133,7 +135,7 @@ class ClientUpdateForm(UserChangeForm):
                                 label='Пароль')
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': '', 'class': 'password2'}),
                                 label='Повторить Пароль')
-    phone = forms.CharField(max_length=19, label='Номер телефона',
+    phone = forms.CharField(max_length=19, label='Номер телефона', required=False,
                             validators=[
                                 validators.MaxLengthValidator(19),
                                 validators.MinLengthValidator(19),
@@ -146,13 +148,13 @@ class ClientUpdateForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Имя')
     patronymic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Отчество')
     last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Фамилия')
-    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber')
-    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram')
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение')
+    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber', required=False,)
+    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram', required=False,)
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение', required=False,)
 
-    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)')
+    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)', required=False,)
     birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': '', 'class': 'birthday'}),
-                               label='Дата рождения')
+                               label='Дата рождения', required=False,)
 
     class Meta(UserChangeForm.Meta):
         model = User
@@ -200,8 +202,37 @@ class ClientsFilterForm(forms.Form):
     flat = forms.CharField(label="", max_length=100, required=False,
                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     date_added = forms.CharField(label="", max_length=100, required=False,
-                                 widget=forms.TextInput(attrs={'placeholder': '', 'class': 'singledatepicker',}))
+                                 widget=forms.TextInput(attrs={'placeholder': '', 'class': 'singledatepicker', }))
     status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
     have_debts = forms.ChoiceField(label="", required=False, choices=DEBTS_CHOICE, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
+
+class PersonalFilterForm(forms.Form):
+    ROLE_CHOICE = (
+        ('', ''),
+        ('director', 'Директор'),
+        ('manager', 'Управляющий'),
+        ('accountant', 'Бухгалтер'),
+        ('electrician', 'Электрик'),
+        ('plumber', 'Сантехник'),
+        ('locksmith', 'Слесарь'),
+    )
+    STATUS_CHOICE = (
+        ('', ''),
+        ('new', 'Новый'),
+        ('active', 'Активен'),
+        ('disabled', 'Отключен'),
+    )
+    user = forms.CharField(label="", max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    role = forms.ChoiceField(label="", required=False, choices=ROLE_CHOICE, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+    email = forms.CharField(label="", max_length=100, required=False,
+                            widget=forms.EmailInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    phone = forms.CharField(label="", max_length=100, required=False,
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+    status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
+        attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
