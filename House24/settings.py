@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'admin_panel.apps.AdminPanelConfig',
+    'users.apps.UsersConfig',
     'cabinet.apps.CabinetConfig',
     'website.apps.WebsiteConfig',
     "django_cleanup",
@@ -67,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cabinet.middlewares.flats',
             ],
             'libraries': {
                 'check_relation': 'admin_panel.templatetags.check_relation',
@@ -113,10 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
-
+LOGIN_REDIRECT_URL = 'cabinet_statistic'
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 USE_I10N = False
@@ -152,3 +154,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTHENTICATION_BACKENDS = ['users.authentication.EmailBackend']

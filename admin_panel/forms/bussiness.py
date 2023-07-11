@@ -155,6 +155,7 @@ class MailBoxForm(forms.ModelForm):
                 for item in q:
                     result = result & item
                 flats = Flat.objects.filter(result)
+                flats = flats.exclude(flat_owner__isnull=True)
                 for flat in flats:
                     instance.flat_owners.add(flat.flat_owner)
             else:

@@ -77,6 +77,7 @@ urlpatterns = [
     path("house/delete/<str:pk>", admin_panel.views.DeleteHouseView.as_view(), name='delete_house'),
 
 
+
     path("mailbox", admin_panel.views.MailboxList.as_view(), name='mailboxes'),
     path("filtered_messages", admin_panel.views.MailboxFilteredList.as_view(),
          name='filtered_messages'),
@@ -163,10 +164,5 @@ urlpatterns = [
     path("get_service-info/<str:pk>", admin_panel.views.GetServiceInfoView.as_view(), name='get_service-info'),
     path("get_indication-info/<str:flat_id>/<str:service_id>", admin_panel.views.GetIndicationInfoView.as_view(), name='get_indication-info'),
     path("get_indication-sorted-list/<str:flat_id>", admin_panel.views.GetIndicationsSortedList.as_view(), name='get_indication-sorted-list'),
-
-
-
-    # path("login", admin_panel.views.Login.as_view(), name='login'),
-
 
 ]

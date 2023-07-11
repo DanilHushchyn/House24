@@ -12,7 +12,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Личный кабинет</title>
+    <link rel="icon" type="image/svg"   href="{% static 'admin_panel/imgs/logo.svg' %}">
+
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
 {#    <link href="{% static "node_modules/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet" >#}
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
       <!-- Google Font: Source Sans Pro -->
@@ -71,13 +77,13 @@
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="fa-solid fa-crown"></i>
-          <span class="d-none d-sm-inline" style="font-size: 15px">Пользователь Пользователей</span>
+          <span class="d-none d-sm-inline" style="font-size: 15px">{{ request.user.last_name }}&nbsp;{{ request.user.first_name }}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <div class="dropdown-item card card-widget widget-user p-0 m-0">
               <!-- Add the bg color to the header using any of the bg-* classes -->
               <div class="widget-user-header bg-info">
-                <h3 class="widget-user-username">Пользователь Пользователей</h3>
+                <span class="">{{ request.user.last_name }}&nbsp;{{ request.user.first_name }}</span>
                 <h5 class="widget-user-desc">Пользователь</h5>
               </div>
               <div class="widget-user-image">
@@ -158,30 +164,27 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="fa-solid fa-money-check-dollar"></i>
-                  <p>Квартира 1</p>
-                </a>
-              </li>
+                {% for flat in flats %}
+                  <li class="nav-item">
+                        <a href="{% url 'get_tariff' flat.id %}" class="nav-link">
+                          <i class="fa-solid fa-money-check-dollar"></i>
+                          <p>{{ flat.house }}, кв.{{ flat.number }}</p>
+                        </a>
+                  </li>
+                {% endfor %}
+
             </ul>
           </li>
           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'mailbox' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+            <a href="{% url 'mailboxes_cabinet' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-envelope">
                 <span class="p-2">Сообщения</span></i>
             </a>
           </li>
             <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'application' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+            <a href="{% url 'applications_cabinet' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-screwdriver-wrench">
                 <span class="p-2">Заявки вызова мастера</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'indications' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-calculator">
-                <span class="p-2">Показания счётчиков</span></i>
             </a>
           </li>
           <li class="nav-item pb-1 " style="height: 3rem;">

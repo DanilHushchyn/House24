@@ -1,6 +1,6 @@
 import django.forms as forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.db import transaction
 
 from House24 import settings
@@ -148,13 +148,15 @@ class ClientUpdateForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Имя')
     patronymic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Отчество')
     last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Фамилия')
-    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber', required=False,)
-    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram', required=False,)
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение', required=False,)
+    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber', required=False, )
+    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram', required=False, )
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение',
+                              required=False, )
 
-    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)', required=False,)
+    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)',
+                          required=False, )
     birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': '', 'class': 'birthday'}),
-                               label='Дата рождения', required=False,)
+                               label='Дата рождения', required=False, )
 
     class Meta(UserChangeForm.Meta):
         model = User
@@ -226,7 +228,7 @@ class PersonalFilterForm(forms.Form):
         ('disabled', 'Отключен'),
     )
     user = forms.CharField(label="", max_length=100, required=False,
-                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
+                           widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     role = forms.ChoiceField(label="", required=False, choices=ROLE_CHOICE, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
     email = forms.CharField(label="", max_length=100, required=False,
@@ -235,4 +237,5 @@ class PersonalFilterForm(forms.Form):
                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
+
 

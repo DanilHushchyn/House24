@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+{% extends 'cabinet/base.html' %}
 {%  load static %}
 {# Load the tag library#}
 {% load django_bootstrap5 %}
@@ -27,7 +27,7 @@
 
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'cabinet_statistic' %}">Главная</a></li>
                 <li class="breadcrumb-item active">Сообщения</li>
             </ol>
           </div>
@@ -35,7 +35,6 @@
         <hr style="border-top: 1px solid darkgrey;">
         <div class="row mb-3">
             <div class="dropdown text-right">
-                <a class="btn btn-success" href="{% url 'add_mailbox' %}">Отправить сообщение</a>
             </div>
           <!-- ./col -->
         </div>
@@ -45,7 +44,7 @@
     <!-- Main content -->
     <section class="content">
       <!-- Default box -->
-        <form action="{% url 'filtered_messages' %}" method="get" id="filter">
+        <form action="{% url 'filtered_messages_cabinet' %}" method="get" id="filter">
            <div class="card card-success card-outline">
                 <div class="card-header">
                   <div class="card-tools">
@@ -54,7 +53,8 @@
                             <input type="text" class="form-control" placeholder="Поиск" name="search_row"   value="{{ filter_form.search_row.value }}" id="id_search_row" maxlength="100">
                         {% else %}
                             <input type="text" class="form-control" placeholder="Поиск" name="search_row"   id="id_search_row" maxlength="100">
-                        {% endif %}                      <div class="input-group-append">
+                        {% endif %}
+                      <div class="input-group-append">
                         <div class="btn btn-success pt-2 search-button">
                           <i class="fa-solid fa-magnifying-glass"></i>
                         </div>
@@ -100,7 +100,7 @@
                                               <label for="check2"></label>
                                           </div>
                                         </td>
-                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-name">
+                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail_cabinet' mailbox.id %}" class="mailbox-name">
                                             {% if mailbox.house is None %}
                                                 Всем
                                             {% else %}
@@ -119,11 +119,11 @@
                                                 {% endif %}
                                             {% endif %}
                                         </td>
-                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-subject">
+                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail_cabinet' mailbox.id %}" class="mailbox-subject">
                                             <b>{{ mailbox.title }}</b>
                                             - {{ mailbox.description }}
                                         </td>
-                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail' mailbox.id %}" class="mailbox-date">
+                                        <td style="cursor: pointer" data-href="{% url 'mailbox_detail_cabinet' mailbox.id %}" class="mailbox-date">
                                             {{ mailbox.date_published|date:"d.m.Y" }}-{{ mailbox.date_published|time:"h:i"  }}
                                         </td>
                                   </tr>
@@ -147,7 +147,7 @@
                       </button>
                     </div>
                   </div>
-                    <form  action="{% url 'mailboxes' %}" method="get" class="d-none">
+                    <form  action="{% url 'mailboxes_cabinet' %}" method="get" class="d-none">
                         {% csrf_token %}
                         <button type="Submit" class="d-none" id="reloader_tool">Refresh</button>
                     </form>
@@ -190,7 +190,7 @@
                 $('input[name="deletion_filter"]:checked').each(function () {
                     $.ajax({
                         headers: {"X-CSRFToken": $.cookie("csrftoken")},
-                        url: `/admin/mailbox/delete/${$(this).val()}`,
+                        url: `/cabinet/mailbox/delete/${$(this).val()}`,
                         method: 'post',             /* Метод запроса (post или get) */
                         dataType: 'html',
                         success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */

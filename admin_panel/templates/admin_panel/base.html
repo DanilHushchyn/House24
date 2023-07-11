@@ -60,7 +60,7 @@
           <span class="badge badge-danger navbar-badge">60</span>
         </a>
         <div class="dropdown-menu dropdown-menu-md   dropdown-menu-right" style="overflow-y: scroll;max-height: 180px">
-            <a href="#" class="dropdown-item dropdown-footer">Перейти в раздел пользователей</a>
+            <a href="{% url 'clients' %}" class="dropdown-item dropdown-footer">Перейти в раздел пользователей</a>
             <a href="#" class="dropdown-item">
                 <!-- Message Start -->
                 <div class="media">
@@ -155,7 +155,7 @@
               </div>
               <div class="card-footer">
                 <div class="row">
-                  <button type="button" class="col-5 btn btn-block btn-default">Профиль</button>
+                  <a href="#!" type="button" class="col-5 btn btn-block btn-default">Профиль</a>
                   <div class="col-2"></div>
                     <button type="button" class="col-5 btn btn-block btn-default">Выход</button>
                 </div>
@@ -176,7 +176,7 @@
   <aside class="main-sidebar sidebar-light-gray-dark elevation-4">
 
     <!-- Brand Logo -->
-    <a href="#" class="brand-link text-center p-2">
+    <a href="{% url 'statistic' %}" class="brand-link text-center p-2">
       <img src="{% static 'admin_panel/imgs/logo.svg' %}" alt="AdminLTE Logo" class="" style="width: 9rem;">
     </a>
 

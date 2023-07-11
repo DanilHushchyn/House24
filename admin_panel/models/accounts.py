@@ -8,8 +8,9 @@ from admin_panel.utilities import get_timestamp_path
 class CustomUser(AbstractUser):
     username = None,
     email = models.EmailField(max_length=255, unique=True)
-    REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
     avatar = models.ImageField(verbose_name='Сменить изображение', upload_to=get_timestamp_path, blank=True, null=True)
     phone = models.CharField(max_length=19, verbose_name='Номер телефона',
                              validators=[
@@ -61,7 +62,7 @@ class Personal(models.Model):
 
 class FlatOwner(models.Model):
     ID = models.CharField(max_length=11, unique=True,null=True)
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,related_name='client')
     patronymic = models.CharField(verbose_name='Отчество', max_length=100, default='', blank=True)
     viber = models.CharField(verbose_name='Viber', max_length=100, default='', blank=True)
     telegram = models.CharField(verbose_name='Telegram', max_length=100, default='', blank=True)
