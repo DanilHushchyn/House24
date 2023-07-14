@@ -8,7 +8,9 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 {# Read the documentation for more information #}
-
+{% block title %}
+    Сводка - {{ flat.house }}, кв.{{ flat.number }}
+{% endblock %}
 {% block head %}
 {% endblock %}
 {% block content %}
@@ -18,7 +20,7 @@
     <section class="content-header pb-0">
       <div class="container-fluid">
         <div class="row">
-            <h4 class="mb-0">Сводка</h4>
+            <h4 class="mb-0">Сводка - {{ flat.house }}, кв.{{ flat.number }}</h4>
         </div>
       </div><!-- /.container-fluid -->
       <hr style="border-top: 1px solid darkgrey;">

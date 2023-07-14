@@ -138,20 +138,25 @@ class Receipt(models.Model):
         db_table = 'receipt'
         ordering = ['-date_published']
 
+
 class ReceiptExcelDoc(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100, default='', blank=True)
     file = models.FileField(upload_to="receipt", verbose_name="Загрузить пользовательский шаблон", )
     by_default = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'receipt_excel_doc'
 
 
 class ReceiptService(models.Model):
     unit_price = models.DecimalField(verbose_name='Цена', default=0.0, max_digits=10, decimal_places=2)
-    consumption = models.DecimalField(verbose_name='Цена', default=0.0 ,max_digits=15, decimal_places=2)
+    consumption = models.DecimalField(verbose_name='Цена', default=0.0, max_digits=15, decimal_places=2)
     receipt = models.ForeignKey('Receipt', on_delete=models.CASCADE, null=True, blank=True)
     service = models.ForeignKey('Service', verbose_name='Услуга', on_delete=models.SET_NULL, null=True, blank=True)
     measure = models.ForeignKey('Measure', verbose_name='Ед. изм.', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def calc_sum(self):
+        return round(self.consumption * self.unit_price,2)
 
     class Meta:
         db_table = 'receipt-service'

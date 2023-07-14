@@ -128,12 +128,14 @@ class ClientSignUpForm(UserCreationForm):
 
 
 class ClientUpdateForm(UserChangeForm):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': ''}), label='Email (логин)')
-    ID = forms.CharField(max_length=11, label='ID', widget=forms.TextInput(attrs={'placeholder': ''}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': '', 'class': 'rounded-0'}),
+                             label='Email (логин)')
+    ID = forms.CharField(max_length=11, label='ID',
+                         widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}))
 
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': '', 'class': 'password1'}),
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': '', 'class': 'password1 rounded-0'}),
                                 label='Пароль')
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': '', 'class': 'password2'}),
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': '', 'class': 'password2 rounded-0'}),
                                 label='Повторить Пароль')
     phone = forms.CharField(max_length=19, label='Номер телефона', required=False,
                             validators=[
@@ -143,24 +145,33 @@ class ClientUpdateForm(UserChangeForm):
                                 validators.RegexValidator('^\+38 \(\d{3}\) \d{3}-?\d{2}-?\d{2}$',
                                                           message='Неверно введён номер телефона.Пример ввода: +38 (098) 567-81-23')
                             ],
-                            widget=forms.TextInput(attrs={'placeholder': ''})
+                            widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'})
                             )
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Имя')
-    patronymic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Отчество')
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Фамилия')
-    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Viber', required=False, )
-    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': ''}), label='Telegram', required=False, )
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block'}), label='Сменить изображение',
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}), label='Имя')
+    patronymic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}),
+                                 label='Отчество')
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}),
+                                label='Фамилия')
+    viber = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}), label='Viber',
+                            required=False, )
+    telegram = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '', 'class': 'rounded-0'}),
+                               label='Telegram', required=False, )
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'avatar d-block rounded-0'}),
+                              label='Сменить изображение',
                               required=False, )
 
-    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': ''}), label='О владельце (заметки)',
+    bio = forms.CharField(widget=forms.Textarea(attrs={'placeholder': '', 'class': 'rounded-0'}),
+                          label='О владельце (заметки)',
                           required=False, )
-    birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': '', 'class': 'birthday'}),
+    birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': '', 'class': 'birthday rounded-0'}),
                                label='Дата рождения', required=False, )
 
     class Meta(UserChangeForm.Meta):
         model = User
         fields = ('avatar', 'email', 'first_name', 'last_name', 'phone', 'password1', 'password2', 'status')
+        widgets = {
+            'status': forms.Select(attrs={'class': 'rounded-0 shadow-none'})
+        }
 
     @transaction.atomic
     def save(self, commit=True):
@@ -237,5 +248,3 @@ class PersonalFilterForm(forms.Form):
                             widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0'}))
     status = forms.ChoiceField(label="", choices=STATUS_CHOICE, required=False, widget=forms.Select(
         attrs={'placeholder': '', 'class': 'form-control select2-simple select2-success rounded-0'}))
-
-

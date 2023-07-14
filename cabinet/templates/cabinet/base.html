@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/fontawesome-free/css/all.min.css' %}">
       <!-- Theme style -->
     <link rel="stylesheet" href="{% static 'admin_panel/adminlte/dist/css/adminlte.css' %}">
+    <link rel="stylesheet" href="{% static 'cabinet/base.css' %}">
     {% block head %}
     {% endblock %}
 </head>
@@ -91,7 +92,7 @@
               </div>
               <div class="card-footer">
                 <div class="row">
-                  <button type="button" class="col-5 btn btn-block btn-default">Профиль</button>
+                  <a href="{% url 'profile' %}" class="col-5 btn btn-block btn-default">Профиль</a>
                   <div class="col-2"></div>
                     <button type="button" class="col-5 btn btn-block btn-default">Выход</button>
                 </div>
@@ -130,12 +131,14 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{% url 'cabinet_statistic' %}" class="nav-link">
-                    <i class="fa-solid fa-building"></i>
-                  <p>Квартира 1</p>
-                </a>
-              </li>
+              {% for flat in flats %}
+                  <li class="nav-item">
+                        <a href="{% url 'flat_statistic_cabinet' flat.id %}" class="nav-link">
+                          <i class="fa-solid fa-building"></i>
+                          <p>{{ flat.house }}, кв.{{ flat.number }}</p>
+                        </a>
+                  </li>
+              {% endfor %}
             </ul>
           </li>
           <li class="nav-item">
@@ -148,11 +151,20 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{% url 'receipts_cabinet' %}" class="nav-link">
                   <i class="fa-solid fa-file"></i>
                   <p>Все квитанции</p>
                 </a>
               </li>
+            {% for flat in flats %}
+              <li class="nav-item">
+                    <a href="{% url 'get_flat_receipts_cabinet' flat.id %}" class="nav-link">
+                      <i class="fa fa-file-text-o"></i>
+                      <p>{{ flat.house }}, кв.{{ flat.number }}</p>
+                    </a>
+              </li>
+            {% endfor %}
+
             </ul>
           </li>
           <li class="nav-item">
@@ -166,7 +178,7 @@
             <ul class="nav nav-treeview">
                 {% for flat in flats %}
                   <li class="nav-item">
-                        <a href="{% url 'get_tariff' flat.id %}" class="nav-link">
+                        <a href="{% url 'get_tariff_cabinet' flat.id %}" class="nav-link">
                           <i class="fa-solid fa-money-check-dollar"></i>
                           <p>{{ flat.house }}, кв.{{ flat.number }}</p>
                         </a>
@@ -184,7 +196,7 @@
             <li class="nav-item pb-1" style="height: 3rem;">
             <a href="{% url 'applications_cabinet' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-screwdriver-wrench">
-                <span class="p-2">Заявки вызова мастера</span></i>
+                <span class="p-2">Вызов мастера</span></i>
             </a>
           </li>
           <li class="nav-item pb-1 " style="height: 3rem;">

@@ -19,10 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 
 from House24 import settings
+from admin_panel.views.custom_errors import *
 
 urlpatterns = [
-                  path('admin/', include('admin_panel.urls')),
-                  path('cabinet/', include('cabinet.urls')),
-                  path('website/', include('website.urls')),
-                  path('users/', include('users.urls')),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+      path('admin/', include('admin_panel.urls')),
+      path('cabinet/', include('cabinet.urls')),
+      path('website/', include('website.urls')),
+      path('users/', include('users.urls')),
+  ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+handler404 = customhandler404
+handler500 = customhandler500
