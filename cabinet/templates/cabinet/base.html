@@ -50,26 +50,27 @@
         </a>
       </li>
     </ul>
-
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- fullscreen -->
       <li class="nav-item dropdown mt-1">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa-solid fa-bell"></i>
-          <span class="badge badge-danger navbar-badge">60</span>
+          <i class="far fa-bell"></i>
+            {% if notifications.count > 0 %}
+                <span class="badge badge-warning navbar-badge">{{ notifications.count }}</span>
+            {% endif %}
         </a>
-        <div class="dropdown-menu dropdown-menu-md   dropdown-menu-right" style="overflow-y: scroll;max-height: 180px">
-            <a href="#" class="dropdown-item dropdown-footer">Перейти в раздел сообщений</a>
-            <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a><!-- Message Start -->
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-header">Новых сообщений: {{ notifications.count }}</span>
+          <div class="dropdown-divider"></div>
+            {% for notification in notifications %}
+                <a href="{% url 'mailbox_detail_cabinet' notification.id %}" class="dropdown-item">
+                    <i class="fas fa-envelope mr-2"></i> {{ notification.title }}
+                    <span class="float-right text-muted text-sm">{{ notification.sender }}</span>
+                </a>
+            {% endfor %}
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'mailboxes_cabinet' %}" class="dropdown-item dropdown-footer">Посмотреть все сообщения</a>
         </div>
       </li>
 
@@ -94,16 +95,13 @@
                 <div class="row">
                   <a href="{% url 'profile' %}" class="col-5 btn btn-block btn-default">Профиль</a>
                   <div class="col-2"></div>
-                    <button type="button" class="col-5 btn btn-block btn-default">Выход</button>
+                    <a  href="{% url 'logout' %}" class="col-5 btn btn-block btn-default">Выход</a>
                 </div>
                 <!-- /.row -->
               </div>
             </div>
         </div>
       </li>
-
-
-
     </ul>
 
   </nav>

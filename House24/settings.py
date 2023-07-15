@@ -68,7 +68,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cabinet.middlewares.flats',
+                'cabinet.middlewares.user_info',
+
             ],
             'libraries': {
                 'check_relation': 'admin_panel.templatetags.check_relation',
@@ -116,6 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 LOGIN_REDIRECT_URL = 'cabinet_statistic'
+LOGOUT_REDIRECT_URL = 'main'
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Kiev'

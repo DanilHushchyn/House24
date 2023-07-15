@@ -156,7 +156,7 @@ class ReceiptService(models.Model):
     measure = models.ForeignKey('Measure', verbose_name='Ед. изм.', on_delete=models.SET_NULL, null=True, blank=True)
 
     def calc_sum(self):
-        return round(self.consumption * self.unit_price,2)
+        return round(self.consumption * self.unit_price, 2)
 
     class Meta:
         db_table = 'receipt-service'
@@ -221,6 +221,7 @@ class MailBox(models.Model):
     section = models.ForeignKey('Section', on_delete=models.CASCADE, null=True, blank=True)
     flat = models.ForeignKey('Flat', on_delete=models.CASCADE, null=True, blank=True)
     flat_owners = models.ManyToManyField('FlatOwner')
+    unread = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'mailbox'

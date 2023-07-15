@@ -36,8 +36,9 @@ class PersonalSignUpForm(UserCreationForm):
     @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)
-
         if commit:
+            user.save()
+            user.is_staff = True
             user.save()
         Personal.objects.create(user=user, role=self.cleaned_data.get('role'))
         return user
@@ -75,6 +76,9 @@ class PersonalUpdateForm(UserChangeForm):
         obj = Personal.objects.get(user=user)
         obj.role = self.cleaned_data.get('role')
         obj.save()
+        if self.cleaned_data.get('password1') == self.cleaned_data.get('password2'):
+            obj.user.set_password(self.cleaned_data.get('password1'))
+            obj.user.save()
         return user
 
 
@@ -186,6 +190,9 @@ class ClientUpdateForm(UserChangeForm):
         obj.telegram = self.cleaned_data.get('telegram')
         obj.ID = self.cleaned_data.get('ID')
         obj.save()
+        if self.cleaned_data.get('password1') == self.cleaned_data.get('password2'):
+            obj.user.set_password(self.cleaned_data.get('password1'))
+            obj.user.save()
         return user
 
 

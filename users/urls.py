@@ -6,5 +6,6 @@ from House24 import settings
 from users.views import *
 
 urlpatterns = [
-    path('login/', LoginFlatOwner.as_view(), name='login'),
+    path('login/', LoginHouse24.as_view(), name='login'),
+    path('logout/', LogoutHouse24.as_view(), name='logout'),
 ]

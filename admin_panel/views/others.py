@@ -166,6 +166,8 @@ class CreatePaybox(FormView):
     def get(self, request, income, *args, **kwargs):
         form = PayboxForm()
         form.fields['date_published'].initial = timezone.now().date()
+        form.fields['user'].initial = Personal.objects.get(user_id=self.request.user.id)
+        form.fields['is_complete'].initial = True
 
         if income == 'plus':
             form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
@@ -749,7 +751,6 @@ class FlatListView(ListView):
     context_object_name = 'flats'
     queryset = Flat.objects.all()
     paginate_by = 20
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1626,7 +1627,6 @@ class MailboxList(ListView):
     template_name = 'admin_panel/mailbox.html'
     context_object_name = 'mailboxes'
     queryset = MailBox.objects.all()
-    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1663,6 +1663,13 @@ class CreateMailbox(CreateView):
     model = MailBox
     template_name = 'admin_panel/get_mailbox_form.html'
     form_class = MailBoxForm
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.sender_id = Personal.objects.get(user_id=self.request.user.id).id
+        obj.save()
+        return super().form_valid(form)
+
     success_url = reverse_lazy('mailboxes')
 
 
@@ -2082,5 +2089,3 @@ from openpyxl import Workbook
 #         data = {
 #         }
 #         return redirect(request.path)
-
-

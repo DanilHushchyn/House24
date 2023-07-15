@@ -231,7 +231,8 @@
                     dataType: 'html',
                     context: 'html',
                     success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
-                        tr_elem.remove()
+                        {#tr_elem.remove()#}
+                        $('#filter').submit()
                     }
                 });
             }

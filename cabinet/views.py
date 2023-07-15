@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import *
 from weasyprint import HTML, CSS
@@ -164,7 +164,6 @@ class ReceiptPDF2(View):
     def get(self, request, *args, **kwargs):
         receipt = Receipt.objects.get(pk=self.kwargs['receipt_id'])
         services = ReceiptService.objects.filter(receipt_id=self.kwargs['receipt_id'])
-
         html_template = get_template('cabinet/invoice/invoice.html')
         context = {
             'services': services,
@@ -261,7 +260,6 @@ class MailboxList(ListView):
 class MailboxFilteredList(ListView):
     template_name = 'cabinet/mailbox.html'
     context_object_name = 'mailboxes'
-    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -289,7 +287,10 @@ class MailboxDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['mailbox'] = MailBox.objects.get(pk=self.kwargs['pk'])
+        obj = MailBox.objects.get(pk=self.kwargs['pk'])
+        obj.unread = False
+        obj.save()
+        context['mailbox'] = obj
         return context
 
 

@@ -13,7 +13,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg"   href="{% static 'admin_panel/imgs/logo.svg' %}">
-
     <title>
         {% block title %}
 
@@ -54,110 +53,50 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- fullscreen -->
-      <li class="nav-item dropdown mt-1">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa-solid fa-user"></i>
-          <span class="badge badge-danger navbar-badge">60</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-md   dropdown-menu-right" style="overflow-y: scroll;max-height: 180px">
-            <a href="{% url 'clients' %}" class="dropdown-item dropdown-footer">Перейти в раздел пользователей</a>
-            <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a><!-- Message Start -->
-             <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-             <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-              <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-              <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-            <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-            <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-            <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">Call me whenever you can...</h3>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a>
-        </div>
-      </li>
+        <li class="nav-item dropdown mt-1">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+              <i class="far fa-bell"></i>
+                {% if new_clients.count > 0 %}
+                    <span class="badge badge-success navbar-badge">{{ new_clients.count }}</span>
+                {% endif %}
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+              <span class="dropdown-header">Новых пользователей: {{ new_clients.count }}</span>
+              <div class="dropdown-divider"></div>
+                {% for client in new_clients %}
+                    <a href="{% url 'read_client' client.id %}" class="dropdown-item">
+                        <i class="fas fa-envelope mr-2"></i> {{ client }}
+                    </a>
+                {% endfor %}
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'clients' %}" class="dropdown-item dropdown-footer">Перейти в раздел пользователей</a>
+            </div>
+        </li>
+
 
 
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="fa-solid fa-crown"></i>
-          <span class="d-none d-sm-inline" style="font-size: 15px">Директор Директоров</span>
+          <span class="d-none d-sm-inline" style="font-size: 15px">{{ request.user }}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <div class="dropdown-item card card-widget widget-user p-0 m-0">
               <!-- Add the bg color to the header using any of the bg-* classes -->
               <div class="widget-user-header bg-info">
-                <h3 class="widget-user-username">Директор Директоров</h3>
-                <h5 class="widget-user-desc">Директор</h5>
+                <h3 class="widget-user-username">{{ request.user }}</h3>
+                <h5 class="widget-user-desc">{{ request.user.personal.get_role_display }}</h5>
               </div>
               <div class="widget-user-image">
+
                 <img class="img-circle elevation-1" src="{% static 'admin_panel/imgs/user-avatar.jpg' %}" alt="User Avatar">
               </div>
               <div class="card-footer">
                 <div class="row">
-                  <a href="#!" type="button" class="col-5 btn btn-block btn-default">Профиль</a>
+                  <a href="{% url 'update_personal' user.id %}" type="button" class="col-5 btn btn-block btn-default">Профиль</a>
                   <div class="col-2"></div>
-                    <button type="button" class="col-5 btn btn-block btn-default">Выход</button>
+                    <a  href="{% url 'logout' %}" class="col-5 btn btn-block btn-default">Выход</a>
                 </div>
                 <!-- /.row -->
               </div>
