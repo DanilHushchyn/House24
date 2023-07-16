@@ -82,6 +82,7 @@ urlpatterns = [
     path("filtered_messages", admin_panel.views.MailboxFilteredList.as_view(),
          name='filtered_messages'),
     path("mailbox/add", admin_panel.views.CreateMailbox.as_view(), name='add_mailbox'),
+    path("mailbox/add_debtors", admin_panel.views.CreateDebtorsMailbox.as_view(), name='add_debtors_mailbox'),
     path("mailbox/detail/<str:pk>", admin_panel.views.MailboxDetail.as_view(), name='mailbox_detail'),
     path("mailbox/delete/<str:pk>", admin_panel.views.DeleteMailbox.as_view(),
          name='delete_mailbox'),
@@ -164,5 +165,8 @@ urlpatterns = [
     path("get_service-info/<str:pk>", admin_panel.views.GetServiceInfoView.as_view(), name='get_service-info'),
     path("get_indication-info/<str:flat_id>/<str:service_id>", admin_panel.views.GetIndicationInfoView.as_view(), name='get_indication-info'),
     path("get_indication-sorted-list/<str:flat_id>", admin_panel.views.GetIndicationsSortedList.as_view(), name='get_indication-sorted-list'),
+
+
+    path("roles", admin_panel.views.roles, name='roles'),
 
 ]

@@ -1,0 +1,124 @@
+{% extends 'admin_panel/base.html' %}
+{%  load static %}
+{# Load the tag library#}
+{% load django_bootstrap5 %}
+{# Load CSS and JavaScript#}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts#}
+{% bootstrap_messages %}
+{# Read the documentation for more information#}
+{% block title %}
+    Роли
+{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'admin_panel/adminlte/plugins/select2/css/select2.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="{% static 'admin_panel/system_settings/tariffs/tariffs.css' %}">
+
+{% endblock %}
+{% block content %}
+    <div class="content-wrapper" style="height: auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header pb-0">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="mb-0">Роли</h4>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                <li class="breadcrumb-item active">Роли</li>
+            </ol>
+          </div>
+        </div>
+        <hr style="border-top: 1px solid darkgrey;">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+       <div class="card card-success card-outline">
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+              <div class="table-responsive" >
+                   <table id="roles" class="table table-bordered  table-hover table-striped linkedRow border-0 w-100">
+                      <thead>
+                        <tr>
+                          <th >Роль</th>
+                          <th >Статистика</th>
+                          <th >Касса</th>
+                          <th >Квитанции на оплату</th>
+                          <th >Лицевые счета</th>
+                          <th >Квартиры</th>
+                          <th >Владельцы квартир</th>
+                          <th >Дома</th>
+                          <th >Сообщения</th>
+                          <th >Заявки вызова мастера</th>
+                          <th >Счётчики</th>
+                          <th >Управление сайтом</th>
+                          <th >Услуги</th>
+                          <th >Тарифы</th>
+                          <th >Роли</th>
+                          <th >Пользователи</th>
+                          <th>Платёжные реквизиты</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                            <tr class="border-0">
+                              <td class="text-center">Директор</td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                              <td><div class="d-flex justify-content-center"><input type="checkbox" class="form-check"></div></td>
+                            </tr>
+                      </tbody>
+                   </table>
+              </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer d-flex flex-column bg-white">
+
+          </div>
+       </div>
+    </section>
+    <!-- /.content -->
+  </div>
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'admin_panel/adminlte/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="application/javascript">
+       $(document).ready(function () {
+             $('#roles').DataTable({
+                searching: false,
+                ordering:  false,
+                paging: false,
+                select: true,
+                "bInfo" : false
+
+
+            });
+        });
+
+    </script>
+    <script type="module" src="{% static 'admin_panel/system_settings/tariffs/tariffs.js' %}"></script>
+{% endblock %}

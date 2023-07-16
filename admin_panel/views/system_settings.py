@@ -314,3 +314,7 @@ class PaymentArticlesListView(ListView):
     template_name = 'admin_panel/system_settings/payment_articles.html'
     context_object_name = 'rows'
     queryset = Article.objects.all()
+
+
+def roles(request):
+    return render(request, 'admin_panel/system_settings/roles.html')

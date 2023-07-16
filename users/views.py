@@ -1,3 +1,7 @@
+import json
+import urllib
+from urllib.request import urlopen
+
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.hashers import make_password, check_password
@@ -9,66 +13,98 @@ from django.views import View
 # Create your views here.
 from users.forms import *
 
+# class LoginHouse24(LoginView):
+#     authentication_form = LoginForm
+#     template_name = 'registration/login.html'
+#
+#     def form_valid(self, form):
+#         user = authenticate(
+#             username=form.cleaned_data['username'],
+#             password=form.cleaned_data['password'],
+#         )
+#         if user is not None:
+#             login(self.request, user)
+#             # if not form.cleaned_data['remember_me']:
+#             #     self.request.session.set_expiry(0)
+#             if user.is_staff:
+#                 return redirect('statistic')
+#             else:
+#                 return redirect('profile')
 
-class LoginHouse24(LoginView):
-    template_name = 'users/login.html'
-    authentication_form = LoginForm
 
-    def form_invalid(self, form):
-        messages.error(self.request, 'Неверная почта или пароль')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        user = authenticate(
-            username=form.cleaned_data['username'],
-            password=form.cleaned_data['password'],
-        )
-        if user is not None:
-            print('hello2')
-
-            login(self.request, user)
-            if user.is_staff:
-                return redirect('statistic')
-            else:
-                return redirect('profile')
-
-    def get_success_url(self):
-        return reverse_lazy('profile')
+from django.views.generic import View
 
 
 # class LoginHouse24(View):
-#     template_name = 'users/login.html'
+#     template_name = 'registration/login.html'
 #     form_class = LoginForm
 #
-#     def get(self, request):
-#         form = self.form_class()
-#         message = ''
-#         return render(request, self.template_name, context={'form': form, 'message': message})
-#
-#     def post(self, request):
-#         form = self.form_class(request.POST)
-#         print(form.errors)
-#         print(form)
-#         print(form.is_valid())
-#
-#         if form.is_valid():
-#             print('hello1')
-#
-#             user = authenticate(
-#                 username=form.cleaned_data['email'],
-#                 password=form.cleaned_data['password'],
-#             )
-#             if user is not None:
-#                 print('hello2')
-#
-#                 login(request, user)
-#                 if user.is_staff():
-#                     return redirect('statistic')
-#                 else:
-#                     return redirect('profile')
-#         message = 'Неправильно указана почта или пароль'
-#         return render(request, self.template_name, context={'form': form, 'message': message})
+#     def dispatch(self, request):
+#         if request.method == "POST":
+#             form = self.form_class(request.POST)
+#             print(form.errors)
+#             print(form.is_valid())
+#             print('hello')
+#             if form.is_valid():
+#                 user = authenticate(
+#                     username=form.cleaned_data['username'],
+#                     password=form.cleaned_data['password'],
+#                 )
+#                 if user is not None:
+#                     login(self.request, user)
+#                     # if not form.cleaned_data['remember_me']:
+#                     #     self.request.session.set_expiry(0)
+#                     if user.is_staff:
+#                         return redirect('statistic')
+#                     else:
+#                         return redirect('profile')
+#             message = 'Неверно указана почта или пароль'
+#             return render(request, self.template_name, context={'form': form, 'message': message})
+#         else:
+#             form = self.form_class()
+#             message = ''
+#             return render(request, self.template_name, context={'form': form, 'message': message})
 
 
-class LogoutHouse24(LogoutView):
-    success_url = reverse_lazy('main')
+class LoginHouse24(View):
+    template_name = 'registration/login.html'
+    form_class = LoginForm
+
+    def get(self, request):
+        form = self.form_class()
+        message = ''
+        return render(request, self.template_name, context={'form': form, 'message': message})
+
+    def post(self, request):
+        form = self.form_class(data=request.POST)
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+        if result['success']:
+            if form.is_valid():
+
+                user = authenticate(
+                    username=form.cleaned_data['username'],
+                    password=form.cleaned_data['password'],
+                )
+                if user is not None:
+                    login(request, user)
+                    if not form.cleaned_data['remember_me']:
+                        self.request.session.set_expiry(0)
+                    if user.is_staff:
+                        return redirect('statistic')
+                    else:
+                        return redirect('profile')
+            messages.error(request, 'Неправильно указана почта или пароль')
+            return render(request, self.template_name, context={'form': form})
+        messages.error(request, 'ReCaptcha не пройдена')
+        return render(request, self.template_name, context={'form': form})
+

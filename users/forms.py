@@ -6,3 +6,5 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput())
+    remember_me = forms.BooleanField(required=False)  # and add the remember_me field
+

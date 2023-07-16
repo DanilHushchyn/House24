@@ -26,6 +26,6 @@ def user_info(request):
         }
     elif app_name == 'website':
         pass
-    elif app_name == 'users':
+    elif app_name == 'registration':
         pass
     return data

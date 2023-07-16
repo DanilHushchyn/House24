@@ -34,7 +34,6 @@
     <div class="login-box">
       <div class="login-logo">
           <img src="{% static 'admin_panel/imgs/logo.svg' %}" style="width: 250px;height: auto" alt="House 24">
-          {{ request.user }}
       </div>
       <!-- /.login-logo -->
             <div class="card card-primary card-outline card-outline-tabs">
@@ -56,17 +55,22 @@
                             <p class="login-box-msg">Вход в личный кабинет</p>
                             <input type="email" name="username" class="form-control mb-3 rounded-0" placeholder="Email" required="" id="id_email">
 
-                            <input type="password" name="password" class="form-control mb-3 rounded-0" placeholder="Password" required="" id="id_password">
+                            <input type="password" name="password" class="form-control mb-3 rounded-0" placeholder="Пароль" required="" id="id_password">
                             <div class="row">
-                              <div class="col-8">
+                              <div class="col-8 mb-3">
                                 <div class="icheck-primary">
-                                  <input type="checkbox" id="remember">
-                                  <label for="remember">
+                                  <input type="checkbox" name="remember_me" id="id_remember_me">
+                                  <label for="id_remember_me">
                                     Запомнить меня
                                   </label>
                                 </div>
                               </div>
-                              <!-- /.col -->
+                              <div class="col-12 mb-3  d-flex justify-content-center">
+                                <div class="g-recaptcha" data-sitekey="6LfR5ionAAAAAJJFyak25pkoYhXzChXkxRqOiyT5"></div>
+                              </div>
+                              <p class="mb-3">
+                                <a href="{% url 'password-reset' %}">Забыли пароль?</a>
+                              </p>
                               <div class="col-12">
                                 <button type="submit" class="btn btn-primary btn-block">Вход</button>
                               </div>
@@ -78,17 +82,23 @@
                             {% csrf_token %}
                             <p class="login-box-msg">Вход в панель управления</p>
                             <input type="email" name="username" class="form-control mb-3 rounded-0" placeholder="Email" required="" id="id_email">
-                            <input type="password" name="password" class="form-control mb-3 rounded-0" placeholder="Password" required="" id="id_password">
+                            <input type="password" name="password" class="form-control mb-3 rounded-0" placeholder="Пароль" required="" id="id_password">
                             <div class="row">
-                              <div class="col-8">
+                              <div class="col-8 mb-3">
                                 <div class="icheck-primary">
-                                  <input type="checkbox" id="remember">
-                                  <label for="remember">
+                                  <input type="checkbox" name="remember_me" id="id_remember_me">
+                                  <label for="id_remember_me">
                                     Запомнить меня
                                   </label>
                                 </div>
                               </div>
                               <!-- /.col -->
+                              <div class="col-12 mb-3 d-flex justify-content-center">
+                                <div class="g-recaptcha" data-sitekey="6LfR5ionAAAAAJJFyak25pkoYhXzChXkxRqOiyT5"></div>
+                              </div>
+                              <p class="mb-1">
+                                <a href="{% url 'password-reset' %}">Забыли пароль?</a>
+                              </p>
                               <div class="col-12">
                                 <button type="submit" class="btn btn-primary btn-block">Вход</button>
                               </div>
@@ -112,6 +122,8 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                                    <script src='https://www.google.com/recaptcha/api.js'></script>
+
     <script>
         $("#login-admin").validate({
             errorClass: "error fail-alert",

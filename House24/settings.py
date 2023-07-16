@@ -26,6 +26,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'dhushchyn@gmail.com'
+EMAIL_HOST_PASSWORD = 'mfpxzbsjatijcboa'
+DEFAULT_FROM_EMAIL = 'dhushchyn@gmail.com'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,6 +52,7 @@ INSTALLED_APPS = [
     "django_cleanup",
     'easy_thumbnails',
 ]
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LfR5ionAAAAAOBoMMJVwiwd-mp_6YJJtXEMD4Uj'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

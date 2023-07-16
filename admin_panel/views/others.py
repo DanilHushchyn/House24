@@ -1358,7 +1358,7 @@ class HouseDetail(DetailView):
         users = house.houseuser_set.all()
         context['house'] = house
         context['photos'] = photos
-        context['users'] = users
+        context['registration'] = users
 
         return context
 
@@ -1663,6 +1663,27 @@ class CreateMailbox(CreateView):
     model = MailBox
     template_name = 'admin_panel/get_mailbox_form.html'
     form_class = MailBoxForm
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.sender_id = Personal.objects.get(user_id=self.request.user.id).id
+        obj.save()
+        return super().form_valid(form)
+
+    success_url = reverse_lazy('mailboxes')
+
+
+class CreateDebtorsMailbox(CreateView):
+    model = MailBox
+    template_name = 'admin_panel/get_mailbox_form.html'
+
+    def get(self, request, *args, **kwargs):
+        form = MailBoxForm()
+        form.fields['to_debtors'].initial = True
+        data = {
+            "form": form
+        }
+        return render(request, 'admin_panel/get_mailbox_form.html', context=data)
 
     def form_valid(self, form):
         obj = form.save(commit=False)
