@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import *
 from admin_panel.forms import *
+from users.forms import RoleFormset
 
 
 class ServicesView(FormView):
@@ -316,5 +317,25 @@ class PaymentArticlesListView(ListView):
     queryset = Article.objects.all()
 
 
-def roles(request):
-    return render(request, 'admin_panel/system_settings/roles.html')
+class Roles(FormView):
+    def get(self, request, *args, **kwargs):
+        roles_formset = RoleFormset(prefix='roles')
+        data = {
+            'roles_formset': roles_formset,
+
+        }
+        return render(request, 'admin_panel/system_settings/roles.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        roles_formset = RoleFormset(request.POST, prefix='roles')
+
+        if roles_formset.is_valid():
+            roles_formset.save()
+        else:
+            data = {
+                'roles_formset': roles_formset,
+            }
+            return render(request, 'admin_panel/system_settings/roles.html', context=data)
+        return redirect('roles')
+
+

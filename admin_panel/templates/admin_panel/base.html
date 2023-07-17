@@ -115,7 +115,7 @@
   <aside class="main-sidebar sidebar-light-gray-dark elevation-4">
 
     <!-- Brand Logo -->
-    <a href="{% url 'statistic' %}" class="brand-link text-center p-2">
+    <a href="#" class="brand-link text-center p-2">
       <img src="{% static 'admin_panel/imgs/logo.svg' %}" alt="AdminLTE Logo" class="" style="width: 9rem;">
     </a>
 
@@ -124,68 +124,88 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column mb-3" data-widget="treeview" role="menu" data-accordion="false" style="font-size: 14px">
+            {% if user_permission.statistics %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'statistic' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-light fa-chart-line">
+                    <span class="p-2">Статистика</span></i>
 
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'statistic' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-light fa-chart-line">
-                <span class="p-2">Статистика</span></i>
-
-            </a>
-          </li>
-           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'paybox' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-light fa-dollar-sign">
-                <span class="p-2">Касса</span></i>
-            </a>
-          </li>
-           <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'receipts' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-file">
-                <span class="p-2">Квитанции на оплату</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'personal_accounts' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-credit-card">
-                <span class="p-2">Лицевые счета</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'flats' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-key">
-                <span class="p-2">Квартиры</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'clients' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-users">
-                <span class="p-2">Владельцы квартир</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'houses' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-building">
-                <span class="p-2">Дома</span></i>
-            </a>
-          </li>
-          <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'mailboxes' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-envelope">
-                <span class="p-2">Сообщения</span></i>
-            </a>
-          </li>
-            <li class="nav-item pb-1" style="height: 3rem;">
-            <a href="{% url 'applications' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
-                <i class="fa-solid fa-screwdriver-wrench">
-                <span class="p-2">Заявки вызова мастера</span></i>
-            </a>
-          </li>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.paybox %}
+               <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'paybox' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-light fa-dollar-sign">
+                    <span class="p-2">Касса</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.receipt %}
+               <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'receipts' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-file">
+                    <span class="p-2">Квитанции на оплату</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.personal_account %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'personal_accounts' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-credit-card">
+                    <span class="p-2">Лицевые счета</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.flat %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'flats' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-key">
+                    <span class="p-2">Квартиры</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.flat_owner %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'clients' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-users">
+                    <span class="p-2">Владельцы квартир</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.house %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'houses' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-building">
+                    <span class="p-2">Дома</span></i>
+                </a>
+              </li>
+            {% endif %}
+            {% if user_permission.mailbox %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'mailboxes' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-envelope">
+                    <span class="p-2">Сообщения</span></i>
+                </a>
+              </li>
+            {% endif %}
+          {% if user_permission.indication %}
+              <li class="nav-item pb-1" style="height: 3rem;">
+                <a href="{% url 'applications' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
+                    <i class="fa-solid fa-screwdriver-wrench">
+                    <span class="p-2">Заявки вызова мастера</span></i>
+                </a>
+              </li>
+          {% endif %}
+        {% if user_permission.indication %}
           <li class="nav-item pb-1" style="height: 3rem;">
             <a href="{% url 'counters' %}" class="nav-link h-100 d-flex flex-row align-items-center ps-2">
                 <i class="fa-solid fa-calculator">
                 <span class="p-2">Показания счётчиков</span></i>
             </a>
           </li>
+        {% endif %}
+        {% if user_permission.manage_site %}
           <li class="nav-item">
             <a href="#" class="nav-link ps-2">
               <i class="fa-solid fa-desktop"></i>
@@ -227,6 +247,8 @@
               </li>
             </ul>
           </li>
+        {% endif %}
+        {% if user_permission.service or user_permission.tariff or user_permission.role or user_permission.users or user_permission.payment_detail or user_permission.payment_article %}
           <li class="nav-item">
             <a href="#" class="nav-link ps-2">
               <i class="fa-sharp fa-solid fa-gears"></i>
@@ -236,22 +258,26 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{% url 'system_services' %}" class="nav-link">
-                  <i class="fa-solid fa-briefcase"></i>
-                  <p class="p-2">Услуги</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'system_tariffs' %}" class="nav-link">
-                  <i class="fa-solid fa-money-check-dollar"></i>
-                  <p class="p-2">Тарифы</p>
-                </a>
-              </li>
+                {% if user_permission.service %}
+                  <li class="nav-item">
+                    <a href="{% url 'system_services' %}" class="nav-link">
+                      <i class="fa-solid fa-briefcase"></i>
+                      <p class="p-2">Услуги</p>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if user_permission.tariff %}
+                  <li class="nav-item">
+                    <a href="{% url 'system_tariffs' %}" class="nav-link">
+                      <i class="fa-solid fa-money-check-dollar"></i>
+                      <p class="p-2">Тарифы</p>
+                    </a>
+                  </li>
+                {% endif %}
               <li class="nav-item">
                 <a href="{% url 'roles' %}" class="nav-link">
                   <i class="fa-solid fa-scale-balanced"></i>
-                  <p>Роли</p>
+                  <p  class="p-2">Роли</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -274,6 +300,7 @@
               </li>
             </ul>
           </li>
+        {% endif %}
         </ul>
       </nav>
     </div>

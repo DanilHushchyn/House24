@@ -27,7 +27,11 @@
 
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right" style="font-size: 15px">
-                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                {% if user_permission.statistics %}
+                    <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                {% else %}
+                    <li class="breadcrumb-item"><a href="{% url 'update_personal' request.user.id %}">Главная</a></li>
+                {% endif %}
                 <li class="breadcrumb-item"><a href="{% url 'receipts' %}">Квитанции</a></li>
                 <li class="breadcrumb-item active">Квитанция №{{ receipt.number }}</li>
             </ol>
@@ -68,7 +72,7 @@
                     <h5 class="me-1">Просмотр квитанции</h5>
                     <div class="text-right d-flex flex-wrap">
                         <a class="btn btn-default me-1 mb-1" href="{% url 'receipt_print' receipt.id %}">Печать</a>
-                        <a class="btn btn-default me-1 mb-1" href="#!">Отправить на e-mail</a>
+                        <a class="btn btn-default me-1 mb-1" href="{% url 'send_receipt_email' receipt.id %}">Отправить на e-mail</a>
                         <a class="btn btn-primary me-1 mb-1" href="{% url 'update_receipt' receipt.id %}">Редактировать квитанцию</a>
                     </div>
                 </div>

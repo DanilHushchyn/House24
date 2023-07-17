@@ -483,3 +483,17 @@ class CounterIndicationsFilterForm(forms.Form):
 class SearchMessageFilterForm(forms.Form):
     search_row = forms.CharField(label="", max_length=100, required=False,
                                  widget=forms.TextInput(attrs={'placeholder': '', 'class': 'form-control rounded-0 '}))
+
+
+class InvitationForm(forms.Form):
+    phone = forms.CharField(max_length=19, label='Телефон',
+                            validators=[
+                                validators.MaxLengthValidator(19),
+                                validators.MinLengthValidator(19),
+                                validators.ProhibitNullCharactersValidator(),
+                                validators.RegexValidator('^\+38 \(\d{3}\) \d{3}-?\d{2}-?\d{2}$',
+                                                          message='Неверно введён номер телефона.Пример ввода: +38 (098) 567-81-23')
+                            ],
+                            widget=forms.TextInput(attrs={'placeholder': '+38 (098) 567-81-23'})
+                            )
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'info@example.com'}), label='Email')

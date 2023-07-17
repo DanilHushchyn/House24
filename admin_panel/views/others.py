@@ -4,7 +4,7 @@ from functools import reduce
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import *
@@ -99,7 +99,6 @@ class PayboxList(ListView):
         total_plus = sum(Paybox.objects.filter(debit_credit='plus', is_complete=True).values_list('total', flat=True))
         total_minus = sum(Paybox.objects.filter(debit_credit='minus', is_complete=True).values_list('total', flat=True))
         context['filter_form'] = PayboxFilterForm()
-
         context['total_plus'] = total_plus
         context['total_minus'] = total_minus
         return context
@@ -446,6 +445,17 @@ class ReceiptsFilteredList(ListView):
         return receipts
 
 
+from admin_panel.tasks import send_receipt
+
+
+class SendReceiptEmail(View):
+    def get(self, request, receipt_id, *args, **kwargs):
+        receipt = Receipt.objects.get(pk=receipt_id)
+        send_receipt.delay(receipt_id, to=receipt.flat.flat_owner.user.email)
+        url = f"/admin/receipt/detail/{receipt_id}"
+        return HttpResponseRedirect(url)
+
+
 class UpdateReceipt(UpdateView):
     model = Receipt
     template_name = 'admin_panel/update_receipt.html'
@@ -472,10 +482,7 @@ class UpdateReceipt(UpdateView):
         if receipt_form.is_valid() and service_formset.is_valid():
             obj = receipt_form.save()
             instances = service_formset.save()
-            print(service_formset.errors)
-            print(instances)
             for instance in instances:
-                print('hello')
                 instance.receipt_id = obj.id
                 instance.save()
             return redirect('receipts')
@@ -494,7 +501,6 @@ class ReceiptPrint(View):
     def get(self, request, pk, *args, **kwargs):
         receipt = Receipt.objects.get(pk=pk)
         rows = ReceiptExcelDoc.objects.all().order_by('id')
-
         data = {
             'rows': rows,
             'receipt': receipt
@@ -1267,6 +1273,33 @@ class ClientDetail(DetailView):
         context['flats'] = client.flat_set.all()
 
         return context
+
+
+from admin_panel.tasks import send_invitation
+
+
+class SendInvitation(FormView):
+    template_name = 'admin_panel/send_invitation.html'
+    form_class = InvitationForm
+    success_url = reverse_lazy('send_invitation')
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        data = {
+            'form': form
+        }
+        return render(self.request, 'admin_panel/send_invitation.html', context=data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            send_invitation.delay(to=form.cleaned_data['email'])
+            return redirect('send_invitation')
+        else:
+            data = {
+                'form': form
+            }
+            return render(self.request, 'admin_panel/send_invitation.html', context=data)
 
 
 class ClientSignUpView(CreateView):

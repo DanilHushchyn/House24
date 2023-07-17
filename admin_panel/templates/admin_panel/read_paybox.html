@@ -27,7 +27,11 @@
 
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right" style="font-size: 15px">
-                <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                {% if user_permission.statistics %}
+                    <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
+                {% else %}
+                    <li class="breadcrumb-item"><a href="{% url 'update_personal' request.user.id %}">Главная</a></li>
+                {% endif %}
                 <li class="breadcrumb-item"><a href="{% url 'paybox' %}">Платежи</a></li>
                 <li class="breadcrumb-item active">Приходная ведомость №{{ paybox.number  }}</li>
             </ol>

@@ -37,7 +37,7 @@ class CustomUser(AbstractUser):
 
 
 class Personal(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='personal')
     ROLE_CHOICE = (
         ('director', 'Директор'),
         ('manager', 'Управляющий'),
@@ -61,13 +61,13 @@ class Personal(models.Model):
 
 
 class FlatOwner(models.Model):
-    ID = models.CharField(max_length=11, unique=True,null=True)
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,related_name='client')
+    ID = models.CharField(max_length=11, unique=True, null=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='client')
     patronymic = models.CharField(verbose_name='Отчество', max_length=100, default='', blank=True)
     viber = models.CharField(verbose_name='Viber', max_length=100, default='', blank=True)
     telegram = models.CharField(verbose_name='Telegram', max_length=100, default='', blank=True)
     bio = models.TextField(verbose_name='О владельце (заметки)', default='', blank=True)
-    birthday = models.DateField(verbose_name='Дата рождения',blank=True,null=True)
+    birthday = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.last_name} {self.user.first_name} {self.patronymic}"
@@ -75,3 +75,30 @@ class FlatOwner(models.Model):
     class Meta:
         db_table = 'flat_owner'
         ordering = ['-id']
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    statistics = models.BooleanField(default=False, verbose_name='')
+    paybox = models.BooleanField(default=False, verbose_name='')
+    receipt = models.BooleanField(default=False, verbose_name='')
+    personal_account = models.BooleanField(default=False, verbose_name='')
+    flat = models.BooleanField(default=False, verbose_name='')
+    flat_owner = models.BooleanField(default=False, verbose_name='')
+    house = models.BooleanField(default=False, verbose_name='')
+    mailbox = models.BooleanField(default=False, verbose_name='')
+    application = models.BooleanField(default=False, verbose_name='')
+    indication = models.BooleanField(default=False, verbose_name='')
+    manage_site = models.BooleanField(default=False, verbose_name='')
+    service = models.BooleanField(default=False, verbose_name='')
+    tariff = models.BooleanField(default=False, verbose_name='')
+    role = models.BooleanField(default=False, verbose_name='')
+    users = models.BooleanField(default=False, verbose_name='')
+    payment_detail = models.BooleanField(default=False, verbose_name='')
+    payment_article = models.BooleanField(default=False, verbose_name='')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'role'

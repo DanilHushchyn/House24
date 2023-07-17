@@ -31,8 +31,10 @@
     </button>
     <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="{% url 'add_client' %}">Добавить владельца квартиры</a></li>
-        <li><a class="dropdown-item" href="{% url 'add_debtors_mailbox' %}">Отправить сообщение должникам</a></li>
-        <li><a class="dropdown-item" href="#">Отправить приглашение</a></li>
+        {% if user_permission.mailbox %}
+            <li><a class="dropdown-item" href="{% url 'add_debtors_mailbox' %}">Отправить сообщение должникам</a></li>
+        {% endif %}
+        <li><a class="dropdown-item" href="{% url 'send_invitation' %}">Отправить приглашение</a></li>
     </ul>
 {% endblock %}
 

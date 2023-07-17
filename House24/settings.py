@@ -35,6 +35,13 @@ EMAIL_HOST_USER = 'dhushchyn@gmail.com'
 EMAIL_HOST_PASSWORD = 'mfpxzbsjatijcboa'
 DEFAULT_FROM_EMAIL = 'dhushchyn@gmail.com'
 
+
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 # Application definition
 
 INSTALLED_APPS = [

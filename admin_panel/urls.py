@@ -29,7 +29,7 @@ urlpatterns = [
     path("receipt/print_settings", admin_panel.views.ReceiptPrintingSettings.as_view(), name='receipt_print_settings'),
     path("receipt/print_settings/delete/<str:pk>", admin_panel.views.ReceiptPrintingSettingsDelete.as_view(), name='receipt_print_settings_delete'),
     path("receipt/print_settings/default/<str:pk>", admin_panel.views.ReceiptPrintingSettingsDefault.as_view(), name='receipt_print_settings_default'),
-
+    path("send_receipt_email/<str:receipt_id>", admin_panel.views.SendReceiptEmail.as_view(), name='send_receipt_email'),
 
     path("personal_accounts", admin_panel.views.PersonalAccountListView.as_view(), name='personal_accounts'),
     path("filtered_personal_accounts", admin_panel.views.PersonalAccountFilteredList.as_view(), name='filtered_personal_accounts'),
@@ -66,6 +66,7 @@ urlpatterns = [
     path("clients/update/<str:pk>", admin_panel.views.UpdateClientView.as_view(), name='update_client'),
     path("clients/detail/<str:pk>", admin_panel.views.ClientDetail.as_view(), name='read_client'),
     path("clients/delete/<str:pk>", admin_panel.views.DeleteClientView.as_view(), name='delete_client'),
+    path("send_invitation", admin_panel.views.SendInvitation.as_view(), name='send_invitation'),
 
 
     path("houses", admin_panel.views.HouseListView.as_view(), name='houses'),
@@ -167,6 +168,6 @@ urlpatterns = [
     path("get_indication-sorted-list/<str:flat_id>", admin_panel.views.GetIndicationsSortedList.as_view(), name='get_indication-sorted-list'),
 
 
-    path("roles", admin_panel.views.roles, name='roles'),
+    path("roles", admin_panel.views.Roles.as_view(), name='roles'),
 
 ]
