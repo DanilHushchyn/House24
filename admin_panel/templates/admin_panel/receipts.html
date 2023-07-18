@@ -34,7 +34,7 @@
           <thead>
             <tr>
               <th class="ps-0 pe-0 text-center">
-                  <input type="checkbox" name="selection_all">
+                  <input type="checkbox" name="selection_all" data-checkbox="true">
               </th>
               <th>№ квитанции</th>
               <th>Статус</th>
@@ -77,7 +77,7 @@
               {% for receipt in receipts %}
                 <tr class="border-0">
                   <td class="ps-0 pe-0 text-center">
-                      <input type="checkbox" value="{{receipt.id}}" name="deletion_filter">
+                      <input type="checkbox" value="{{receipt.id}}" data-checkbox="true" name="deletion_filter">
                   </td>
                   <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">{{ receipt.number }}</td>
                   <td style="cursor: pointer;" data-href="{% url 'read_receipt' receipt.id %}">
@@ -230,8 +230,11 @@
             }
 
         })
-        $('#filter').on('change',function () {
-             $(this).trigger('submit')
+        $('#filter').on('change',function (event) {
+            if ($(event.target).attr('data-checkbox')==='true'){
+                return false
+            }
+            $(this).trigger('submit')
         });
          $('#filter').on('cancel.daterangepicker',function () {
             $(this).trigger('submit')

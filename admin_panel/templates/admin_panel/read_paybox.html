@@ -9,7 +9,11 @@
 {% bootstrap_messages %}
 {# Read the documentation for more information#}
 {% block title %}
-    Приходная ведомость
+    {% if paybox.debit_credit == "plus" %}
+        Приходная ведомость
+    {% else %}
+        Расходная ведомость
+    {% endif %}
 {% endblock %}
 {% block head %}
 {% endblock %}
@@ -22,7 +26,13 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h4 class="mb-0">Приходная ведомость</h4>
+            <h4 class="mb-0">
+                {% if paybox.debit_credit == "plus" %}
+                    Приходная ведомость
+                {% else %}
+                    Расходная ведомость
+                {% endif %}
+            </h4>
           </div>
 
           <div class="col-sm-6">
@@ -33,7 +43,14 @@
                     <li class="breadcrumb-item"><a href="{% url 'update_personal' request.user.id %}">Главная</a></li>
                 {% endif %}
                 <li class="breadcrumb-item"><a href="{% url 'paybox' %}">Платежи</a></li>
-                <li class="breadcrumb-item active">Приходная ведомость №{{ paybox.number  }}</li>
+                <li class="breadcrumb-item active">
+                    {% if paybox.debit_credit == "plus" %}
+                        Приходная ведомость
+                    {% else %}
+                        Расходная ведомость
+                    {% endif %}
+                    №{{ paybox.number }}
+                </li>
             </ol>
           </div>
         </div>
@@ -57,10 +74,11 @@
                     <div class="ps-2 pb-3 pe-2"><span>от</span></div>
                     <div class="d-flex">
                             <div class="mb-3">
-                                <input type="text" name="date_published" value="{{ paybox.date_published|date:"d.m.Y"  }}" class="form-control publishing-date rounded-0 shadow-none flatpickr-input bg-white" placeholder="" required="" id="id_date_published" readonly="readonly"></div>
-                                <div class="d-inline-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
-                                    <i class="fa-solid fa-calendar-days"></i>
-                                </div>
+                                <input type="text" name="date_published" value="{{ paybox.date_published|date:"d.m.Y"  }}" class="form-control publishing-date rounded-0 shadow-none flatpickr-input bg-white" placeholder="" required="" id="id_date_published" readonly="readonly">
+                            </div>
+                            <div class="d-inline-flex align-items-center  ps-3 pe-3 pt-2 pb-2 bg-white" style="height: 38px;border: 1px solid #ced4da">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -71,7 +89,14 @@
                 <form action="{% url 'delete_paybox' paybox.id %}" method="post">
                   {% csrf_token %}
                 <div class="d-flex justify-content-between flex-wrap">
-                        <h5 class="me-1">Просмотр квитанции</h5>
+                        <h5 class="me-1">
+                            Просмотр
+                                {% if paybox.debit_credit == "plus" %}
+                                    приходной ведомости
+                                {% else %}
+                                    расходной ведомости
+                                {% endif %}
+                        </h5>
                         <div class="text-right d-flex flex-wrap">
                             <a class="btn btn-default me-1 mb-1" href="{% url 'copy_paybox' paybox.id %}">Копировать</a>
                             <button class="btn btn-default delete-confirmation me-1 mb-1" type="submit" role="button">Удалить</button>
@@ -137,7 +162,7 @@
                             <tr>
                                 <td class="font-weight-bold">Сумма</td>
                                 <td>
-                                    {% if paybox.total > 0 %}
+                                    {% if paybox.debit_credit == "plus" %}
                                         <span class="text-success">
                                         {{ paybox.total }}
                                         </span>
@@ -146,7 +171,6 @@
                                             {{ paybox.total }}
                                         </span>
                                     {% endif %}
-
                                 </td>
                             </tr>
                             <tr>

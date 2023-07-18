@@ -3,7 +3,7 @@ from django.urls import path
 import admin_panel.views
 
 urlpatterns = [
-    path("statistic", admin_panel.views.statistic, name='statistic'),
+    path("statistic", admin_panel.views.Statistic.as_view(), name='statistic'),
 
 
     path("paybox", admin_panel.views.PayboxList.as_view(), name='paybox'),
@@ -104,7 +104,7 @@ urlpatterns = [
     path("filtered_counters", admin_panel.views.CountersFilteredList.as_view(),
          name='filtered_counters'),
     path("counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsList.as_view(), name='counter_indications'),
-    path("filtered_counter_indications/<str:flat>/<str:service>", admin_panel.views.CounterIndicationsFilteredList.as_view(),
+    path("filtered_counter_indications/<str:flat>", admin_panel.views.CounterIndicationsFilteredList.as_view(),
          name='filtered_counter_indications'),
     path("indication/add", admin_panel.views.CreateIndication.as_view(), name='add_indication'),
     path("indication/add_new/<str:flat>/<str:service>", admin_panel.views.CreateNewIndication.as_view(), name='add_new_indication'),
@@ -112,7 +112,7 @@ urlpatterns = [
     path("indication/update/<str:pk>", admin_panel.views.UpdateIndication.as_view(), name='update_indication'),
     path("indication/detail/<str:pk>", admin_panel.views.IndicationDetail.as_view(), name='read_indication'),
     path("indication/delete/<str:pk>", admin_panel.views.DeleteIndication.as_view(), name='delete_indication'),
-    path("flat_indications/<str:flat>/", admin_panel.views.FlatIndicationsList.as_view(), name='flat_indications'),
+    path("flat_indications/<str:flat>", admin_panel.views.FlatIndicationsList.as_view(), name='flat_indications'),
 
     path("system_services", admin_panel.views.ServicesView.as_view(), name='system_services'),
     path("system_tariffs", admin_panel.views.TariffsListView.as_view(), name='system_tariffs'),

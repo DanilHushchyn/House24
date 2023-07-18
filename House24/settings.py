@@ -91,6 +91,8 @@ TEMPLATES = [
             'libraries': {
                 'check_relation': 'admin_panel.templatetags.check_relation',
                 'check_personal_account': 'admin_panel.templatetags.check_personal_account',
+                'check_email': 'admin_panel.templatetags.check_email',
+                'check_flat': 'admin_panel.templatetags.check_flat',
             }
         },
     },

@@ -209,6 +209,7 @@ class ReceiptForm(forms.ModelForm):
         self.fields['start_date'].initial = timezone.now().date()
         self.fields['end_date'].initial = timezone.now().date()
         self.fields['total_price'].initial = 0
+        self.fields['is_complete'].initial = True
 
     class Meta:
         model = Receipt

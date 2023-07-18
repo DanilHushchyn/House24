@@ -25,12 +25,12 @@
     <li class="breadcrumb-item active">Показания счетчиков, кв.{{ flat.number }}</li>
 {% endblock %}
 {% block action_list %}
-    <a class="btn btn-success" href="{% url 'add_new_indication' flat.id service.id %}">Добавить показание</a>
+    <a class="btn btn-success" href="{% url 'add_indication_to_flat' flat.id %}">Добавить показание</a>
 {% endblock %}
 
 
 {% block card_body %}
-    <form action="{% url 'filtered_counter_indications' flat.id service.id %}" method="get" id="filter">
+    <form action="{% url 'filtered_counter_indications' flat.id%}" method="get" id="filter">
        <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
           <thead>
             <tr>

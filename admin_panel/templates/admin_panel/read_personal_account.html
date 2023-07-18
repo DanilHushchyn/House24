@@ -139,13 +139,20 @@
                             </tbody>
                         </table>
                         <div>
-                            {% if personal_account.flat or personal_account.status == 'disabled' %}
+                            {% if personal_account.flat and personal_account.status != 'disabled' %}
                                 <p><a href="{% url 'flat_indications' personal_account.flat.id %}">Посмотреть показания счетчиков</a></p>
                             {% else %}
                                 <p><a class="accept_payment dsbld" href="#!">Посмотреть показания счетчиков</a></p>
                             {% endif %}
+
                             <p><a href="{% url 'personal_account_paybox' personal_account.id %}">Посмотреть приходы</a></p>
-                            <p><a href="{% url 'personal_account_receipts' personal_account.id %}">Посмотреть квитанции</a></p>
+
+
+                            {% if personal_account.flat and personal_account.status != 'disabled' %}
+                                <p><a href="{% url 'personal_account_receipts' personal_account.id %}">Посмотреть квитанции</a></p>
+                            {% else %}
+                                <p><a class="accept_payment dsbld" href="#!">Посмотреть квитанции</a></p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

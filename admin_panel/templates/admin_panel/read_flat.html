@@ -13,7 +13,8 @@
 {% endblock %}
 {% block head %}
 {% endblock %}
-
+{% load check_flat %}
+{% load check_personal_account %}
 
 {% block content %}
     <div class="content-wrapper" style="height: auto">
@@ -48,7 +49,7 @@
             <div class="card-header text-right">
                     <h3 class="card-title">Просмотр квартиры</h3>
                     <div class="">
-                        <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'flat_accept_payment' flat.id %}"><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
+                        <a {% if flat.id|accept_flat_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} href="{% url 'flat_accept_payment' flat.id %}" class="btn btn-default mb-3 mb-sm-0 accept_payment" {% endif %}><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
                         <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'flat_accept_receipt' flat.id %}"><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
                         <a class="btn btn-primary mb-3 mb-sm-0" href="{% url 'update_flat' flat.id %}">Редактировать квартиру</a>
                     </div>
@@ -132,7 +133,11 @@
                         </table>
                         <div>
                             <p><a href="{% url 'flat_indications' flat.id %}">Посмотреть показания счетчиков</a></p>
-                            <p><a href="{% url 'flat_paybox' flat.id %}">Посмотреть приходы</a></p>
+                            {% if flat.personal_account %}
+                                <p><a href="{% url 'flat_paybox' flat.id %}">Посмотреть приходы</a></p>
+                            {% else %}
+                                <p><a class="accept_payment dsbld" href="#!">Посмотреть приходы</a></p>
+                            {% endif %}
                             <p><a href="{% url 'flat_receipts' flat.id %}">Посмотреть квитанции</a></p>
                         </div>
                     </div>
@@ -149,5 +154,6 @@
 {% endblock %}
 
 {% block  script %}
+    <script type="module" src="{% static 'admin_panel/flat/read_flat.js' %}"></script>
 
 {% endblock %}

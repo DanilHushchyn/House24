@@ -27,9 +27,10 @@
     <a class="btn btn-success" href="{% url 'add_indication' %}">Добавить показание</a>
 {% endblock %}
 
+
 {% block card_body %}
     <form action="{% url 'filtered_counters' %}" method="get" id="filter">
-       <table id="indication" class="table border-0 table-bordered table-hover  linkedRow w-100">
+       <table id="indication" class="table border-0 table-bordered table-hover linkedRow w-100">
           <thead>
             <tr>
               <th>Дом</th>
@@ -99,7 +100,8 @@
     </div>
 {% endblock %}
 
-{% block  script_2b %}
+{% block script_2b %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script type="application/javascript">
         $(document).ready(function () {
              $('#indication').DataTable({

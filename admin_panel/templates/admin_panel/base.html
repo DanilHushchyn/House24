@@ -51,11 +51,11 @@
     </ul>
 
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto d-flex flex-row align-items-center justify-content-center">
       <!-- fullscreen -->
         <li class="nav-item dropdown mt-1">
             <a class="nav-link" data-toggle="dropdown" href="#">
-              <i class="far fa-bell"></i>
+              <i class="fa-sharp fa-solid fa-person"></i>
                 {% if new_clients.count > 0 %}
                     <span class="badge badge-success navbar-badge">{{ new_clients.count }}</span>
                 {% endif %}

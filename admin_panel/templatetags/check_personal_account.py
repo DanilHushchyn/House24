@@ -14,4 +14,6 @@ def accept_payment(value):
     personal_account = PersonalAccount.objects.get(pk=value)
     if personal_account.status == "disabled" or personal_account.flat is None:
         result = False
+
     return result
+

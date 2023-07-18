@@ -58,9 +58,9 @@
                               <div class="d-flex flex-wrap justify-content-center justify-content-sm-start">
                                   <div class="me-3 mb-3">
                                       {% if form.avatar.value == '' %}
-                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;" src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" alt="">
+                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;object-fit: cover" src="{% static 'admin_panel/imgs/placeholder.jpeg' %}" alt="">
                                         {% else %}
-                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;" src="{{ form.instance.avatar.url }}" alt="">
+                                          <img class="img-circle pull-left img-responsive" style="width: 160px;height: 160px;object-fit: cover" src="{{ form.instance.avatar.url }}" alt="">
                                       {% endif %}
                                   </div>
                                   <div class="flex-grow text-left">

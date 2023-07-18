@@ -2,6 +2,10 @@ import json
 from copy import copy
 from functools import reduce
 
+from weasyprint import HTML
+
+from admin_panel.tasks import *
+
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
@@ -18,6 +22,20 @@ from admin_panel.models import *
 
 def statistic(request):
     return render(request, 'admin_panel/statistic.html')
+
+
+class Statistic(TemplateView):
+    template_name = 'admin_panel/statistic.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['houses_count'] = House.objects.all().count()
+        context['personal_accounts_count'] = PersonalAccount.objects.all().count()
+        context['flats_count'] = Flat.objects.all().count()
+        context['flat_owner_count'] = FlatOwner.objects.all().count()
+        context['in_work_applications_count'] = Application.objects.filter(status='in work').count()
+        context['new_applications_count'] = Application.objects.filter(status='new').count()
+        return context
 
 
 class PayboxList(ListView):
@@ -124,7 +142,6 @@ class PayboxFilteredList(ListView):
             if form_filter.cleaned_data['personal_account']:
                 qs.append(Q(personal_account__number__icontains=form_filter.cleaned_data['personal_account']))
             if form_filter.cleaned_data['daterange']:
-                print(form_filter.cleaned_data['daterange'])
                 date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
                 date_start = date_start.split('/')
                 date_end = date_end.split('/')
@@ -406,7 +423,6 @@ class ReceiptsFilteredList(ListView):
             if form_filter.cleaned_data['status']:
                 qs.append(Q(status=form_filter.cleaned_data['status']))
             if form_filter.cleaned_data['daterange']:
-                print(form_filter.cleaned_data['daterange'])
                 date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
                 date_start = date_start.split('/')
                 date_end = date_end.split('/')
@@ -445,13 +461,20 @@ class ReceiptsFilteredList(ListView):
         return receipts
 
 
-from admin_panel.tasks import send_receipt
-
-
 class SendReceiptEmail(View):
     def get(self, request, receipt_id, *args, **kwargs):
         receipt = Receipt.objects.get(pk=receipt_id)
-        send_receipt.delay(receipt_id, to=receipt.flat.flat_owner.user.email)
+        services = ReceiptService.objects.filter(receipt_id=receipt_id)
+        context = {
+            'services': services,
+            'receipt': receipt,
+        }
+        html_template = get_template('cabinet/invoice/invoice.html')
+        html = html_template.render(context)
+        base_url = request.build_absolute_uri()
+
+        send_receipt.delay(html_to_pdf=html, base_url=base_url,
+                           to=receipt.flat.flat_owner.user.email)
         url = f"/admin/receipt/detail/{receipt_id}"
         return HttpResponseRedirect(url)
 
@@ -847,6 +870,8 @@ class FlatAcceptPayment(CreatePaybox):
         form = PayboxForm(initial=initial)
         form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
         form.fields['date_published'].initial = timezone.now().date()
+        form.fields['user'].initial = request.user.personal.id
+        form.fields['is_complete'].initial = True
 
         data = {
             'income': 'plus',
@@ -858,15 +883,18 @@ class FlatAcceptPayment(CreatePaybox):
 class FlatAcceptReceipt(FormView):
     def get(self, request, pk, *args, **kwargs):
         flat = Flat.objects.get(pk=pk)
+        init_data = {
+            'house': flat.house,
+            'section': flat.section,
+            'flat': flat,
+            'tariff': flat.tariff,
+        }
+        if hasattr(flat, 'personal_account'):
+            if flat.personal_account is not None and flat.personal_account != '':
+                init_data['personal_account'] = flat.personal_account
 
         receipt_form = ReceiptForm(
-            initial={
-                'house': flat.house,
-                'section': flat.section,
-                'flat': flat,
-                'tariff': flat.tariff,
-                'personal_account': flat.personal_account,
-            }
+            initial=init_data
         )
 
         service_formset = ReceiptServiceFormset(queryset=ReceiptService.objects.none(),
@@ -906,6 +934,12 @@ class FlatReceiptList(ListView):
     context_object_name = 'receipts'
     paginate_by = 20
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        flat = Flat.objects.get(pk=self.kwargs['pk'])
+        context['filter_form'] = ReceiptFilterForm(initial={'flat': flat.number})
+        return context
+
     def get_queryset(self):
         flat = Flat.objects.get(pk=self.kwargs['pk'])
         queryset = Receipt.objects.filter(flat_id=flat.id)
@@ -920,6 +954,8 @@ class FlatPayboxList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         flat = Flat.objects.get(pk=self.kwargs['pk'])
+        context['filter_form'] = PayboxFilterForm(initial={'personal_account': flat.personal_account})
+
         if flat.personal_account is not None:
             total_plus = sum(Paybox.objects.filter(debit_credit='plus',
                                                    personal_account=flat.personal_account,
@@ -1106,6 +1142,8 @@ class PersonalAccountAcceptPayment(CreatePaybox):
         form = PayboxForm(initial=initial)
         form.fields['article'].queryset = Article.objects.filter(debit_credit="plus")
         form.fields['date_published'].initial = timezone.now().date()
+        form.fields['user'].initial = request.user.personal.id
+        form.fields['is_complete'].initial = True
 
         data = {
             'income': 'plus',
@@ -1165,6 +1203,12 @@ class PersonalAccountReceiptList(ListView):
     context_object_name = 'receipts'
     paginate_by = 20
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
+        context['filter_form'] = ReceiptFilterForm(initial={'flat': personal_account.flat.number})
+        return context
+
     def get_queryset(self):
         personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
         if personal_account.flat is not None:
@@ -1181,6 +1225,9 @@ class PersonalAccountPayboxList(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        personal_account = PersonalAccount.objects.get(pk=self.kwargs['pk'])
+        context['filter_form'] = PayboxFilterForm(initial={'personal_account': personal_account.number})
+
         total_plus = sum(Paybox.objects.filter(debit_credit='plus',
                                                personal_account_id=self.kwargs['pk'],
                                                is_complete=True).values_list('total', flat=True))
@@ -1367,9 +1414,7 @@ class HouseFilteredList(ListView):
         form_filter = HouseFilterForm(self.request.GET)
         qs = []
         if form_filter.is_valid():
-            print(form_filter.cleaned_data['title'])
             if form_filter.cleaned_data['title']:
-                print(form_filter.cleaned_data['title'])
                 qs.append(Q(title__icontains=form_filter.cleaned_data['title']))
             if form_filter.cleaned_data['address']:
                 qs.append(Q(address__icontains=form_filter.cleaned_data['address']))
@@ -1547,7 +1592,7 @@ class GetFlatInfoView(View):
             flat_owner_obj = FlatOwner.objects.get(flat=flat)
             flat_owner = serializers.serialize('json', [flat_owner_obj])
             data['flat_owner'] = flat_owner
-            user = CustomUser.objects.get(flatowner=flat_owner_obj)
+            user = CustomUser.objects.get(client=flat_owner_obj)
             user = serializers.serialize('json', [user])
             data['user'] = user
         except ObjectDoesNotExist:
@@ -1772,7 +1817,6 @@ class ApplicationFilteredList(ListView):
             if form_filter.cleaned_data['number']:
                 qs.append(Q(pk__icontains=form_filter.cleaned_data['number']))
             if form_filter.cleaned_data['daterange']:
-                print(form_filter.cleaned_data['daterange'])
                 date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
                 date_start = date_start.split('/')
                 date_end = date_end.split('/')
@@ -1852,7 +1896,7 @@ class CounterList(ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
-    paginate_by = 20
+    paginate_by = 10
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1876,19 +1920,12 @@ class CountersFilteredList(ListView):
         qs = []
         if form_filter.is_valid():
             if form_filter.cleaned_data['flat']:
-                print(form_filter.cleaned_data['flat'])
                 qs.append(Q(flat__number=form_filter.cleaned_data['flat']))
             if form_filter.cleaned_data['house']:
-                print(form_filter.cleaned_data['house'])
-
                 qs.append(Q(flat__house_id=form_filter.cleaned_data['house'].id))
             if form_filter.cleaned_data['section']:
-                print(form_filter.cleaned_data['section'])
-
                 qs.append(Q(flat__section_id=form_filter.cleaned_data['section'].id))
             if form_filter.cleaned_data['service']:
-                print(form_filter.cleaned_data['service'])
-
                 qs.append(Q(service_id=form_filter.cleaned_data['service'].id))
             q = Q()
             for item in qs:
@@ -1907,7 +1944,6 @@ class CounterIndicationsFilteredList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
-        context['service'] = Service.objects.get(pk=self.kwargs['service'])
         context['filter_form'] = CounterIndicationsFilterForm(initial=self.request.GET)
         return context
 
@@ -1917,18 +1953,14 @@ class CounterIndicationsFilteredList(ListView):
         qs = []
         if form_filter.is_valid():
             if form_filter.cleaned_data['house']:
-                print(form_filter.cleaned_data['house'])
                 qs.append(Q(flat__house_id=form_filter.cleaned_data['house'].id))
             if form_filter.cleaned_data['section']:
-                print(form_filter.cleaned_data['section'])
                 qs.append(Q(flat__section_id=form_filter.cleaned_data['section'].id))
             if form_filter.cleaned_data['service']:
-                print(form_filter.cleaned_data['service'])
                 qs.append(Q(service_id=form_filter.cleaned_data['service'].id))
             if form_filter.cleaned_data['number']:
                 qs.append(Q(number__icontains=form_filter.cleaned_data['number']))
             if form_filter.cleaned_data['daterange']:
-                print(form_filter.cleaned_data['daterange'])
                 date_start, date_end = str(form_filter.cleaned_data['daterange']).split(' - ')
                 date_start = date_start.split('/')
                 date_end = date_end.split('/')
@@ -1952,7 +1984,7 @@ class CounterIndicationsFilteredList(ListView):
 class CounterIndicationsList(ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
-    paginate_by = 20
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1968,13 +2000,18 @@ class CounterIndicationsList(ListView):
 
 
 class FlatIndicationsList(ListView):
-    template_name = 'admin_panel/flat_indications_list.html'
+    template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
     paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        flat = Flat.objects.get(pk=self.kwargs['flat'])
         context['flat'] = Flat.objects.get(pk=self.kwargs['flat'])
+        context['filter_form'] = CounterIndicationsFilterForm(initial={
+            'flat': flat.number
+        })
+
         return context
 
     def get_queryset(self):

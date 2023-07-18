@@ -5,6 +5,7 @@ from django.db import transaction
 
 from House24 import settings
 from ..models import *
+from ..tasks import notification_password_changed
 
 User = get_user_model()
 
@@ -79,6 +80,7 @@ class PersonalUpdateForm(UserChangeForm):
         if self.cleaned_data.get('password1') == self.cleaned_data.get('password2'):
             obj.user.set_password(self.cleaned_data.get('password1'))
             obj.user.save()
+            notification_password_changed.delay(obj.user.email)
         return user
 
 
@@ -193,6 +195,8 @@ class ClientUpdateForm(UserChangeForm):
         if self.cleaned_data.get('password1') == self.cleaned_data.get('password2'):
             obj.user.set_password(self.cleaned_data.get('password1'))
             obj.user.save()
+            notification_password_changed.delay(obj.user.email)
+
         return user
 
 

@@ -13,7 +13,7 @@
 {% endblock %}
 {% block head %}
 {% endblock %}
-
+{% load check_email %}
 
 {% block content %}
     <div class="content-wrapper" style="height: auto">
@@ -72,7 +72,8 @@
                     <h5 class="me-1">Просмотр квитанции</h5>
                     <div class="text-right d-flex flex-wrap">
                         <a class="btn btn-default me-1 mb-1" href="{% url 'receipt_print' receipt.id %}">Печать</a>
-                        <a class="btn btn-default me-1 mb-1" href="{% url 'send_receipt_email' receipt.id %}">Отправить на e-mail</a>
+{#                        <a class="btn btn-default me-1 mb-1" href="{% url 'send_receipt_email' receipt.id %}">Отправить на e-mail</a>#}
+                        <a {% if receipt.id|accept_email is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default me-1 mb-1 accept_email dsbld" href="#!" {% else %} class="btn btn-default me-1 mb-1 accept_email" href="{% url 'send_receipt_email' receipt.id %}" {% endif %}>Отправить на e-mail</a>
                         <a class="btn btn-primary me-1 mb-1" href="{% url 'update_receipt' receipt.id %}">Редактировать квитанцию</a>
                     </div>
                 </div>
@@ -231,6 +232,14 @@
                  total_price = total_price+Number($(total_service_price).text())
                  $('#price-total').text(Number(total_price).toFixed(2))
              }
+        })
+        $('body').on('click','.accept_email',function () {
+            if($(this).hasClass('dsbld')){
+                alert('У квартиры на которую оформлена квитанция нету владельца. Поэтому отправка на почту невозможна')
+            }else {
+            }
+
+
         })
 
     </script>

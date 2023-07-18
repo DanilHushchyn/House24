@@ -30,7 +30,8 @@ def intspace(value):
 
 @register.filter
 def get_house_queryset(value):
-    return FlatOwner.objects.get(id=value).flat_set.all().distinct('house')
+    flats = FlatOwner.objects.get(id=value).flat_set.all().distinct('house')
+    return flats
 
 @register.filter
 def get_flat_queryset(value):
