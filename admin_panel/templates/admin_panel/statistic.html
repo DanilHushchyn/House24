@@ -119,6 +119,7 @@
                   <a href="{% url 'applications' %}" class="small-box-footer">Перейти в заявки<i class="ms-2 fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
+
               <!-- ./col -->
             </div>
             <div class="row ps-2">
@@ -138,7 +139,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">ЗАДОЛЖЕННОСТЬ ПО СЧЕТАМ, ГРН</span>
-                            <span class="info-box-number">5,200</span>
+                            <span class="info-box-number">{{ personal_accounts_debts }}</span>
                         </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -148,7 +149,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">БАЛАНС ПО СЧЕТАМ, ГРН</span>
-                        <span class="info-box-number">92,050</span>
+                        <span class="info-box-number">{{ personal_accounts_balance }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -158,7 +159,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">СОСТОЯНИЕ КАССЫ, ГРН</span>
-                        <span class="info-box-number">114,381</span>
+                        <span class="info-box-number">{{ paybox_balance }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -206,18 +207,18 @@
           dataset: {
             dimensions: ['product',  "задолженность", 'Погашение задолженности', ],
             source: [
-              { product: 'январь 2023', "задолженность": 43.3, 'Погашение задолженности': 85.8, },
-              { product: 'февраль 2023', "задолженность": 43.3, 'Погашение задолженности': 85.8, },
-              { product: 'март 2023', "задолженность": 43.3, 'Погашение задолженности': 85.8, },
-              { product: 'апрель 2023', "задолженность": 43.3, 'Погашение задолженности': 85.8, },
-              { product: 'май 2023', "задолженность": 43.3, 'Погашение задолженности': 85.8, },
-              { product: 'июнь 2023',  "задолженность": 83.1, 'Погашение задолженности': 73.4, },
-              { product: 'июль 2023',  "задолженность": 86.4, 'Погашение задолженности': 65.2, },
-              { product: 'август 2023',  "задолженность": 72.4, 'Погашение задолженности': 53.9, },
-              { product: 'сентябрь 2023',  "задолженность": 72.4, 'Погашение задолженности': 53.9, },
-              { product: 'октябрь 2023',  "задолженность": 72.4, 'Погашение задолженности': 53.9, },
-              { product: 'ноябрь 2023',  "задолженность": 72.4, 'Погашение задолженности': 53.9, },
-              { product: 'декабрь 2023',  "задолженность": 72.4, 'Погашение задолженности': 53.9, },
+              { product: 'январь 2023', "задолженность": '{{ receipt_minus_by_month.0 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.0 }}', },
+              { product: 'февраль 2023', "задолженность": '{{ receipt_minus_by_month.1 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.1 }}', },
+              { product: 'март 2023', "задолженность": '{{ receipt_minus_by_month.2 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.2 }}', },
+              { product: 'апрель 2023', "задолженность": '{{ receipt_minus_by_month.3 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.3 }}', },
+              { product: 'май 2023', "задолженность": '{{ receipt_minus_by_month.4 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.4 }}', },
+              { product: 'июнь 2023',  "задолженность": '{{ receipt_minus_by_month.5 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.5 }}', },
+              { product: 'июль 2023',  "задолженность": '{{ receipt_minus_by_month.6 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.6 }}', },
+              { product: 'август 2023',  "задолженность": '{{ receipt_minus_by_month.7 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.7 }}', },
+              { product: 'сентябрь 2023',  "задолженность": '{{ receipt_minus_by_month.8 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.8 }}', },
+              { product: 'октябрь 2023',  "задолженность": '{{ receipt_minus_by_month.9 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.9 }}', },
+              { product: 'ноябрь 2023',  "задолженность": '{{ receipt_minus_by_month.10 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.10 }}', },
+              { product: 'декабрь 2023',  "задолженность": '{{ receipt_minus_by_month.11 }}', 'Погашение задолженности': '{{ receipt_plus_by_month.11 }}', },
             ]
           },
           xAxis: {
@@ -266,18 +267,18 @@
           dataset: {
             dimensions: ['product',  "приход", 'расход', ],
             source: [
-              { product: 'январь 2023', "приход": 43.3, 'расход': 85.8, },
-              { product: 'февраль 2023', "приход": 43.3, 'расход': 85.8, },
-              { product: 'март 2023', "приход": 43.3, 'расход': 85.8, },
-              { product: 'апрель 2023', "приход": 43.3, 'расход': 85.8, },
-              { product: 'май 2023', "приход": 43.3, 'расход': 85.8, },
-              { product: 'июнь 2023',  "приход": 83.1, 'расход': 73.4, },
-              { product: 'июль 2023',  "приход": 86.4, 'расход': 65.2, },
-              { product: 'август 2023',  "приход": 72.4, 'расход': 53.9, },
-              { product: 'сентябрь 2023',  "приход": 72.4, 'расход': 53.9, },
-              { product: 'октябрь 2023',  "приход": 72.4, 'расход': 53.9, },
-              { product: 'ноябрь 2023',  "приход": 72.4, 'расход': 53.9, },
-              { product: 'декабрь 2023',  "приход": 72.4, 'расход': 53.9, },
+              { product: 'январь 2023', "приход": {{ paybox_plus_by_month.0 }}, 'расход': '{{ paybox_minus_by_month.0 }}', },
+              { product: 'февраль 2023', "приход": {{ paybox_plus_by_month.1 }}, 'расход': '{{ paybox_minus_by_month.1 }}', },
+              { product: 'март 2023', "приход": {{ paybox_plus_by_month.2 }}, 'расход': '{{ paybox_minus_by_month.2 }}', },
+              { product: 'апрель 2023', "приход": {{ paybox_plus_by_month.3 }}, 'расход': '{{ paybox_minus_by_month.3 }}', },
+              { product: 'май 2023', "приход": {{ paybox_plus_by_month.4 }}, 'расход': '{{ paybox_minus_by_month.4 }}', },
+              { product: 'июнь 2023',  "приход": {{ paybox_plus_by_month.5 }}, 'расход': '{{ paybox_minus_by_month.5 }}', },
+              { product: 'июль 2023',  "приход": {{ paybox_plus_by_month.6 }}, 'расход': '{{ paybox_minus_by_month.6 }}', },
+              { product: 'август 2023',  "приход": {{ paybox_plus_by_month.7 }}, 'расход': '{{ paybox_minus_by_month.7 }}', },
+              { product: 'сентябрь 2023',  "приход": {{ paybox_plus_by_month.8 }}, 'расход': '{{ paybox_minus_by_month.8 }}', },
+              { product: 'октябрь 2023',  "приход": {{ paybox_plus_by_month.9 }}, 'расход': '{{ paybox_minus_by_month.9 }}', },
+              { product: 'ноябрь 2023',  "приход": {{ paybox_plus_by_month.10 }}, 'расход': '{{ paybox_minus_by_month.10 }}', },
+              { product: 'декабрь 2023',  "приход": {{ paybox_plus_by_month.11 }}, 'расход': '{{ paybox_minus_by_month.11 }}', },
             ]
           },
           xAxis: {

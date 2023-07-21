@@ -158,6 +158,7 @@ urlpatterns = [
     path("get_measure/<str:pk>", admin_panel.views.GetMeasureView.as_view(), name='get_measure'),
     path("get_role/<str:pk>", admin_panel.views.GetRoleView.as_view(), name='get_role'),
     path("get_house-info/<str:pk>", admin_panel.views.GetHouseInfoView.as_view(), name='get_house-info'),
+    path("get_flats-for-mailbox/<str:section_id>/<str:floor_id>", admin_panel.views.GetFlatsForMailbox.as_view(), name='get_flat-for-mailbox'),
     path("get_flat_owner-info/<str:pk>", admin_panel.views.GetFlatOwnerInfo.as_view(), name='get_flat_owner-info'),
     path("get_section-info/<str:pk>", admin_panel.views.GetSectionInfoView.as_view(), name='get_section-info'),
     path("get_flat-info/<str:pk>", admin_panel.views.GetFlatInfoView.as_view(), name='get_flat-info'),

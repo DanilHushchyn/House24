@@ -31,6 +31,28 @@ $('.form-house-select').on('change',function () {
         });
     }
 })
+$('#mailbox-form').on('change','.form-floor-select, .form-section-select',function () {
+     let section_id = $('.form-section-select').val() ? $('.form-section-select').val() : "None"
+     let floor_id = $('.form-floor-select').val() ? $('.form-floor-select').val() : "None"
+         $.ajax({
+            url: `/admin/get_flats-for-mailbox/${section_id}/${floor_id}`,         /* Куда отправить запрос */
+            method: 'get',             /* Метод запроса (post или get) */
+            dataType: 'html',
+            context: 'html',
+            success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                 $('.form-flat-select').children().remove()
+                 $('.form-flat-select').append(`
+                   <option value="">Выберите...</option>
+                 `)
+                data = JSON.parse(data)
+                for(let flat of JSON.parse(data['flats'])){
+                    $('.form-flat-select').append($(`
+                        <option value="${flat['pk']}">${flat['fields']['number']}</option>
+                    `))
+                }
+            }
+         })
+})
 function clearSelects() {
      $('.form-section-select').children().remove()
      $('.form-floor-select').children().remove()

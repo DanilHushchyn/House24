@@ -1,15 +1,17 @@
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import *
 from admin_panel.forms import *
+from admin_panel.views import StaffRequiredMixin
 from users.forms import RoleFormset
 
 
-class ServicesView(FormView):
+class ServicesView(StaffRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         service_formset = ServiceFormset(prefix='service_formset')
@@ -46,12 +48,12 @@ class ServicesView(FormView):
         return redirect('system_services')
 
 
-class TariffsListView(ListView):
+class TariffsListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/system_settings/tariffs.html'
     model = TariffSystem
 
 
-class TariffDetail(DetailView):
+class TariffDetail(StaffRequiredMixin, DetailView):
     model = TariffSystem
     template_name = 'admin_panel/system_settings/read_tariff.html'
 
@@ -64,7 +66,7 @@ class TariffDetail(DetailView):
         return context
 
 
-class DeleteTariffView(DeleteView):
+class DeleteTariffView(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('system_tariffs')
     queryset = TariffSystem.objects.all()
 
@@ -73,7 +75,7 @@ class DeleteTariffView(DeleteView):
         return super().post(request, *args, **kwargs)
 
 
-class UpdateTariffView(FormView):
+class UpdateTariffView(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         tariff = TariffSystem.objects.get(pk=pk)
         tariff_form = TariffForm(instance=tariff)
@@ -110,7 +112,7 @@ class UpdateTariffView(FormView):
         return redirect('system_tariffs')
 
 
-class GetMeasureView(View):
+class GetMeasureView(StaffRequiredMixin, View):
     def get(self, request, pk):
         service = Service.objects.get(pk=pk)
 
@@ -121,7 +123,7 @@ class GetMeasureView(View):
         return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-class CopyTariffView(FormView):
+class CopyTariffView(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         copy = TariffSystem.objects.get(pk=pk)
         tariff_form = TariffForm(instance=copy)
@@ -159,7 +161,7 @@ class CopyTariffView(FormView):
         return redirect('system_tariffs')
 
 
-class CreateTariffView(FormView):
+class CreateTariffView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         tariff_form = TariffForm()
         tariff_service_formset = TariffServiceFormset(queryset=TariffService.objects.none(), prefix='tariff_service')
@@ -194,7 +196,7 @@ class CreateTariffView(FormView):
         return redirect('system_tariffs')
 
 
-class PersonalListView(ListView):
+class PersonalListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/system_settings/personals.html'
     context_object_name = 'personals'
     queryset = Personal.objects.all()
@@ -206,7 +208,7 @@ class PersonalListView(ListView):
         return context
 
 
-class PersonalFilteredList(ListView):
+class PersonalFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/system_settings/personals.html'
     context_object_name = 'personals'
     paginate_by = 20
@@ -240,7 +242,7 @@ class PersonalFilteredList(ListView):
         return personals
 
 
-class PersonalDetail(DetailView):
+class PersonalDetail(StaffRequiredMixin, DetailView):
     model = Personal
     template_name = 'admin_panel/system_settings/read_personal.html'
 
@@ -250,7 +252,7 @@ class PersonalDetail(DetailView):
         return context
 
 
-class PersonalSignUpView(CreateView):
+class PersonalSignUpView(StaffRequiredMixin, CreateView):
     model = CustomUser
     form_class = PersonalSignUpForm
     template_name = 'admin_panel/system_settings/get_personal_form.html'
@@ -263,7 +265,7 @@ class PersonalSignUpView(CreateView):
         return redirect('personals')
 
 
-class UpdatePersonalView(UpdateView):
+class UpdatePersonalView(StaffRequiredMixin, UpdateView):
     model = CustomUser
     form_class = PersonalUpdateForm
     template_name = 'admin_panel/system_settings/update_personal.html'
@@ -279,7 +281,7 @@ class UpdatePersonalView(UpdateView):
         return render(request, 'admin_panel/system_settings/update_personal.html', context=data)
 
 
-class UpdatePaymentDetailView(UpdateView):
+class UpdatePaymentDetailView(StaffRequiredMixin, UpdateView):
     template_name = 'admin_panel/system_settings/payment_details.html'
     form_class = PaymentDetailForm
     success_url = reverse_lazy('system_payment_details')
@@ -288,36 +290,36 @@ class UpdatePaymentDetailView(UpdateView):
         return PaymentDetail.objects.first()
 
 
-class DeletePersonalView(DeleteView):
+class DeletePersonalView(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('personals')
     queryset = CustomUser.objects.all()
 
 
-class CreatePaymentArticleView(CreateView):
+class CreatePaymentArticleView(StaffRequiredMixin, CreateView):
     template_name = 'admin_panel/system_settings/get_payment_article_form.html'
     form_class = PaymentArticleForm
     success_url = reverse_lazy('system_payment_articles')
 
 
-class UpdatePaymentArticleView(UpdateView):
+class UpdatePaymentArticleView(StaffRequiredMixin, UpdateView):
     template_name = 'admin_panel/system_settings/update_payment_article.html'
     form_class = PaymentArticleForm
     success_url = reverse_lazy('system_payment_articles')
     queryset = Article.objects.all()
 
 
-class DeletePaymentArticleView(DeleteView):
+class DeletePaymentArticleView(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('system_payment_articles')
     queryset = Article.objects.all()
 
 
-class PaymentArticlesListView(ListView):
+class PaymentArticlesListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/system_settings/payment_articles.html'
     context_object_name = 'rows'
     queryset = Article.objects.all()
 
 
-class Roles(FormView):
+class Roles(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         roles_formset = RoleFormset(prefix='roles')
         data = {

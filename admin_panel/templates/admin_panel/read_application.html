@@ -93,7 +93,7 @@
                                       {% if application.flat.flat_owner is None %}
                                           (не указано)
                                       {% else %}
-                                          <a href="{% url 'read_client' application.flat.flat_owner.id %}">
+                                          <a {% if user_permission.flat_owner %} href="{% url 'read_client' application.flat.flat_owner.id %}" {% else %} href="#!" {% endif %}>
                                             {{ application.flat.flat_owner }}
                                           </a>
                                       {% endif %}
@@ -112,7 +112,7 @@
                         <tr>
                             <td>Квартира</td>
                             <td>
-                                <a href="{% url 'read_flat' application.flat.id  %}">
+                                <a {% if user_permission.flat %} href="{% url 'read_flat' application.flat.id  %}" {% else %} href="#!" {% endif %} >
                                     {{ application.flat.number }}, {{ application.flat.house }}
                                 </a>
                             </td>
@@ -133,7 +133,7 @@
                                 {% if application.user is None %}
                                   (не указано)
                                 {% else %}
-                                  <a href="{% url 'read_personal' application.user.id %}">
+                                  <a {% if user_permission.users %} href="{% url 'read_personal' application.user.id %}" {% else %} href="#!" {% endif %}>
                                     {{ application.user}} ({{ application.user.get_role_display}})
                                   </a>
                                 {% endif %}

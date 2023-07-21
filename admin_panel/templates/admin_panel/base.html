@@ -53,6 +53,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto d-flex flex-row align-items-center justify-content-center">
       <!-- fullscreen -->
+    {% if user_permission.flat_owner %}
         <li class="nav-item dropdown mt-1">
             <a class="nav-link" data-toggle="dropdown" href="#">
               <i class="fa-sharp fa-solid fa-person"></i>
@@ -72,6 +73,7 @@
               <a href="{% url 'clients' %}" class="dropdown-item dropdown-footer">Перейти в раздел пользователей</a>
             </div>
         </li>
+    {% endif %}
 
 
 
@@ -274,30 +276,38 @@
                     </a>
                   </li>
                 {% endif %}
-              <li class="nav-item">
-                <a href="{% url 'roles' %}" class="nav-link">
-                  <i class="fa-solid fa-scale-balanced"></i>
-                  <p  class="p-2">Роли</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'personals' %}" class="nav-link">
-                  <i class="fa-solid fa-user-plus"></i>
-                  <p class="p-2">Пользователи</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'system_payment_details' %}" class="nav-link">
-                  <i class="fa-solid fa-credit-card"></i>
-                  <p class="p-2">Платёжные реквизиты</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'system_payment_articles' %}" class="nav-link">
-                  <i class="fa-solid fa-list-ol"></i>
-                  <p class="p-2">Статьи платежей</p>
-                </a>
-              </li>
+                {% if user_permission.role %}
+                  <li class="nav-item">
+                    <a href="{% url 'roles' %}" class="nav-link">
+                      <i class="fa-solid fa-scale-balanced"></i>
+                      <p  class="p-2">Роли</p>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if user_permission.users %}
+                  <li class="nav-item">
+                    <a href="{% url 'personals' %}" class="nav-link">
+                      <i class="fa-solid fa-user-plus"></i>
+                      <p class="p-2">Пользователи</p>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if user_permission.payment_detail %}
+                  <li class="nav-item">
+                    <a href="{% url 'system_payment_details' %}" class="nav-link">
+                      <i class="fa-solid fa-credit-card"></i>
+                      <p class="p-2">Платёжные реквизиты</p>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if user_permission.payment_article %}
+                  <li class="nav-item">
+                    <a href="{% url 'system_payment_articles' %}" class="nav-link">
+                      <i class="fa-solid fa-list-ol"></i>
+                      <p class="p-2">Статьи платежей</p>
+                    </a>
+                  </li>
+                {% endif %}
             </ul>
           </li>
         {% endif %}

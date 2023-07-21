@@ -119,7 +119,7 @@
                     dataType: 'html',
                     context: 'html',
                     success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
-                        $('#filter').submit()
+                        $('#filter').trigger('change')
                     }
                 });
             }

@@ -33,8 +33,8 @@ class Flat(models.Model):
     house = models.ForeignKey("House", verbose_name='Дом', on_delete=models.CASCADE, null=True)
     tariff = models.ForeignKey('TariffSystem', verbose_name='Тариф', on_delete=models.SET_NULL, null=True,
                                blank=True)
-    section = models.ForeignKey('Section', verbose_name='Секция', on_delete=models.SET_NULL, null=True)
-    floor = models.ForeignKey('Floor', verbose_name='Этаж', on_delete=models.SET_NULL, null=True)
+    section = models.ForeignKey('Section', verbose_name='Секция', on_delete=models.CASCADE, null=True)
+    floor = models.ForeignKey('Floor', verbose_name='Этаж', on_delete=models.CASCADE, null=True)
     flat_owner = models.ForeignKey("FlatOwner", verbose_name='Владелец', on_delete=models.SET_NULL, null=True,
                                    blank=True)
 
@@ -58,7 +58,7 @@ class Flat(models.Model):
 
 class Section(models.Model):
     title = models.CharField(verbose_name='Секция', max_length=100, default='', blank=True)
-    house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True)
+    house = models.ForeignKey('House', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.title}"
@@ -69,7 +69,7 @@ class Section(models.Model):
 
 class Floor(models.Model):
     title = models.CharField(verbose_name='Этаж', max_length=100, default='', blank=True)
-    house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True)
+    house = models.ForeignKey('House', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.title}"

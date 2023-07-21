@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 import json
 
@@ -7,9 +8,10 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.edit import *
 from admin_panel.forms import *
+from admin_panel.views import StaffRequiredMixin
 
 
-class MainPageView(FormView):
+class MainPageView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         main_page = MainPage.objects.prefetch_related('gallery__photo_set', 'gallery__infophoto_set').first()
         seo_form = SeoForm(instance=Seo.objects.get(id=main_page.seo_id), prefix='seo')
@@ -48,7 +50,7 @@ class MainPageView(FormView):
         return redirect('main_page')
 
 
-class AboutUsView(FormView):
+class AboutUsView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         about_us = AboutUs.objects.prefetch_related('gallery__photo_set', 'extra_gallery__photo_set').first()
         seo_form = SeoForm(instance=Seo.objects.get(id=about_us.seo_id), prefix='seo')
@@ -99,7 +101,7 @@ class AboutUsView(FormView):
         return redirect('about_us')
 
 
-class SiteServicesView(FormView):
+class SiteServicesView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         service_site = SeviceSite.objects.prefetch_related('gallery__infophoto_set').first()
         seo_form = SeoForm(instance=Seo.objects.get(id=service_site.seo_id), prefix='seo')
@@ -131,21 +133,21 @@ class SiteServicesView(FormView):
         return redirect('services')
 
 
-class DeletePhotoView(FormView):
+class DeletePhotoView(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         obj = Photo.objects.get(id=pk)
         obj.delete()
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-class DeleteDocView(FormView):
+class DeleteDocView(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         obj = AboutUsDocument.objects.get(id=pk)
         obj.delete()
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-class SiteTariffsView(FormView):
+class SiteTariffsView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         tariff_site = TariffSite.objects.prefetch_related('gallery__infophoto_set').first()
         tariff_site_form = TariffSiteForm(instance=tariff_site)
@@ -181,7 +183,7 @@ class SiteTariffsView(FormView):
         return redirect('tariffs')
 
 
-class ContactsView(FormView):
+class ContactsView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         contacts = Contacts.objects.first()
         contacts_form = ContactForm(instance=contacts, prefix="contact")

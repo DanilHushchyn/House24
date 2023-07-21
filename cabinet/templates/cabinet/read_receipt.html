@@ -104,7 +104,15 @@
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script>
         $('.print_pdf').on('click',function (event) {
-            printJS('media/invoice/invoice.pdf')
+            $.ajax({
+                url: `/cabinet/receipt_to_pdf_print/{{ receipt.id }}`,         /* Куда отправить запрос */
+                method: 'get',             /* Метод запроса (post или get) */
+                dataType: 'html',
+                context: 'html',
+                success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
+                    printJS('media/invoice/invoice.pdf')
+                }
+            });
             return false;
         })
         let total_price = 0

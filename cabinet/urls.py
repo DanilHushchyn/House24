@@ -8,7 +8,7 @@ urlpatterns = [
 
     path("receipts", cabinet.views.ReceiptList.as_view(), name='receipts_cabinet'),
     path("invoice", cabinet.views.Invoice.as_view(), name='invoice'),
-    path("receipt_to_pdf", cabinet.views.ReceiptPDF.as_view(), name='receipt_to_pdf'),
+    path("receipt_to_pdf_print/<str:receipt_id>", cabinet.views.ReceiptPDF.as_view(), name='receipt_to_pdf_print'),
     path("receipt_to_pdf2/<str:receipt_id>", cabinet.views.ReceiptPDF2.as_view(), name='receipt_to_pdf2'),
     path("flat_receipts/<str:flat_id>", cabinet.views.FlatReceiptList.as_view(), name='get_flat_receipts_cabinet'),
     path("filtered_receipts", cabinet.views.ReceiptsFilteredList.as_view(),

@@ -83,7 +83,7 @@
                         <tr>
                             <td>Дом</td>
                             <td>
-                                <a href="{% url 'read_house' indication.flat.house.id %}">{{ indication.flat.house}}</a>
+                                <a {% if user_permission.house %} href="{% url 'read_house' indication.flat.house.id %}" {% else %} href="#!" {% endif %}>{{ indication.flat.house}}</a>
                             </td>
                         </tr>
                         <tr>
@@ -99,7 +99,7 @@
                         <tr>
                             <td>Квартира</td>
                             <td>
-                                <a href="{% url 'read_flat' indication.flat.id %}">{{ indication.flat}}</a>
+                                <a {% if user_permission.flat %} href="{% url 'read_flat' indication.flat.id %}" {% else %} href="#!" {% endif %}>{{ indication.flat}}</a>
                             </td>
                         </tr>
                         <tr>
@@ -108,7 +108,7 @@
                                 {% if indication.flat.flat_owner is None %}
                                     не указано
                                 {% else %}
-                                    <a href="{% url 'read_client' indication.flat.flat_owner.user.id %}">{{ indication.flat.flat_owner}}</a>
+                                    <a {% if user_permission.client %} href="{% url 'read_client' indication.flat.flat_owner.user.id %}" {% else %} href="#!" {% endif %} >{{ indication.flat.flat_owner}}</a>
                                 {% endif %}
                             </td>
                         </tr>

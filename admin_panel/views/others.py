@@ -2,6 +2,12 @@ import json
 from copy import copy
 from functools import reduce
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.utils.decorators import method_decorator
 from weasyprint import HTML
 
 from admin_panel.tasks import *
@@ -18,13 +24,45 @@ from openpyxl.utils import range_boundaries
 
 from admin_panel.forms import *
 from admin_panel.models import *
+import House24.settings as settings
 
 
-def statistic(request):
-    return render(request, 'admin_panel/statistic.html')
+class StaffRequiredMixin():
+    """
+    Mixin which requires that the authenticated user is a staff member.
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+
+            messages.error(
+                request,
+                'Либо вы не вошли в систему'
+                ' либо у вас нету соответствующих прав для пользования административной панелью.'
+            )
+            return redirect(settings.LOGIN_URL)
+        return super(StaffRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
-class Statistic(TemplateView):
+def balances(context):
+    total_plus = sum(Paybox.objects.filter(debit_credit='plus', is_complete=True).values_list('total', flat=True))
+    total_minus = sum(Paybox.objects.filter(debit_credit='minus', is_complete=True).values_list('total', flat=True))
+    context['paybox_balance'] = total_plus - total_minus
+
+    context['personal_accounts_debts'] = sum(
+        PersonalAccount.objects.filter(balance__lt=0).values_list('balance', flat=True))
+
+    personal_accounts_plus = sum(
+        Paybox.objects.filter(debit_credit='plus', is_complete=True, personal_account__isnull=False).values_list(
+            'total', flat=True))
+    personal_accounts_minus = sum(
+        Receipt.objects.filter(is_complete=True, flat__personal_account__isnull=False).values_list(
+            'total_price', flat=True))
+    context['personal_accounts_balance'] = personal_accounts_plus - personal_accounts_minus
+
+
+class Statistic(StaffRequiredMixin, TemplateView):
     template_name = 'admin_panel/statistic.html'
 
     def get_context_data(self, **kwargs):
@@ -35,10 +73,39 @@ class Statistic(TemplateView):
         context['flat_owner_count'] = FlatOwner.objects.all().count()
         context['in_work_applications_count'] = Application.objects.filter(status='in work').count()
         context['new_applications_count'] = Application.objects.filter(status='new').count()
+        balances(context)
+
+        receipt_minus_by_month = []
+        receipt_plus_by_month = []
+        for i in range(1, 13):
+            receipt_plus = Receipt.objects.aggregate(
+                sum=Sum('total_price', filter=Q(date_published__month=i) & Q(is_complete=True) & Q(status="paid")))
+            receipt_minus = Receipt.objects.aggregate(
+                sum=Sum('total_price', filter=Q(date_published__month=i) & Q(is_complete=True) & Q(status="unpaid")))
+
+            receipt_minus_by_month.append(int(receipt_minus['sum']) if receipt_minus['sum'] else 0)
+            receipt_plus_by_month.append(int(receipt_plus['sum']) if receipt_plus['sum'] else 0)
+
+        context['receipt_minus_by_month'] = receipt_minus_by_month
+        context['receipt_plus_by_month'] = receipt_plus_by_month
+
+        paybox_minus_by_month = []
+        paybox_plus_by_month = []
+        for i in range(1, 13):
+            paybox_plus = Paybox.objects.aggregate(
+                sum=Sum('total', filter=Q(date_published__month=i) & Q(is_complete=True) & Q(debit_credit="plus")))
+            paybox_minus = Paybox.objects.aggregate(
+                sum=Sum('total', filter=Q(date_published__month=i) & Q(is_complete=True) & Q(debit_credit="minus")))
+
+            paybox_minus_by_month.append(int(paybox_minus['sum']) if paybox_minus['sum'] else 0)
+            paybox_plus_by_month.append(int(paybox_plus['sum']) if paybox_plus['sum'] else 0)
+
+        context['paybox_minus_by_month'] = paybox_minus_by_month
+        context['paybox_plus_by_month'] = paybox_plus_by_month
         return context
 
 
-class PayboxList(ListView):
+class PayboxList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
     paginate_by = 20
@@ -119,10 +186,11 @@ class PayboxList(ListView):
         context['filter_form'] = PayboxFilterForm()
         context['total_plus'] = total_plus
         context['total_minus'] = total_minus
+        balances(context)
         return context
 
 
-class PayboxFilteredList(ListView):
+class PayboxFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
     paginate_by = 20
@@ -130,6 +198,7 @@ class PayboxFilteredList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = PayboxFilterForm(initial=self.request.GET)
+        balances(context)
         return context
 
     def get_queryset(self):
@@ -178,7 +247,7 @@ class PayboxFilteredList(ListView):
         return paybox
 
 
-class CreatePaybox(FormView):
+class CreatePaybox(StaffRequiredMixin, FormView):
     def get(self, request, income, *args, **kwargs):
         form = PayboxForm()
         form.fields['date_published'].initial = timezone.now().date()
@@ -239,7 +308,7 @@ class CopyPaybox(CreatePaybox):
 from urllib.parse import urlencode, quote
 
 
-class PayboxDetail(DetailView):
+class PayboxDetail(StaffRequiredMixin, DetailView):
     model = Paybox
     template_name = 'admin_panel/read_paybox.html'
 
@@ -293,7 +362,7 @@ class PayboxDetail(DetailView):
         return context
 
 
-class UpdatePaybox(FormView):
+class UpdatePaybox(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         paybox = Paybox.objects.get(pk=pk)
         form = PayboxForm(instance=paybox)
@@ -312,12 +381,17 @@ class UpdatePaybox(FormView):
         if form.is_valid():
             instance = form.save()
             if instance.debit_credit == 'plus':
-                if instance.personal_account is not None:
+
+                if instance.personal_account is not None and instance.is_complete is True:
                     personal_account = PersonalAccount.objects.get(pk=instance.personal_account_id)
-                    total = sum(
+                    plus_total = sum(
                         Paybox.objects.filter(personal_account=personal_account,
                                               is_complete=True).values_list('total', flat=True))
-                    personal_account.balance = total
+                    minus_total = sum(
+                        Receipt.objects.filter(flat__personal_account=personal_account,
+                                               is_complete=True).values_list('total_price', flat=True))
+
+                    personal_account.balance = plus_total - minus_total
                     personal_account.save()
             return redirect('paybox')
         else:
@@ -327,17 +401,21 @@ class UpdatePaybox(FormView):
             return render(request, 'admin_panel/update_paybox.html', context=data)
 
 
-class DeletePaybox(FormView):
+class DeletePaybox(StaffRequiredMixin, FormView):
     def post(self, request, pk, *args, **kwargs):
         paybox = Paybox.objects.get(pk=pk)
         if paybox.debit_credit == 'plus':
             if paybox.personal_account is not None and paybox.is_complete is True:
                 personal_account = PersonalAccount.objects.get(pk=paybox.personal_account_id)
                 paybox.delete()
-                total = sum(
+                plus_total = sum(
                     Paybox.objects.filter(personal_account=personal_account,
                                           is_complete=True).values_list('total', flat=True))
-                personal_account.balance = total
+                minus_total = sum(
+                    Receipt.objects.filter(flat__personal_account=personal_account,
+                                           is_complete=True).values_list('total_price', flat=True))
+
+                personal_account.balance = plus_total - minus_total
                 personal_account.save()
             else:
                 paybox.delete()
@@ -347,7 +425,7 @@ class DeletePaybox(FormView):
         return redirect('paybox')
 
 
-class ReceiptList(ListView):
+class ReceiptList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
     queryset = Receipt.objects.all()
@@ -356,10 +434,11 @@ class ReceiptList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = ReceiptFilterForm()
+        balances(context)
         return context
 
 
-class CreateReceipt(CreateView):
+class CreateReceipt(StaffRequiredMixin, CreateView):
     model = Receipt
     template_name = 'admin_panel/get_receipt_form.html'
     form_class = ReceiptForm
@@ -371,6 +450,7 @@ class CreateReceipt(CreateView):
         context['service_formset'] = ReceiptServiceFormset(queryset=ReceiptService.objects.none(), prefix='service')
         context['measures'] = Measure.objects.all()
         context['services'] = Service.objects.all()
+        balances(context)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -382,6 +462,13 @@ class CreateReceipt(CreateView):
             for instance in instances:
                 instance.receipt_id = obj.id
                 instance.save()
+            if hasattr(obj.flat, 'personal_account'):
+                if obj.flat.personal_account is not None \
+                        and obj.flat.personal_account != '' \
+                        and obj.is_complete is True:
+                    personal_account = PersonalAccount.objects.get(pk=obj.flat.personal_account.id)
+                    personal_account.balance = personal_account.balance - obj.total_price
+                    personal_account.save()
             return redirect('receipts')
         else:
             data = {
@@ -394,7 +481,7 @@ class CreateReceipt(CreateView):
             return render(request, 'admin_panel/get_receipt_form.html', context=data)
 
 
-class GetIndicationsSortedList(View):
+class GetIndicationsSortedList(StaffRequiredMixin, View):
     def get(self, request, flat_id):
         indications = Indication.objects.order_by('date_published').filter(flat_id=flat_id)
         data = {
@@ -403,7 +490,7 @@ class GetIndicationsSortedList(View):
         return render(request, 'admin_panel/ajax_indication_table.html', context=data)
 
 
-class ReceiptsFilteredList(ListView):
+class ReceiptsFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
     paginate_by = 20
@@ -411,6 +498,7 @@ class ReceiptsFilteredList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = ReceiptFilterForm(initial=self.request.GET)
+        balances(context)
         return context
 
     def get_queryset(self):
@@ -461,7 +549,7 @@ class ReceiptsFilteredList(ListView):
         return receipts
 
 
-class SendReceiptEmail(View):
+class SendReceiptEmail(StaffRequiredMixin, View):
     def get(self, request, receipt_id, *args, **kwargs):
         receipt = Receipt.objects.get(pk=receipt_id)
         services = ReceiptService.objects.filter(receipt_id=receipt_id)
@@ -479,7 +567,7 @@ class SendReceiptEmail(View):
         return HttpResponseRedirect(url)
 
 
-class UpdateReceipt(UpdateView):
+class UpdateReceipt(StaffRequiredMixin, UpdateView):
     model = Receipt
     template_name = 'admin_panel/update_receipt.html'
     form_class = ReceiptForm
@@ -508,6 +596,21 @@ class UpdateReceipt(UpdateView):
             for instance in instances:
                 instance.receipt_id = obj.id
                 instance.save()
+
+            if hasattr(obj.flat, 'personal_account'):
+                if obj.flat.personal_account is not None \
+                        and obj.flat.personal_account != '' \
+                        and obj.is_complete is True:
+                    personal_account = PersonalAccount.objects.get(pk=obj.flat.personal_account.id)
+                    plus_total = sum(
+                        Paybox.objects.filter(personal_account=personal_account,
+                                              is_complete=True).values_list('total', flat=True))
+                    minus_total = sum(
+                        Receipt.objects.filter(flat__personal_account=personal_account,
+                                               is_complete=True).values_list('total_price', flat=True))
+
+                    personal_account.balance = plus_total - minus_total
+                    personal_account.save()
             return redirect('receipts')
         else:
             data = {
@@ -520,7 +623,7 @@ class UpdateReceipt(UpdateView):
             return render(request, 'admin_panel/update_receipt.html', context=data)
 
 
-class ReceiptPrint(View):
+class ReceiptPrint(StaffRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         receipt = Receipt.objects.get(pk=pk)
         rows = ReceiptExcelDoc.objects.all().order_by('id')
@@ -560,7 +663,7 @@ def copy_row(ws, source_row_num, target_row_num):
         dest_cell.border = copy(source_cell.border)  # Copy border style
 
 
-class ReceiptDownloadExcel(View):
+class ReceiptDownloadExcel(StaffRequiredMixin, View):
     def post(self, request, excel_id, receipt_id, *args, **kwargs):
         receipt = Receipt.objects.get(pk=receipt_id)
         services = ReceiptService.objects.filter(receipt_id=receipt_id)
@@ -687,7 +790,7 @@ class ReceiptDownloadExcel(View):
         return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-class ReceiptPrintingSettings(View):
+class ReceiptPrintingSettings(StaffRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         rows = ReceiptExcelDoc.objects.all().order_by('id')
         form = ReceiptExcelDocForm()
@@ -704,7 +807,7 @@ class ReceiptPrintingSettings(View):
         return redirect('receipt_print_settings')
 
 
-class ReceiptPrintingSettingsDefault(View):
+class ReceiptPrintingSettingsDefault(StaffRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         for row in ReceiptExcelDoc.objects.all():
             row.by_default = False
@@ -715,12 +818,12 @@ class ReceiptPrintingSettingsDefault(View):
         return redirect('receipt_print_settings')
 
 
-class ReceiptPrintingSettingsDelete(DeleteView):
+class ReceiptPrintingSettingsDelete(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('receipt_print_settings')
     queryset = ReceiptExcelDoc.objects.all()
 
 
-class CopyReceipt(FormView):
+class CopyReceipt(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         copy = Receipt.objects.get(pk=pk)
         receipt_form = ReceiptForm(instance=copy, initial={'house': copy.flat.house, 'section': copy.flat.section})
@@ -757,7 +860,7 @@ class CopyReceipt(FormView):
             return render(request, 'admin_panel/get_receipt_form.html', context=data)
 
 
-class ReceiptDetail(DetailView):
+class ReceiptDetail(StaffRequiredMixin, DetailView):
     model = Receipt
     template_name = 'admin_panel/read_receipt.html'
 
@@ -770,12 +873,33 @@ class ReceiptDetail(DetailView):
         return context
 
 
-class DeleteReceipt(DeleteView):
+class DeleteReceipt(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('receipts')
     queryset = Receipt.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        receipt = Receipt.objects.get(pk=self.kwargs['pk'])
+        if hasattr(receipt.flat, 'personal_account'):
+            if receipt.flat.personal_account is not None \
+                    and receipt.flat.personal_account != '' \
+                    and receipt.is_complete is True:
+                personal_account = PersonalAccount.objects.get(pk=receipt.flat.personal_account.id)
+                receipt.delete()
+                plus_total = sum(
+                    Paybox.objects.filter(personal_account=personal_account,
+                                          is_complete=True).values_list('total', flat=True))
+                minus_total = sum(
+                    Receipt.objects.filter(flat__personal_account=personal_account,
+                                           is_complete=True).values_list('total_price', flat=True))
 
-class FlatListView(ListView):
+                personal_account.balance = plus_total - minus_total
+                personal_account.save()
+        else:
+            receipt.delete()
+        return redirect('receipts')
+
+
+class FlatListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/flats.html'
     context_object_name = 'flats'
     queryset = Flat.objects.all()
@@ -787,7 +911,7 @@ class FlatListView(ListView):
         return context
 
 
-class FlatFilteredList(ListView):
+class FlatFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/flats.html'
     context_object_name = 'flats'
     paginate_by = 20
@@ -829,14 +953,14 @@ class FlatFilteredList(ListView):
         return flats
 
 
-class CreateFlatView(CreateView):
+class CreateFlatView(StaffRequiredMixin, CreateView):
     model = Flat
     template_name = 'admin_panel/get_flat_form.html'
     form_class = FlatForm
     success_url = reverse_lazy('flats')
 
 
-class FlatDetail(DetailView):
+class FlatDetail(StaffRequiredMixin, DetailView):
     model = Flat
     template_name = 'admin_panel/read_flat.html'
 
@@ -847,14 +971,14 @@ class FlatDetail(DetailView):
         return context
 
 
-class UpdateFlatView(UpdateView):
+class UpdateFlatView(StaffRequiredMixin, UpdateView):
     model = Flat
     template_name = 'admin_panel/update_flat.html'
     form_class = FlatForm
     success_url = reverse_lazy('flats')
 
 
-class DeleteFlatView(DeleteView):
+class DeleteFlatView(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('flats')
     queryset = Flat.objects.all()
 
@@ -880,7 +1004,7 @@ class FlatAcceptPayment(CreatePaybox):
         return render(request, 'admin_panel/get_paybox_form.html', context=data)
 
 
-class FlatAcceptReceipt(FormView):
+class FlatAcceptReceipt(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         flat = Flat.objects.get(pk=pk)
         init_data = {
@@ -929,7 +1053,7 @@ class FlatAcceptReceipt(FormView):
             return render(request, 'admin_panel/get_receipt_form.html', context=data)
 
 
-class FlatReceiptList(ListView):
+class FlatReceiptList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
     paginate_by = 20
@@ -946,7 +1070,7 @@ class FlatReceiptList(ListView):
         return queryset
 
 
-class FlatPayboxList(ListView):
+class FlatPayboxList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
     paginate_by = 20
@@ -975,7 +1099,7 @@ class FlatPayboxList(ListView):
         return queryset
 
 
-class PersonalAccountListView(ListView):
+class PersonalAccountListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
     paginate_by = 5
@@ -984,6 +1108,7 @@ class PersonalAccountListView(ListView):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = PersonalAccountsFilterForm()
         context['personal_accounts_count'] = PersonalAccount.objects.all().count()
+        balances(context)
         return context
 
     def get_queryset(self):
@@ -1058,7 +1183,7 @@ class PersonalAccountListView(ListView):
         return personal_accounts
 
 
-class PersonalAccountFilteredList(ListView):
+class PersonalAccountFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/personal_accounts.html'
     context_object_name = 'personal_accounts'
     paginate_by = 5
@@ -1066,6 +1191,7 @@ class PersonalAccountFilteredList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = PersonalAccountsFilterForm(initial=self.request.GET)
+        balances(context)
         return context
 
     def get_queryset(self):
@@ -1102,7 +1228,7 @@ class PersonalAccountFilteredList(ListView):
         return personal_accounts
 
 
-class PersonalAccountDetail(DetailView):
+class PersonalAccountDetail(StaffRequiredMixin, DetailView):
     model = PersonalAccount
     template_name = 'admin_panel/read_personal_account.html'
 
@@ -1113,21 +1239,21 @@ class PersonalAccountDetail(DetailView):
         return context
 
 
-class CreatePersonalAccount(CreateView):
+class CreatePersonalAccount(StaffRequiredMixin, CreateView):
     model = PersonalAccount
     template_name = 'admin_panel/get_personal_account_form.html'
     form_class = PersonalAccountForm
     success_url = reverse_lazy('personal_accounts')
 
 
-class UpdatePersonalAccount(UpdateView):
+class UpdatePersonalAccount(StaffRequiredMixin, UpdateView):
     model = PersonalAccount
     template_name = 'admin_panel/update_personal_account.html'
     form_class = PersonalAccountForm
     success_url = reverse_lazy('personal_accounts')
 
 
-class DeletePersonalAccount(DeleteView):
+class DeletePersonalAccount(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('personal_accounts')
     queryset = PersonalAccount.objects.all()
 
@@ -1152,7 +1278,7 @@ class PersonalAccountAcceptPayment(CreatePaybox):
         return render(request, 'admin_panel/get_paybox_form.html', context=data)
 
 
-class PersonalAccountAcceptReceipt(FormView):
+class PersonalAccountAcceptReceipt(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         personal_account = PersonalAccount.objects.get(pk=pk)
 
@@ -1198,7 +1324,7 @@ class PersonalAccountAcceptReceipt(FormView):
             return render(request, 'admin_panel/get_receipt_form.html', context=data)
 
 
-class PersonalAccountReceiptList(ListView):
+class PersonalAccountReceiptList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/receipts.html'
     context_object_name = 'receipts'
     paginate_by = 20
@@ -1218,7 +1344,7 @@ class PersonalAccountReceiptList(ListView):
         return queryset
 
 
-class PersonalAccountPayboxList(ListView):
+class PersonalAccountPayboxList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/paybox.html'
     context_object_name = 'paybox'
     paginate_by = 20
@@ -1241,7 +1367,7 @@ class PersonalAccountPayboxList(ListView):
         return queryset
 
 
-class ClientListView(ListView):
+class ClientListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
     paginate_by = 20
@@ -1256,7 +1382,7 @@ class ClientListView(ListView):
         return clients
 
 
-class ClientFilteredListView(ListView):
+class ClientFilteredListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/clients.html'
     context_object_name = 'clients'
     paginate_by = 20
@@ -1308,7 +1434,7 @@ class ClientFilteredListView(ListView):
         return clients
 
 
-class ClientDetail(DetailView):
+class ClientDetail(StaffRequiredMixin, DetailView):
     model = FlatOwner
     template_name = 'admin_panel/read_client.html'
 
@@ -1325,7 +1451,7 @@ class ClientDetail(DetailView):
 from admin_panel.tasks import send_invitation
 
 
-class SendInvitation(FormView):
+class SendInvitation(StaffRequiredMixin, FormView):
     template_name = 'admin_panel/send_invitation.html'
     form_class = InvitationForm
     success_url = reverse_lazy('send_invitation')
@@ -1349,7 +1475,7 @@ class SendInvitation(FormView):
             return render(self.request, 'admin_panel/send_invitation.html', context=data)
 
 
-class ClientSignUpView(CreateView):
+class ClientSignUpView(StaffRequiredMixin, CreateView):
     model = CustomUser
     form_class = ClientSignUpForm
     template_name = 'admin_panel/get_client_form.html'
@@ -1362,7 +1488,7 @@ class ClientSignUpView(CreateView):
         return redirect('clients')
 
 
-class UpdateClientView(UpdateView):
+class UpdateClientView(StaffRequiredMixin, UpdateView):
     model = CustomUser
     form_class = ClientUpdateForm
     template_name = 'admin_panel/update_client.html'
@@ -1382,12 +1508,12 @@ class UpdateClientView(UpdateView):
         return render(request, 'admin_panel/update_client.html', context=data)
 
 
-class DeleteClientView(DeleteView):
+class DeleteClientView(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('clients')
     queryset = CustomUser.objects.all()
 
 
-class HouseListView(ListView):
+class HouseListView(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
     queryset = House.objects.all()
@@ -1399,7 +1525,7 @@ class HouseListView(ListView):
         return context
 
 
-class HouseFilteredList(ListView):
+class HouseFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/houses.html'
     context_object_name = 'houses'
     paginate_by = 20
@@ -1425,7 +1551,7 @@ class HouseFilteredList(ListView):
         return houses
 
 
-class HouseDetail(DetailView):
+class HouseDetail(StaffRequiredMixin, DetailView):
     model = House
     template_name = 'admin_panel/read_house.html'
 
@@ -1436,12 +1562,11 @@ class HouseDetail(DetailView):
         users = house.houseuser_set.all()
         context['house'] = house
         context['photos'] = photos
-        context['registration'] = users
-
+        context['users'] = users
         return context
 
 
-class CreateHouseView(FormView):
+class CreateHouseView(StaffRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         house_form = HouseForm()
         personals = Personal.objects.all()
@@ -1502,7 +1627,7 @@ class CreateHouseView(FormView):
         return redirect('houses')
 
 
-class UpdateHouseView(FormView):
+class UpdateHouseView(StaffRequiredMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         personals = Personal.objects.all()
         house = House.objects.get(pk=pk)
@@ -1564,7 +1689,7 @@ class UpdateHouseView(FormView):
         return redirect('houses')
 
 
-class GetRoleView(View):
+class GetRoleView(StaffRequiredMixin, View):
     def get(self, request, pk):
         personal = Personal.objects.get(pk=pk)
         data = {
@@ -1574,7 +1699,7 @@ class GetRoleView(View):
         return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-class GetSectionInfoView(View):
+class GetSectionInfoView(StaffRequiredMixin, View):
     def get(self, request, pk):
         section = Section.objects.prefetch_related('flat_set').get(pk=pk)
         flats = serializers.serialize('json', section.flat_set.all())
@@ -1584,7 +1709,7 @@ class GetSectionInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetFlatInfoView(View):
+class GetFlatInfoView(StaffRequiredMixin, View):
     def get(self, request, pk):
         data = {}
         flat = Flat.objects.get(pk=pk)
@@ -1614,7 +1739,7 @@ class GetFlatInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetHouseInfoView(View):
+class GetHouseInfoView(StaffRequiredMixin, View):
     def get(self, request, pk):
         house = House.objects.prefetch_related('section_set', 'floor_set', 'flat_set').get(pk=pk)
         sections = serializers.serialize('json', house.section_set.all())
@@ -1630,7 +1755,22 @@ class GetHouseInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetTariffInfoView(View):
+class GetFlatsForMailbox(StaffRequiredMixin, View):
+    def get(self, request, section_id, floor_id):
+        flats = Flat.objects.all()
+        if self.kwargs['section_id'] != "None":
+            flats = flats.filter(section_id=self.kwargs['section_id'])
+        if self.kwargs['floor_id'] != "None":
+            flats = flats.filter(floor_id=self.kwargs['floor_id'])
+
+        flats = serializers.serialize('json', flats)
+        data = {
+            "flats": flats,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class GetTariffInfoView(StaffRequiredMixin, View):
     def get(self, request, pk):
         tariff = TariffSystem.objects.prefetch_related('tariffservice_set').get(pk=pk)
         tariff_services = serializers.serialize('json', tariff.tariffservice_set.all())
@@ -1640,7 +1780,7 @@ class GetTariffInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetServiceInfoView(View):
+class GetServiceInfoView(StaffRequiredMixin, View):
     def get(self, request, pk):
         service = Service.objects.get(pk=pk)
         service = serializers.serialize('json', [service])
@@ -1650,7 +1790,7 @@ class GetServiceInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetIndicationInfoView(View):
+class GetIndicationInfoView(StaffRequiredMixin, View):
     def get(self, request, flat_id, service_id):
         indication = Indication.objects.filter(flat_id=flat_id, service_id=service_id)
         if indication.count() != 0:
@@ -1664,7 +1804,7 @@ class GetIndicationInfoView(View):
         return JsonResponse(data, safe=False)
 
 
-class GetFlatOwnerInfo(View):
+class GetFlatOwnerInfo(StaffRequiredMixin, View):
     def get(self, request, pk):
         flat_owner = FlatOwner.objects.prefetch_related('flat_set').get(pk=pk)
         flats = flat_owner.flat_set.select_related('house').all()
@@ -1678,7 +1818,7 @@ class GetFlatOwnerInfo(View):
         return JsonResponse(data, safe=False)
 
 
-class GetAllFlats(View):
+class GetAllFlats(StaffRequiredMixin, View):
     def get(self, request):
         flats = Flat.objects.all()
         flats = serializers.serialize('json', flats)
@@ -1692,7 +1832,7 @@ class GetAllFlats(View):
         return JsonResponse(data, safe=False)
 
 
-class DeleteHouseView(DeleteView):
+class DeleteHouseView(StaffRequiredMixin, DeleteView):
     def post(self, request, pk, *args, **kwargs):
         house = House.objects.get(pk=pk)
         gallery = Gallery.objects.get(pk=house.gallery_id)
@@ -1701,7 +1841,7 @@ class DeleteHouseView(DeleteView):
         return redirect('houses')
 
 
-class MailboxList(ListView):
+class MailboxList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/mailbox.html'
     context_object_name = 'mailboxes'
     queryset = MailBox.objects.all()
@@ -1712,7 +1852,7 @@ class MailboxList(ListView):
         return context
 
 
-class MailboxFilteredList(ListView):
+class MailboxFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/mailbox.html'
     context_object_name = 'mailboxes'
     paginate_by = 20
@@ -1737,7 +1877,7 @@ class MailboxFilteredList(ListView):
         return mailboxes
 
 
-class CreateMailbox(CreateView):
+class CreateMailbox(StaffRequiredMixin, CreateView):
     model = MailBox
     template_name = 'admin_panel/get_mailbox_form.html'
     form_class = MailBoxForm
@@ -1751,7 +1891,7 @@ class CreateMailbox(CreateView):
     success_url = reverse_lazy('mailboxes')
 
 
-class CreateDebtorsMailbox(CreateView):
+class CreateDebtorsMailbox(StaffRequiredMixin, CreateView):
     model = MailBox
     template_name = 'admin_panel/get_mailbox_form.html'
 
@@ -1772,7 +1912,7 @@ class CreateDebtorsMailbox(CreateView):
     success_url = reverse_lazy('mailboxes')
 
 
-class MailboxDetail(DetailView):
+class MailboxDetail(StaffRequiredMixin, DetailView):
     model = MailBox
     template_name = 'admin_panel/read_mailbox.html'
 
@@ -1782,12 +1922,12 @@ class MailboxDetail(DetailView):
         return context
 
 
-class DeleteMailbox(DeleteView):
+class DeleteMailbox(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('mailboxes')
     queryset = MailBox.objects.all()
 
 
-class ApplicationList(ListView):
+class ApplicationList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/applications.html'
     context_object_name = 'applications'
     queryset = Application.objects.all()
@@ -1799,7 +1939,7 @@ class ApplicationList(ListView):
         return context
 
 
-class ApplicationFilteredList(ListView):
+class ApplicationFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/applications.html'
     context_object_name = 'applications'
     paginate_by = 20
@@ -1862,7 +2002,7 @@ class ApplicationFilteredList(ListView):
         return applications
 
 
-class ApplicationDetail(DetailView):
+class ApplicationDetail(StaffRequiredMixin, DetailView):
     model = Application
     template_name = 'admin_panel/read_application.html'
 
@@ -1873,26 +2013,26 @@ class ApplicationDetail(DetailView):
         return context
 
 
-class CreateApplication(CreateView):
+class CreateApplication(StaffRequiredMixin, CreateView):
     model = Application
     template_name = 'admin_panel/get_application_form.html'
     form_class = CreateApplicationForm
     success_url = reverse_lazy('applications')
 
 
-class UpdateApplication(UpdateView):
+class UpdateApplication(StaffRequiredMixin, UpdateView):
     model = Application
     template_name = 'admin_panel/update_application.html'
     form_class = ApplicationForm
     success_url = reverse_lazy('applications')
 
 
-class DeleteApplication(DeleteView):
+class DeleteApplication(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('applications')
     queryset = Application.objects.all()
 
 
-class CounterList(ListView):
+class CounterList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     queryset = Indication.objects.order_by('flat', 'service', '-date_published').distinct('flat', 'service')
@@ -1904,7 +2044,7 @@ class CounterList(ListView):
         return context
 
 
-class CountersFilteredList(ListView):
+class CountersFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/counters.html'
     context_object_name = 'indications'
     paginate_by = 20
@@ -1936,7 +2076,7 @@ class CountersFilteredList(ListView):
         return indications
 
 
-class CounterIndicationsFilteredList(ListView):
+class CounterIndicationsFilteredList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
     paginate_by = 20
@@ -1981,7 +2121,7 @@ class CounterIndicationsFilteredList(ListView):
         return indications
 
 
-class CounterIndicationsList(ListView):
+class CounterIndicationsList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
     paginate_by = 10
@@ -1999,7 +2139,7 @@ class CounterIndicationsList(ListView):
         return queryset
 
 
-class FlatIndicationsList(ListView):
+class FlatIndicationsList(StaffRequiredMixin, ListView):
     template_name = 'admin_panel/counter_indications_list.html'
     context_object_name = 'indications'
     paginate_by = 20
@@ -2019,7 +2159,7 @@ class FlatIndicationsList(ListView):
         return queryset
 
 
-class IndicationDetail(DetailView):
+class IndicationDetail(StaffRequiredMixin, DetailView):
     model = Indication
     template_name = 'admin_panel/read_indication.html'
 
@@ -2030,7 +2170,7 @@ class IndicationDetail(DetailView):
         return context
 
 
-class CreateIndication(CreateView):
+class CreateIndication(StaffRequiredMixin, CreateView):
     model = Indication
     template_name = 'admin_panel/get_indication_form.html'
     form_class = IndicationForm
@@ -2060,7 +2200,7 @@ class CreateIndication(CreateView):
             return render(request, 'admin_panel/get_indication_form.html', context=data)
 
 
-class CreateNewIndication(CreateView):
+class CreateNewIndication(StaffRequiredMixin, CreateView):
     model = Indication
     template_name = 'admin_panel/get_indication_form.html'
     form_class = IndicationForm
@@ -2105,7 +2245,7 @@ class CreateNewIndication(CreateView):
             return render(request, 'admin_panel/get_indication_form.html', context=data)
 
 
-class CreateIndicationForFlat(CreateView):
+class CreateIndicationForFlat(StaffRequiredMixin, CreateView):
     model = Indication
     template_name = 'admin_panel/get_indication_form.html'
     form_class = IndicationForm
@@ -2148,7 +2288,7 @@ class CreateIndicationForFlat(CreateView):
             return render(request, 'admin_panel/get_indication_form.html', context=data)
 
 
-class UpdateIndication(UpdateView):
+class UpdateIndication(StaffRequiredMixin, UpdateView):
     model = Indication
     template_name = 'admin_panel/update_indication.html'
     form_class = IndicationForm
@@ -2163,7 +2303,7 @@ class UpdateIndication(UpdateView):
         return render(request, 'admin_panel/update_indication.html', context=data)
 
 
-class DeleteIndication(DeleteView):
+class DeleteIndication(StaffRequiredMixin, DeleteView):
     success_url = reverse_lazy('counters')
     queryset = Indication.objects.all()
 

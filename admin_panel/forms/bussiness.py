@@ -142,6 +142,9 @@ class MailBoxForm(forms.ModelForm):
         if commit:
             instance.save()
         if instance.pk:
+            flats = Flat.objects.filter(flat_owner__isnull=False)
+            if self.cleaned_data['to_debtors']:
+                flats = flats.filter(personal_account__balance__lt=0)
             q = []
             if self.cleaned_data['house']:
                 q.append(Q(house=self.cleaned_data['house']))
@@ -154,14 +157,9 @@ class MailBoxForm(forms.ModelForm):
                 result = Q()
                 for item in q:
                     result = result & item
-                flats = Flat.objects.filter(result)
-                flats = flats.exclude(flat_owner__isnull=True)
-                for flat in flats:
-                    instance.flat_owners.add(flat.flat_owner)
-            else:
-                flat_owners = FlatOwner.objects.all()
-                for flat_owner in flat_owners:
-                    instance.flat_owners.add(flat_owner)
+                flats = flats.filter(result)
+            for flat in flats:
+                instance.flat_owners.add(flat.flat_owner)
         return instance
 
     class Meta:

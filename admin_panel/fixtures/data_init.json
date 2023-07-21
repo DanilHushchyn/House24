@@ -1,0 +1,504 @@
+[
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 1,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Французский бульвар",
+      "seo_description": "Французский бульвар",
+      "keywords": "Французский бульвар"
+    }
+  },
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 2,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Главная страница",
+      "seo_description": "Главная страница",
+      "keywords": "Главная страница"
+    }
+  },
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 3,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Vip-зал",
+      "seo_description": "Vip-зал",
+      "keywords": "Vip-зал"
+    }
+  },
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 4,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Кафе-Бар",
+      "seo_description": "Кафе-Бар",
+      "keywords": "Кафе-Бар"
+    }
+  },
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 5,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Детская комната",
+      "seo_description": "Детская комната",
+      "keywords": "Детская комната"
+    }
+  },
+  {
+    "model": "admin_panel.SeoBlock",
+    "pk": 6,
+    "fields": {
+      "url": "https://www.youtube.com/",
+      "title": "Реклама",
+      "seo_description": "Реклама",
+      "keywords": "Реклама"
+    }
+  },
+  {
+    "model": "admin_panel.Page",
+    "pk": 1,
+    "fields": {
+      "name": "Детская комната",
+      "description": "Детская комната",
+      "description2": "Детская комната",
+      "banner": "null1",
+      "first_pic": "null1",
+      "second_pic": "null1",
+      "third_pic": "null1",
+      "turn_on": true,
+      "able_to_del": false,
+      "cinema_id": 1,
+      "seo_block_id": 5
+    }
+  },
+  {
+    "model": "admin_panel.Page",
+    "pk": 2,
+    "fields": {
+      "name": "Vip зал",
+      "description": "Vip зал",
+      "description2": "Vip зал",
+      "banner": "null2",
+      "first_pic": "null2",
+      "second_pic": "null2",
+      "third_pic": "null2",
+      "turn_on": true,
+      "able_to_del": false,
+      "cinema_id": 1,
+      "seo_block_id": 3
+    }
+  },
+  {
+    "model": "admin_panel.Page",
+    "pk": 3,
+    "fields": {
+      "name": "Реклама",
+      "description": "Реклама",
+      "description2": "Реклама",
+      "banner": "null3",
+      "first_pic": "null3",
+      "second_pic": "null3",
+      "third_pic": "null3",
+      "turn_on": true,
+      "able_to_del": false,
+      "cinema_id": 1,
+      "seo_block_id": 6
+    }
+  },
+  {
+    "model": "admin_panel.Page",
+    "pk": 4,
+    "fields": {
+      "name": "Кафе-Бар",
+      "description": "Кафе-Бар",
+      "banner": "null4",
+      "first_pic": "null4",
+      "second_pic": "null4",
+      "third_pic": "null4",
+      "turn_on": true,
+      "able_to_del": false,
+      "cinema_id": 1,
+      "seo_block_id": 4
+    }
+  },
+
+  {
+    "model": "admin_panel.Account",
+    "pk": 1,
+    "fields": {
+      "first_name": "Клиент",
+      "last_name": "Клиентов",
+      "phone": "+38 (068) 512-23-16",
+      "address": "ул Салтыкова 120",
+      "sex": "Мужской",
+      "lang": "Русский",
+      "date_of_birth": "2023-05-17",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "email": "client@outlook.com",
+      "password": "pbkdf2_sha256$390000$raG7e5Ckk8yQUPgjILRioU$58XEnpuHIKHq+c4JAb0lawAaF1MANK6p1PjR6F8jToc="
+    }
+  },
+  {
+    "model": "admin_panel.Account",
+    "pk": 2,
+    "fields": {
+      "first_name": "John",
+      "last_name": "Johnson",
+      "phone": "+38 (068) 512-23-16",
+      "address": "ул Салтыкова 123",
+      "sex": "Мужской",
+      "lang": "Русский",
+      "date_of_birth": "2023-05-17",
+      "is_staff": true,
+      "is_active": true,
+      "is_superuser": false,
+      "email": "jdoe@outlook.com",
+      "password": "pbkdf2_sha256$390000$raG7e5Ckk8yQUPgjILRioU$58XEnpuHIKHq+c4JAb0lawAaF1MANK6p1PjR6F8jToc="
+    }
+  },
+  {
+    "model": "admin_panel.MainPage",
+    "pk": 1,
+    "fields": {
+      "number": "+38 (098) 567-81-23",
+      "number2": "+38 (098) 567-81-20",
+      "seo_text": "Сео текст",
+      "seo_text_ru": "Сео текст",
+      "seo_text_en": "Seo text",
+      "seo_block_id": 2
+    }
+  },
+  {
+    "model": "admin_panel.Cinema",
+    "pk": 1,
+    "fields": {
+      "name": "Французский бульвар",
+      "banner": "null",
+      "logo": "null",
+      "description": "Французский бульвар",
+      "seo_block_id": 1
+    }
+  },
+  {
+    "model": "admin_panel.Country",
+    "pk": 1,
+    "fields": {
+      "name": "Украина",
+      "name_ru": "Украина",
+      "name_en": "Ukraine"
+    }
+  },
+  {
+    "model": "admin_panel.Country",
+    "pk": 2,
+    "fields": {
+     "name": "США",
+      "name_ru": "США",
+      "name_en": "USA"
+    }
+  },
+  {
+    "model": "admin_panel.Country",
+    "pk": 3,
+    "fields": {
+      "name": "Бразилия",
+      "name_ru": "Бразилия",
+      "name_en": "Brazil"
+    }
+  },
+  {
+    "model": "admin_panel.Country",
+    "pk": 4,
+    "fields": {
+      "name": "Япония",
+      "name_ru": "Япония",
+      "name_en": "Japan"
+    }
+  },
+  {
+    "model": "admin_panel.Country",
+    "pk": 5,
+    "fields": {
+      "name": "Германия",
+      "name_ru": "Германия",
+      "name_en": "Germany"
+    }
+  },
+  {
+    "model": "admin_panel.Operator",
+    "pk": 1,
+    "fields": {
+      "name": "оператор 1",
+      "name_ru": "оператор 1",
+      "name_en": "operator 1"
+    }
+  },
+  {
+    "model": "admin_panel.Operator",
+    "pk": 2,
+    "fields": {
+      "name": "оператор 2",
+      "name_ru": "оператор 2",
+      "name_en": "operator 2"
+    }
+  },
+  {
+    "model": "admin_panel.Operator",
+    "pk": 3,
+    "fields": {
+      "name": "оператор 3",
+      "name_ru": "оператор 3",
+      "name_en": "operator 3"
+    }
+  },
+  {
+    "model": "admin_panel.Operator",
+    "pk": 4,
+    "fields": {
+      "name": "оператор 4",
+      "name_ru": "оператор 4",
+      "name_en": "operator 4"
+    }
+  },
+  {
+    "model": "admin_panel.Operator",
+    "pk": 5,
+    "fields": {
+      "name": "оператор 5",
+      "name_ru": "оператор 5",
+      "name_en": "operator 5"
+    }
+  },
+  {
+    "model": "admin_panel.Editor",
+    "pk": 1,
+    "fields": {
+      "name": "режиссёр 1",
+      "name_ru": "режиссёр 1",
+      "name_en": "editor 1"
+    }
+  },
+  {
+    "model": "admin_panel.Editor",
+    "pk": 2,
+    "fields": {
+      "name": "режиссёр 2",
+      "name_ru": "режиссёр 2",
+      "name_en": "editor 2"
+    }
+  },
+  {
+    "model": "admin_panel.Editor",
+    "pk": 3,
+    "fields": {
+      "name": "режиссёр 3",
+      "name_ru": "режиссёр 3",
+      "name_en": "editor 3"
+    }
+  },
+  {
+    "model": "admin_panel.Editor",
+    "pk": 4,
+    "fields": {
+      "name": "режиссёр 4",
+      "name_ru": "режиссёр 4",
+      "name_en": "editor 4"
+    }
+  },
+  {
+    "model": "admin_panel.Editor",
+    "pk": 5,
+    "fields": {
+      "name": "режиссёр 5",
+      "name_ru": "режиссёр 5",
+      "name_en": "editor 5"
+    }
+  },
+  {
+    "model": "admin_panel.Producer",
+    "pk": 1,
+    "fields": {
+      "name": "продюсер 1",
+      "name_ru": "продюсер 1",
+      "name_en": "producer 1"
+    }
+  },
+  {
+    "model": "admin_panel.Producer",
+    "pk": 2,
+    "fields": {
+      "name": "продюсер 2",
+      "name_ru": "продюсер 2",
+      "name_en": "producer 2"
+    }
+  },
+  {
+    "model": "admin_panel.Producer",
+    "pk": 3,
+    "fields": {
+      "name": "продюсер 3",
+      "name_ru": "продюсер 3",
+      "name_en": "producer 3"
+    }
+  },
+  {
+    "model": "admin_panel.Producer",
+    "pk": 4,
+    "fields": {
+      "name": "продюсер 4",
+      "name_ru": "продюсер 4",
+      "name_en": "producer 4"
+    }
+  },
+  {
+    "model": "admin_panel.Producer",
+    "pk": 5,
+    "fields": {
+      "name": "продюсер 5",
+      "name_ru": "продюсер 5",
+      "name_en": "producer 5"
+    }
+  },
+  {
+    "model": "admin_panel.ScriptWriter",
+    "pk": 1,
+    "fields": {
+      "name": "сценарист 1",
+      "name_ru": "сценарист 1",
+      "name_en": "scriptwriter 1"
+    }
+  },
+  {
+    "model": "admin_panel.ScriptWriter",
+    "pk": 2,
+    "fields": {
+      "name": "сценарист 2",
+      "name_ru": "сценарист 2",
+      "name_en": "scriptwriter 2"
+    }
+  },
+  {
+    "model": "admin_panel.ScriptWriter",
+    "pk": 3,
+    "fields": {
+      "name": "сценарист 3",
+      "name_ru": "сценарист 3",
+      "name_en": "scriptwriter 3"
+    }
+  },
+  {
+    "model": "admin_panel.ScriptWriter",
+    "pk": 4,
+    "fields": {
+      "name": "сценарист 4",
+      "name_ru": "сценарист 4",
+      "name_en": "scriptwriter 4"
+    }
+  },
+  {
+    "model": "admin_panel.ScriptWriter",
+    "pk": 5,
+    "fields": {
+      "name": "сценарист 5",
+      "name_ru": "сценарист 5",
+      "name_en": "scriptwriter 5"
+    }
+  },
+  {
+    "model": "admin_panel.Genre",
+    "pk": 1,
+    "fields": {
+      "name": "драма",
+      "name_ru": "драма",
+      "name_en": "drama"
+    }
+  },
+  {
+    "model": "admin_panel.Genre",
+    "pk": 2,
+    "fields": {
+      "name": "комедия",
+      "name_ru": "комедия",
+      "name_en": "comedy"
+    }
+  },
+  {
+    "model": "admin_panel.Genre",
+    "pk": 3,
+    "fields": {
+      "name": "ужастик",
+      "name_ru": "ужастик",
+      "name_en": "horror"
+    }
+  },
+  {
+    "model": "admin_panel.Genre",
+    "pk": 4,
+    "fields": {
+      "name": "триллер",
+      "name_ru": "триллер",
+      "name_en": "thriller"
+    }
+  },
+  {
+    "model": "admin_panel.Genre",
+    "pk": 5,
+    "fields": {
+      "name": "боевик",
+      "name_ru": "боевик",
+      "name_en": "action"
+    }
+  },
+  {
+    "model": "admin_panel.TechnologyType",
+    "pk": 1,
+    "fields": {
+      "name": "3D",
+      "name_ru": "3D",
+      "name_en": "3D"
+    }
+  },
+   {
+    "model": "admin_panel.TechnologyType",
+    "pk": 2,
+    "fields": {
+      "name": "2D",
+      "name_ru": "2D",
+      "name_en": "2D"
+    }
+  },
+   {
+    "model": "admin_panel.TechnologyType",
+    "pk": 3,
+    "fields": {
+      "name": "IMAX",
+      "name_ru": "IMAX",
+      "name_en": "IMAX"
+    }
+  },
+   {
+    "model": "admin_panel.TechnologyType",
+    "pk": 4,
+    "fields": {
+      "name": "RE’LUX",
+      "name_ru": "RE’LUX",
+      "name_en": "RE’LUX"
+    }
+  },
+   {
+    "model": "admin_panel.TechnologyType",
+    "pk": 5,
+    "fields": {
+      "name": "4DX",
+      "name_ru": "4DX",
+      "name_en": "4DX"
+    }
+  }
+]

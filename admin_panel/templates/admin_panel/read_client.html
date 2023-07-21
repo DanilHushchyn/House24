@@ -14,7 +14,6 @@
 {% block head %}
 {% endblock %}
 
-
 {% block content %}
     <div class="content-wrapper" style="height: auto">
     <!-- Content Header (Page header) -->
@@ -24,7 +23,6 @@
           <div class="col-sm-6">
             <h4 class="mb-0">Профиль владельца</h4>
           </div>
-
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 {% if user_permission.statistics %}
@@ -40,16 +38,14 @@
         <hr style="border-top: 1px solid darkgrey;">
       </div><!-- /.container-fluid -->
     </section>
-
     <!-- Main content -->
     <section class="content">
       <!-- Default box -->
        <div class="card card-success card-outline">
             <div class="card-header text-right">
-                    <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'update_client' client.user.id %}"><i class="fa fa-external-link pe-2"></i>Перейти в кабинет</a>
-                    <a class="btn btn-primary mb-3 mb-sm-0" href="{% url 'update_client' client.user.id %}">Редактировать профиль</a>
+                <a class="btn btn-default mb-3 mb-sm-0" href="{% url 'update_client' client.user.id %}"><i class="fa fa-external-link pe-2"></i>Перейти в кабинет</a>
+                <a class="btn btn-primary mb-3 mb-sm-0" href="{% url 'update_client' client.user.id %}">Редактировать профиль</a>
             </div>
-
             <!-- /.card-header -->
             <div class="card-body p-3">
                 <div class="mb-3 text-center text-sm-left">
@@ -110,7 +106,8 @@
                                 <td class="font-weight-bold">Viber</td>
                                 <td>
                                     {{ client.viber }}
-                                </td>                            </tr>
+                                </td>
+                            </tr>
                             <tr>
                                 <td class="font-weight-bold">Telegram</td>
                                 <td>
@@ -120,7 +117,7 @@
                             <tr>
                                 <td class="font-weight-bold">Email</td>
                                 <td>
-                                    {{ client.user.email }}                                   <!--</a>-->
+                                    {{ client.user.email }}
                                 </td>
                             </tr>
                         </tbody>
@@ -146,7 +143,7 @@
                                             {% if flat.house is None %}
                                                 не указано
                                             {% else %}
-                                                <a href="{% url 'read_house' flat.house.id %}">{{ flat.house }}</a>
+                                                <a {% if user_permission.house %} href="{% url 'read_house' flat.house.id %}" {% else %} href="#!" {% endif %}>{{ flat.house }}</a>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -156,12 +153,12 @@
                                                 {{ flat.section }}
                                             {% endif %}
                                         </td>
-                                        <td><a href="{% url 'read_flat' flat.id %}">{{ flat.number }}</a></td>
+                                        <td><a {% if user_permission.flat %} href="{% url 'read_flat' flat.id %}" {% else %} href="#!" {% endif %}>{{ flat.number }}</a></td>
                                         <td>
                                             {% if flat.personal_account is None or flat.personal_account == ''%}
                                                 не указано
                                             {% else %}
-                                                <a href="{% url 'read_personal_account' flat.personal_account.id %}">{{ flat.personal_account }}</a>
+                                                <a {% if user_permission.personal_account %} href="{% url 'read_personal_account' flat.personal_account.id %}" {% else %} href="#!" {% endif %}>{{ flat.personal_account }}</a>
                                             {% endif %}
                                         </td>
                                     </tr>

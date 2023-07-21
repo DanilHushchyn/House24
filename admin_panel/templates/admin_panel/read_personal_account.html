@@ -65,8 +65,12 @@
       <!-- Default box -->
        <div class="card card-success card-outline">
             <div class="card-header text-right">
-                <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} href="{% url 'personal_account_accept_payment' personal_account.id %}" class="btn btn-default mb-3 mb-sm-0 accept_payment" {% endif %}><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
-                <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} class="btn btn-default mb-3 mb-sm-0 accept_payment" href="{% url 'personal_account_accept_receipt' personal_account.id %}" {% endif %}><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
+                {% if user_permission.paybox %}
+                    <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} href="{% url 'personal_account_accept_payment' personal_account.id %}" class="btn btn-default mb-3 mb-sm-0 accept_payment" {% endif %}><i class="fa fa-dollar pe-2"></i>Принять платёж</a>
+                {% endif %}
+                {% if user_permission.receipt %}
+                    <a {% if personal_account.id|accept_payment is False  %} style="opacity: 0.5;cursor: not-allowed" class="btn btn-default mb-3 mb-sm-0 dsbld accept_payment" href="#!" {% else %} class="btn btn-default mb-3 mb-sm-0 accept_payment" href="{% url 'personal_account_accept_receipt' personal_account.id %}" {% endif %}><i class="fa fa-files-o pe-2"></i>Оформить квитанцию</a>
+                {% endif %}
                 <a class="btn btn-primary" href="{% url 'update_personal_account' personal_account.id %}">Редактировать счёт</a>
             </div>
 
@@ -92,7 +96,7 @@
                                         {% if personal_account.house is None %}
                                             не указано
                                         {% else %}
-                                            <a href="{% url 'read_house' personal_account.house.id %}">{{ personal_account.house }}</a>
+                                            <a {% if user_permission.house %} href="{% url 'read_house' personal_account.house.id %}" {% else %} href="#!" {% endif %} >{{ personal_account.house }}</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -112,7 +116,7 @@
                                         {% if personal_account.flat is None %}
                                             не указано
                                         {% else %}
-                                            <a href="{% url 'read_flat' personal_account.flat.id %}">{{ personal_account.flat.number }}</a>
+                                            <a {% if user_permission.flat %} href="{% url 'read_flat' personal_account.flat.id %}" {% else %} href="#!" {% endif %}>{{ personal_account.flat.number }}</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -122,7 +126,7 @@
                                         {% if personal_account.flat is None or personal_account.flat.flat_owner is None %}
                                             не указано
                                         {% else %}
-                                            <a href="{% url 'read_client' personal_account.flat.flat_owner.id %}">{{ personal_account.flat.flat_owner }}</a>
+                                            <a {% if user_permission.flat_owner %} href="{% url 'read_client' personal_account.flat.flat_owner.id %}" {% else %} href="#!" {% endif %}>{{ personal_account.flat.flat_owner }}</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -139,19 +143,22 @@
                             </tbody>
                         </table>
                         <div>
-                            {% if personal_account.flat and personal_account.status != 'disabled' %}
-                                <p><a href="{% url 'flat_indications' personal_account.flat.id %}">Посмотреть показания счетчиков</a></p>
-                            {% else %}
-                                <p><a class="accept_payment dsbld" href="#!">Посмотреть показания счетчиков</a></p>
+                            {% if user_permission.indication %}
+                                {% if personal_account.flat and personal_account.status != 'disabled' %}
+                                    <p><a href="{% url 'flat_indications' personal_account.flat.id %}">Посмотреть показания счетчиков</a></p>
+                                {% else %}
+                                    <p><a class="accept_payment dsbld" href="#!">Посмотреть показания счетчиков</a></p>
+                                {% endif %}
                             {% endif %}
-
-                            <p><a href="{% url 'personal_account_paybox' personal_account.id %}">Посмотреть приходы</a></p>
-
-
-                            {% if personal_account.flat and personal_account.status != 'disabled' %}
-                                <p><a href="{% url 'personal_account_receipts' personal_account.id %}">Посмотреть квитанции</a></p>
-                            {% else %}
-                                <p><a class="accept_payment dsbld" href="#!">Посмотреть квитанции</a></p>
+                            {% if user_permission.paybox %}
+                              <p><a href="{% url 'personal_account_paybox' personal_account.id %}">Посмотреть приходы</a></p>
+                            {% endif %}
+                            {% if user_permission.receipt %}
+                                {% if personal_account.flat and personal_account.status != 'disabled' %}
+                                    <p><a href="{% url 'personal_account_receipts' personal_account.id %}">Посмотреть квитанции</a></p>
+                                {% else %}
+                                    <p><a class="accept_payment dsbld" href="#!">Посмотреть квитанции</a></p>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

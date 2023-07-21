@@ -98,12 +98,12 @@
               </td>
               <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">
                   {% for flat in client.id|get_house_queryset %}
-                      <a href="{% url 'read_house' flat.house.id %}">{{ flat.house }}</a>,<br>
+                      <a {% if user_permission.house %} href="{% url 'read_house' flat.house.id %}" {% else %} href="#!" {% endif %}>{{ flat.house }}</a>,<br>
                   {% endfor %}
               </td>
               <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">
                   {% for flat in client.id|get_flat_queryset %}
-                      <a href="{% url 'read_flat' flat.id %}">№{{ flat.number }} - {{ flat.house }}</a>,<br>
+                      <a {% if user_permission.flat %} href="{% url 'read_flat' flat.id %}" {% else %} href="#!" {% endif %}>№{{ flat.number }} - {{ flat.house }}</a>,<br>
                   {% endfor %}
               </td>
               <td style="cursor: pointer" data-href="{% url 'read_client' client.id %}">{{ client.user.date_joined }}</td>
@@ -233,8 +233,8 @@
                     dataType: 'html',
                     context: 'html',
                     success: function (data) {   /* функция которая будет выполнена после успешного запроса.  */
-                        {#tr_elem.remove()#}
-                        $('#filter').submit()
+                        tr_elem.remove()
+                        $('#filter').trigger('change')
                     }
                 });
             }

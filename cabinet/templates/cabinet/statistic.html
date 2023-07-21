@@ -38,7 +38,7 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                   <div class="inner">
-                    <h3>150</h3>
+                    <h3>{{ personal_account_balance }}</h3>
                     <p>Баланс по квартире</p>
                   </div>
                   <div class="icon">
@@ -51,7 +51,7 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                   <div class="inner">
-                    <h3>53</h3>
+                    <h3>{{ personal_account }}</h3>
                     <p>Лицевой счет</p>
                   </div>
                   <div class="icon">
@@ -64,7 +64,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                   <div class="inner">
-                    <h3>44</h3>
+                    <h3>{{ avg_consumption_for_month }}</h3>
                     <p>Средний расход за месяц</p>
                   </div>
                   <div class="icon">
@@ -125,7 +125,11 @@
           legend: {
             bottom: 10,
             left: 'center',
-            data: ['CityA', 'CityB', 'CityD', 'CityC', 'CityE']
+            data: [
+                {% for month_consumption in month_consumptions %}
+                    '{{month_consumption.0}}',
+                {% endfor %}
+            ]
           },
           series: [
             {
@@ -134,10 +138,9 @@
               center: ['50%', '50%'],
               selectedMode: 'single',
               data: [
-                { value: 735, name: 'CityC' },
-                { value: 510, name: 'CityD' },
-                { value: 434, name: 'CityB' },
-                { value: 335, name: 'CityA' }
+                  {% for month_consumption in month_consumptions %}
+                    { value: {{month_consumption.1}}, name: '{{month_consumption.0}}' },
+                {% endfor %}
               ],
               emphasis: {
                 itemStyle: {
@@ -158,7 +161,7 @@
 
         option2 = {
           title: {
-            text: 'за предыдущий год',
+            text: 'за текущий год',
             left: 'center'
           },
           tooltip: {
@@ -168,7 +171,11 @@
           legend: {
             bottom: 10,
             left: 'center',
-            data: ['CityA', 'CityB', 'CityD', 'CityC', 'CityE']
+            data: [
+                {% for year_consumption in year_consumptions %}
+                    '{{year_consumption.0}}',
+                {% endfor %}
+            ]
           },
           series: [
             {
@@ -177,10 +184,9 @@
               center: ['50%', '50%'],
               selectedMode: 'single',
               data: [
-                { value: 735, name: 'CityC' },
-                { value: 510, name: 'CityD' },
-                { value: 434, name: 'CityB' },
-                { value: 335, name: 'CityA' }
+                  {% for year_consumption in year_consumptions %}
+                    { value: {{year_consumption.1}}, name: '{{year_consumption.0}}' },
+                  {% endfor %}
               ],
               emphasis: {
                 itemStyle: {
@@ -215,7 +221,7 @@
       xAxis: [
         {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
           axisTick: {
             alignWithLabel: true
           }
@@ -231,7 +237,11 @@
           name: 'Direct',
           type: 'bar',
           barWidth: '60%',
-          data: [10, 52, 200, 334, 390, 330, 220]
+          data: [
+              {% for cons in year_consumptions_by_month %}
+                {{cons}},
+              {% endfor %}
+          ]
         }
       ]
     };
