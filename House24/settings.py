@@ -19,13 +19,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gd(e_xem_9mhj8h%mnvc37v!k6a^th&h8fp-w_oyq)z%gu&o0a'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", default=0)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
+# CSRF_TRUSTED_ORIGINS = ['https://', 'http://','http://*', 'https://*']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:1337', 'http://localhost/*', 'https://', 'http://', 'http://*',
+                        'https://*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -35,11 +37,10 @@ EMAIL_HOST_USER = 'dhushchyn@gmail.com'
 EMAIL_HOST_PASSWORD = 'mfpxzbsjatijcboa'
 DEFAULT_FROM_EMAIL = 'dhushchyn@gmail.com'
 
-
 CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = "redis://redis:6379/0"
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 # Application definition
@@ -106,12 +107,19 @@ WSGI_APPLICATION = 'House24.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # "NAME": 'house24',
+        # "USER": 'postgres',
+        # "PASSWORD": 'buzaho4114',
+        # 'HOST': 'db',
+        # "PORT": 5432,
+
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        "NAME": 'house24',
-        "USER": 'postgres',
-        "PASSWORD": 'buzaho4114',
-        "HOST": 'localhost',
-        "PORT": 5432,
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST"),
+        "PORT": os.environ.get("SQL_PORT"),
 
     }
 }

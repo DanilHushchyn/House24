@@ -17,7 +17,6 @@ from House24 import settings
 from admin_panel.forms import ClientUpdateForm, SearchMessageFilterForm
 from admin_panel.models import *
 from cabinet.forms import CreateApplicationForm, ReceiptFilterForm
-from cabinet.utils import render_to_pdf
 
 
 class Statistic(LoginRequiredMixin, TemplateView):
