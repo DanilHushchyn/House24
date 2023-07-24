@@ -1,10 +1,35 @@
-{% load static %}
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
   <head>
-    <meta charset="utf-8">
-    <link href="{% static 'cabinet/invoice/invoice.css' %}" media="print" rel="stylesheet">
-    <title>Invoice</title>
-    <meta name="description" content="Invoice demo sample">
+      <meta charset="utf-8">
+      <title>Invoice</title>
+      <meta name="description" content="Invoice demo sample">
+      <style>
+          @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
+          body {
+              color: black;
+              font-family: 'Lato', Arial, sans-serif;
+              font-size: 10px;
+
+          }
+
+
+
+          table {
+              width: 100%;
+              margin: auto;
+          }
+
+          table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+          }
+
+          th, td {
+              padding: 10px;
+          }
+      </style>
   </head>
 
   <body>
@@ -13,7 +38,7 @@
             <tr>
                 <th rowspan="2" colspan="1">Отримувач/Виконувач</th>
                 <th rowspan="4" colspan="6" >
-                    <img src="{% static 'admin_panel/imgs/logo.svg' %}" style="width: 150px;height: 40px;margin-left: 80px" alt="">
+                    <img src="http://myhouse24.avada-media.ua/logo.svg" style="width: 150px;height: 40px;margin-left: 80px" alt="">
                 </th>
                 <th rowspan="1" colspan="1">№ О/рахунку</th>
                 <th rowspan="1" colspan="2">ПОВIДОМЛЕННЯ</th>
@@ -100,7 +125,7 @@
             <tr>
                 <th rowspan="2" colspan="1">Отримувач/Виконувач</th>
                 <th rowspan="4" colspan="6" >
-                    <img src="{% static 'admin_panel/imgs/logo.svg' %}" style="width: 150px;height: 40px;margin-left: 80px" alt="">
+                    <img src="http://myhouse24.avada-media.ua/logo.svg" style="width: 150px;height: 40px;margin-left: 80px" alt="">
                 </th>
                 <th rowspan="1" colspan="1">№ О/рахунку</th>
                 <th rowspan="1" colspan="2">КВИТАНЦIЯ</th>

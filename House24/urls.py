@@ -26,6 +26,8 @@ urlpatterns = [
       path('cabinet/', include('cabinet.urls')),
       path('website/', include('website.urls')),
       path('users/', include('users.urls')),
-  ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+  ]
+if bool(settings.DEBUG):
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler404 = customhandler404
 handler500 = customhandler500

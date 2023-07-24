@@ -74,7 +74,7 @@ class Statistic(LoginRequiredMixin, TemplateView):
         avg_consumption_for_month = Receipt.objects.filter(flat=flat,
                                                            date_published__year=timezone.now().year).aggregate(
             sum=Sum('total_price', filter=Q(is_complete=True)))
-        context['avg_consumption_for_month'] = round(avg_consumption_for_month['sum'] / 12, 2)
+        context['avg_consumption_for_month'] = 0 if avg_consumption_for_month['sum'] is None else round(avg_consumption_for_month['sum'] / 12, 2)
         return context
 
 
@@ -208,7 +208,7 @@ class ReceiptPDF(LoginRequiredMixin, View):
             'services': services,
             'receipt': receipt,
         }
-        html = html_template.render(context)
+        html = html_template.render(context).encode(encoding="UTF-8")
         HTML(string=html, base_url=request.build_absolute_uri()).write_pdf('media/invoice/invoice.pdf')
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'filename="invoice.pdf"'
@@ -224,7 +224,7 @@ class ReceiptPDF2(LoginRequiredMixin, View):
             'services': services,
             'receipt': receipt,
         }
-        html = html_template.render(context)
+        html = html_template.render(context).encode(encoding="UTF-8")
         pdf_file = HTML(string=html, base_url=request.build_absolute_uri()).write_pdf()
         response = HttpResponse(pdf_file, content_type='application/pdf')
         response['Content-Disposition'] = 'filename="invoice.pdf"'

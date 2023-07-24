@@ -30,7 +30,7 @@
                 {% if user_permission.statistics %}
                     <li class="breadcrumb-item"><a href="{% url 'statistic' %}">Главная</a></li>
                 {% else %}
-                    <li class="breadcrumb-item"><a href="{% url 'update_personal' request.user.id %}">Главная</a></li>
+{#                    <li class="breadcrumb-item"><a href="{% url 'update_personal' request.user.id %}">Главная</a></li>#}
                 {% endif %}
                 <li class="breadcrumb-item"><a href="{% url 'receipts' %}">Квитанции</a></li>
                 <li class="breadcrumb-item active">Квитанция №{{ receipt.number }}</li>
