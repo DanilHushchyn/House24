@@ -8,8 +8,6 @@ WORKDIR /usr/src/House24
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apk add make # install make
-
 RUN apk update \
     && apk add postgresql-dev gcc python3-dev musl-dev
 RUN apk --update --upgrade --no-cache add fontconfig ttf-freefont font-noto terminus-font \
