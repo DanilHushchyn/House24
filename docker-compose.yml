@@ -3,49 +3,24 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn House24.wsgi:application --bind 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - static_volume:/usr/src/House24/static
-      - media_volume:/usr/src/House24/media
-    expose:
-      - 8000
+      - .:/usr/src/House24
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
     depends_on:
       - db
-    env_file:
-      - ./.env
   db:
     image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env.db
-  nginx:
-    build: ./nginx
-    volumes:
-      - static_volume:/usr/src/House24/static
-      - media_volume:/usr/src/House24/media
-    ports:
-      - "1337:80"
-    depends_on:
-      - web
-  redis:
-    image: redis:alpine
-  celery:
-    restart: always
-    build:
-      context: .
-    command: celery -A House24 worker -l info
-    ports:
-      - "465:465"
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-      - redis
-      - web
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=buzaho4114
+      - POSTGRES_DB=house24
+
 
 volumes:
   postgres_data:
-  static_volume:
-  media_volume:
-
