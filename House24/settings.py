@@ -27,8 +27,11 @@ DEBUG = 0
 
 ALLOWED_HOSTS = ['*']
 # CSRF_TRUSTED_ORIGINS = ['https://', 'http://','http://*', 'https://*']
-CSRF_TRUSTED_ORIGINS = ['http://localhost:1337', 'http://localhost/*',  'http://localhost/', 'https://', 'http://', 'http://*',
-                        'https://*', 'http://161.35.213.26', 'http://161.35.213.26/','http://161.35.213.26/*',]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:1337', 'http://localhost/*',  'http://localhost/',
+                        'http://*', 'http://161.35.192.121:1337', 'http://161.35.192.1211337/*',
+                        'http://161.35.192.121/',
+                        'http://161.35.192.121/*', 'http://161.35.192.121/', 'http://161.35.192.121.13'
+                        ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
