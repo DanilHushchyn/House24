@@ -23,10 +23,14 @@ RUN apk add py3-pip py3-pillow py3-cffi py3-brotli gcc musl-dev python3-dev pang
 
 
 # copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/House24/entrypoint.sh
+RUN chmod +x /usr/src/House24/entrypoint.sh
 
 # copy project
 COPY . .
 
-
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/House24/entrypoint.sh"]
 
 
